@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.mortuusars.scholar.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "refmap": "mixins.scholar.refmap.json",
+  "mixins": [
+    "WrittenBookItemMixin"
+  ],
+  "injectors": {
+    "defaultRequire": -1
+  },
+  "client": [
+    "ClientPacketListenerMixin",
+    "ScreenMixin"
+  ]
+}
