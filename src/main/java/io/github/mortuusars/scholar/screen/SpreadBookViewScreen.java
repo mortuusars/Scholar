@@ -61,8 +61,8 @@ public class SpreadBookViewScreen extends Screen {
     protected Pair<List<FormattedCharSequence>, List<FormattedCharSequence>> cachedPageComponents;
     protected int cachedSpread;
 
-    protected int mainFontColor;
-    protected int secondaryFontColor;
+    protected final int mainFontColor;
+    protected final int secondaryFontColor;
 
     protected int leftPos;
     protected int topPos;
@@ -149,7 +149,7 @@ public class SpreadBookViewScreen extends Screen {
 
     public boolean setPage(int pageIndex) {
         pageIndex = Mth.clamp(pageIndex, 0, this.bookAccess.getPageCount() - 1);
-        int spreadIndex = (int)Math.ceil(pageIndex / 2f);
+        int spreadIndex = (int)(pageIndex / 2f);
         if (spreadIndex != this.currentSpread) {
             this.currentSpread = spreadIndex;
             this.updateButtonVisibility();
@@ -286,10 +286,10 @@ public class SpreadBookViewScreen extends Screen {
             return false;
 
         if (clickEvent.getAction() == ClickEvent.Action.CHANGE_PAGE) {
-            String pageIndexStr = clickEvent.getValue();
+            String pageNumber = clickEvent.getValue();
 
             try {
-                int pageIndex = Integer.parseInt(pageIndexStr) - 1;
+                int pageIndex = Integer.parseInt(pageNumber) - 1;
                 boolean pageChanged = this.forcePage(pageIndex);
                 if (pageChanged)
                     Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1f));
