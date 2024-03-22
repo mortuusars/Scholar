@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.screen;
+package io.github.mortuusars.scholar.visual;
 
 public enum Formatting {
     OBFUSCATED("§k", "obfuscated"),

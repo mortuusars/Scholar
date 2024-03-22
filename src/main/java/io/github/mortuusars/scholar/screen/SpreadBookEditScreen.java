@@ -7,6 +7,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.screen.textbox.TextBox;
+import io.github.mortuusars.scholar.visual.BookColors;
+import io.github.mortuusars.scholar.visual.Formatting;
 import io.netty.util.internal.StringUtil;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
@@ -27,6 +29,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,8 +68,8 @@ public class SpreadBookEditScreen extends Screen {
     public static final int TEXT_WIDTH = 114;
     public static final int TEXT_HEIGHT = 128;
 
-    public static final int SELECTION_COLOR = 0xFF8888FF;
-    public static final int SELECTION_UNFOCUSED_COLOR = 0xFFBBBBFF;
+    public static final int SELECTION_COLOR = 0xFF664488;
+    public static final int SELECTION_UNFOCUSED_COLOR = 0xFF775599;
 
     protected final Player owner;
     protected final ItemStack bookStack;
@@ -120,7 +123,7 @@ public class SpreadBookEditScreen extends Screen {
         leftPageTextBox = new TextBox(font, leftPos + TEXT_LEFT_X, topPos + TEXT_Y, TEXT_WIDTH, TEXT_HEIGHT,
                 () -> getPageText(Side.LEFT), text -> setPageText(Side.LEFT, text))
                 .setFontColor(mainFontColor, mainFontColor)
-                .setSelectionColor(0xFF664488, 0xFF775599);
+                .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
 
         addRenderableWidget(leftPageTextBox);
 
@@ -143,7 +146,7 @@ public class SpreadBookEditScreen extends Screen {
         nextButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.next_page")));
         this.nextButton = addRenderableWidget(nextButton);
 
-        this.enterSignModeButton = new ImageButton(leftPos - 23, topPos + 18, 22, 22, 322, 0,
+        this.enterSignModeButton = new ImageButton(leftPos - 24, topPos + 18, 22, 22, 321, 0,
                 22, TEXTURE, 512, 512,
                 b -> enterSignMode(), Component.translatable("book.signButton"));
         this.enterSignModeButton.setTooltip(Tooltip.create(Component.translatable("book.signButton")));
@@ -257,21 +260,20 @@ public class SpreadBookEditScreen extends Screen {
 
         RenderSystem.enableBlend();
 
-        int col = 0xFF99422b;
-        int alpha = col >> 24 & 0xFF;
+        int col = BookColors.REGULAR;
         int red = col >> 16 & 0xFF;
         int green = col >> 8 & 0xFF;
         int blue = col & 0xFF;
 
-        RenderSystem.setShaderColor(red / 255f, green / 255f, blue / 255f, alpha / 255f);
+        RenderSystem.setShaderColor(red / 255f, green / 255f, blue / 255f, 1.0f);
 
         // Cover
         guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
                 0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
 
         // Enter Sign Mode bg
-        guiGraphics.blit(TEXTURE, leftPos - 27, topPos + 14, 0, 360,
-                27, 28, 512, 512);
+        guiGraphics.blit(TEXTURE, leftPos - 29, topPos + 14, 0, 360,
+                29, 28, 512, 512);
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 

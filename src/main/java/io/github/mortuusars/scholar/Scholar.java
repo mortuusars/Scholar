@@ -12,12 +12,6 @@ public class Scholar {
     public Scholar() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.Common.SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.Client.SPEC);
-
-        /*
-        give Dev written_book{pages:[
-        "{}"
-        ]
-         */
     }
 
     public static ResourceLocation resource(String path) {

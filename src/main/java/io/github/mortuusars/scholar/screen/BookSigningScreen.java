@@ -58,7 +58,7 @@ public class BookSigningScreen extends Screen {
         this.topPos = (this.height - this.imageHeight) / 2;
 
         // TITLE
-        titleTextBox = new TextBox(font, leftPos + 21, topPos + 73, 108, 9,
+        titleTextBox = new TextBox(font, leftPos + 21, topPos + 71, 108, 9,
                 () -> titleText, text -> titleText = text)
                 .setFontColor(0xFF856036, 0xFF856036)
                 .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
@@ -67,7 +67,7 @@ public class BookSigningScreen extends Screen {
         addRenderableWidget(titleTextBox);
 
         // SIGN
-        signButton = new ImageButton(leftPos + 46, topPos + 107, 22, 22, 149, 0,
+        signButton = new ImageButton(leftPos + 46, topPos + 108, 22, 22, 149, 0,
                 22, TEXTURE, textureWidth, textureHeight,
                 b -> signAlbum(), Component.translatable("book.finalizeButton"));
         MutableComponent component = Component.translatable("book.finalizeButton")
@@ -76,7 +76,7 @@ public class BookSigningScreen extends Screen {
         addRenderableWidget(signButton);
 
         // CANCEL
-        cancelSigningButton = new ImageButton(leftPos + 83, topPos + 107, 22, 22, 171, 0,
+        cancelSigningButton = new ImageButton(leftPos + 83, topPos + 108, 22, 22, 171, 0,
                 22, TEXTURE, textureWidth, textureHeight,
                 b -> cancelSigning(), CommonComponents.GUI_CANCEL);
         cancelSigningButton.setTooltip(Tooltip.create(CommonComponents.GUI_CANCEL));
@@ -122,6 +122,9 @@ public class BookSigningScreen extends Screen {
                 imageWidth, imageHeight, textureWidth, textureHeight);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
+        guiGraphics.blit(TEXTURE, leftPos, topPos + 31, 0, 0, 180,
+                imageWidth, 76, textureWidth, textureHeight);
+
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         renderLabels(guiGraphics);
@@ -129,10 +132,10 @@ public class BookSigningScreen extends Screen {
 
     private void renderLabels(GuiGraphics guiGraphics) {
         MutableComponent component = Component.translatable("book.editTitle");
-        guiGraphics.drawString(font, component,  leftPos + 149 / 2 - font.width(component) / 2, topPos + 50, 0xf5ebd0, false);
+        guiGraphics.drawString(font, component,  leftPos + 149 / 2 - font.width(component) / 2, topPos + 51, 0xf5ebd0, false);
 
         component = Component.translatable("book.byAuthor", player.getName());
-        guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 84, 0xc7b496, false);
+        guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 81, 0xc7b496, false);
     }
 
     protected void signAlbum() {
