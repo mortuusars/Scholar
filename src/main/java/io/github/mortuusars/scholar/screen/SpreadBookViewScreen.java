@@ -116,8 +116,8 @@ public class SpreadBookViewScreen extends Screen {
                 (button) -> this.pageBack());
         prevButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.previous_page")));
         this.prevButton = this.addRenderableWidget(prevButton);
-        ImageButton nextButton = new ImageButton(leftPos + 271, topPos + 156, 13, 15,
-                309, 0, 15, TEXTURE, 512, 512,
+        ImageButton nextButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
+                308, 0, 15, TEXTURE, 512, 512,
                 (button) -> this.pageForward());
         nextButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.next_page")));
         this.nextButton = this.addRenderableWidget(nextButton);
@@ -178,27 +178,17 @@ public class SpreadBookViewScreen extends Screen {
             return true;
         }
 
-        if (keyCode == InputConstants.KEY_LEFT || Minecraft.getInstance().options.keyLeft.matches(keyCode, scanCode)) {
+        if (keyCode == InputConstants.KEY_LEFT || keyCode == InputConstants.KEY_PAGEUP || Minecraft.getInstance().options.keyLeft.matches(keyCode, scanCode)) {
             pageBack();
             return true;
         }
 
-        if (keyCode == InputConstants.KEY_RIGHT || Minecraft.getInstance().options.keyRight.matches(keyCode, scanCode)) {
+        if (keyCode == InputConstants.KEY_RIGHT || keyCode == InputConstants.KEY_PAGEDOWN || Minecraft.getInstance().options.keyRight.matches(keyCode, scanCode)) {
             pageForward();
             return true;
         }
 
-        return switch (keyCode) {
-            case InputConstants.KEY_PAGEUP -> {
-                this.prevButton.onPress();
-                yield true;
-            }
-            case InputConstants.KEY_PAGEDOWN -> {
-                this.nextButton.onPress();
-                yield true;
-            }
-            default -> false;
-        };
+        return false;
     }
 
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {

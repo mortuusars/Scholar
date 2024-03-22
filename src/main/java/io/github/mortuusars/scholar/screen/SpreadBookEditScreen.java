@@ -1,15 +1,15 @@
 package io.github.mortuusars.scholar.screen;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.logging.LogUtils;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.screen.textbox.TextBox;
+import io.netty.util.internal.StringUtil;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.NarratorStatus;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
@@ -20,6 +20,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -28,6 +29,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.ListIterator;
@@ -40,17 +42,11 @@ public class SpreadBookEditScreen extends Screen {
     private TextBox rightPageTextBox;
 
     public enum Side {
-        LEFT(0),
-        RIGHT(1);
-
-        private int index;
-
-        Side(int index) {
-            this.index = index;
-        }
+        LEFT,
+        RIGHT;
 
         public int getSideIndex() {
-            return index;
+            return ordinal();
         }
 
         public int getPageIndexFromSpread(int spreadIndex) {
@@ -84,10 +80,10 @@ public class SpreadBookEditScreen extends Screen {
     protected int topPos;
     protected Button nextButton;
     protected Button prevButton;
+    protected Button enterSignModeButton;
 
     protected int currentSpread;
     protected boolean isModified;
-    private String title = "";
 
     public SpreadBookEditScreen(Player owner, ItemStack bookStack, InteractionHand hand) {
         super(GameNarrator.NO_TITLE);
@@ -123,8 +119,8 @@ public class SpreadBookEditScreen extends Screen {
 
         leftPageTextBox = new TextBox(font, leftPos + TEXT_LEFT_X, topPos + TEXT_Y, TEXT_WIDTH, TEXT_HEIGHT,
                 () -> getPageText(Side.LEFT), text -> setPageText(Side.LEFT, text))
-                    .setFontColor(mainFontColor, mainFontColor)
-                    .setSelectionColor(0xFF664488, 0xFF775599);
+                .setFontColor(mainFontColor, mainFontColor)
+                .setSelectionColor(0xFF664488, 0xFF775599);
 
         addRenderableWidget(leftPageTextBox);
 
@@ -141,52 +137,64 @@ public class SpreadBookEditScreen extends Screen {
         prevButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.previous_page")));
         this.prevButton = addRenderableWidget(prevButton);
 
-        ImageButton nextButton = new ImageButton(leftPos + 271, topPos + 156, 13, 15,
-                309, 0, 15, TEXTURE, 512, 512,
+        ImageButton nextButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
+                308, 0, 15, TEXTURE, 512, 512,
                 (button) -> this.pageForward());
         nextButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.next_page")));
         this.nextButton = addRenderableWidget(nextButton);
 
+        this.enterSignModeButton = new ImageButton(leftPos - 23, topPos + 18, 22, 22, 322, 0,
+                22, TEXTURE, 512, 512,
+                b -> enterSignMode(), Component.translatable("book.signButton"));
+        this.enterSignModeButton.setTooltip(Tooltip.create(Component.translatable("book.signButton")));
+        addRenderableWidget(this.enterSignModeButton);
+
         this.updateButtonVisibility();
 
-//        this.createMenuControls();
+        this.createMenuControls();
+    }
+
+    protected void createMenuControls() {
+        if (Config.Client.BOOK_EDIT_SCREEN_SHOW_DONE_BUTTON.get()) {
+            this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE,
+                    (button) -> this.onClose()).bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20).build());
+        }
+    }
+
+    protected void enterSignMode() {
+        Objects.requireNonNull(minecraft).setScreen(new BookSigningScreen(this));
     }
 
     private void updateButtonVisibility() {
         this.prevButton.visible = this.currentSpread > 0;
-        this.nextButton.visible = this.currentSpread < 50; // 100 pages max
-//        this.doneButton.visible = !this.isSigning;
-//        this.signButton.visible = !this.isSigning;
-//        this.cancelButton.visible = this.isSigning;
-//        this.finalizeButton.visible = this.isSigning;
-//        this.finalizeButton.active = !this.title.trim().isEmpty();
+        this.nextButton.visible = this.currentSpread < 49; // 100 pages max
     }
 
     private void clearDisplayCacheAfterPageChange() {
         leftPageTextBox.setCursorToEnd();
         rightPageTextBox.setCursorToEnd();
-//        this.pageEdit.setCursorToEnd();
-//        this.clearDisplayCache();
     }
 
     protected void pageBack() {
         if (this.currentSpread > 0) {
             this.currentSpread--;
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 0.8f));
-        }
 
-        this.updateButtonVisibility();
-        this.clearDisplayCacheAfterPageChange();
+            this.updateButtonVisibility();
+            this.clearDisplayCacheAfterPageChange();
+        }
     }
 
     protected void pageForward() {
-        this.currentSpread++;
-        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1f));
-        while (this.pages.size() < (currentSpread + 1) * 2)
-            appendPageToBook();
+        if (this.currentSpread < 49) {
+            this.currentSpread++;
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1f));
+            while (this.pages.size() < (currentSpread + 1) * 2)
+                appendPageToBook();
 
-        this.updateButtonVisibility();
-        this.clearDisplayCacheAfterPageChange();
+            this.updateButtonVisibility();
+            this.clearDisplayCacheAfterPageChange();
+        }
     }
 
     private void appendPageToBook() {
@@ -209,25 +217,27 @@ public class SpreadBookEditScreen extends Screen {
         }
     }
 
-    protected void saveChanges(boolean sign) {
-        if (this.isModified) {
+    public void saveChanges(boolean sign, @Nullable String title) {
+        if (this.isModified || sign) {
+            if (!sign)
+                title = null;
             this.eraseEmptyTrailingPages();
-            this.updateLocalCopy(sign);
+            this.updateLocalCopy(sign, title);
             int slotId = this.hand == InteractionHand.MAIN_HAND ? this.owner.getInventory().selected : 40;
 
-            Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(new ServerboundEditBookPacket(slotId, this.pages, sign ?
-                    Optional.of(this.title.trim()) : Optional.empty()));
+            Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(
+                    new ServerboundEditBookPacket(slotId, this.pages, Optional.ofNullable(title)));
         }
     }
 
     protected void eraseEmptyTrailingPages() {
         ListIterator<String> iterator = this.pages.listIterator(this.pages.size());
-        while(iterator.hasPrevious() && iterator.previous().isEmpty()) {
+        while (iterator.hasPrevious() && iterator.previous().isEmpty()) {
             iterator.remove();
         }
     }
 
-    protected void updateLocalCopy(boolean sign) {
+    protected void updateLocalCopy(boolean sign, @Nullable String title) {
         ListTag listTag = new ListTag();
         this.pages.stream().map(StringTag::valueOf).forEach(listTag::add);
         if (!this.pages.isEmpty()) {
@@ -235,8 +245,9 @@ public class SpreadBookEditScreen extends Screen {
         }
 
         if (sign) {
+            Preconditions.checkState(!StringUtil.isNullOrEmpty(title), "Title cannot be null or empty when signing a book.");
             this.bookStack.addTagElement("author", StringTag.valueOf(this.owner.getGameProfile().getName()));
-            this.bookStack.addTagElement("title", StringTag.valueOf(this.title.trim()));
+            this.bookStack.addTagElement("title", StringTag.valueOf(title));
         }
 
     }
@@ -257,6 +268,10 @@ public class SpreadBookEditScreen extends Screen {
         // Cover
         guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
                 0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
+
+        // Enter Sign Mode bg
+        guiGraphics.blit(TEXTURE, leftPos - 27, topPos + 14, 0, 360,
+                27, 28, 512, 512);
 
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -289,6 +304,23 @@ public class SpreadBookEditScreen extends Screen {
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.LEVER_CLICK, 1f, 0.5f));
         }
 
+        if (!(getFocused() instanceof TextBox)) {
+            if (Minecraft.getInstance().options.keyInventory.matches(keyCode, scanCode)) {
+                this.onClose();
+                return true;
+            }
+
+            if (keyCode == InputConstants.KEY_LEFT || keyCode == InputConstants.KEY_PAGEUP || Minecraft.getInstance().options.keyLeft.matches(keyCode, scanCode)) {
+                pageBack();
+                return true;
+            }
+
+            if (keyCode == InputConstants.KEY_RIGHT || keyCode == InputConstants.KEY_PAGEDOWN || Minecraft.getInstance().options.keyRight.matches(keyCode, scanCode)) {
+                pageForward();
+                return true;
+            }
+        }
+
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
@@ -305,11 +337,11 @@ public class SpreadBookEditScreen extends Screen {
 
     private static void onTextBoxCharTyped(TextBox textBox) {
         // Plays a sound when formatting code char is typed:
-        
+
         int cursorPos = textBox.textFieldHelper.getCursorPos();
         String text = textBox.getText();
 
-        if (cursorPos < 2 || cursorPos > text.length()) 
+        if (cursorPos < 2 || cursorPos > text.length())
             return;
 
         int sectionSymbolIndex = cursorPos - 2;
@@ -326,7 +358,7 @@ public class SpreadBookEditScreen extends Screen {
 
     @Override
     public void onClose() {
-        saveChanges(false);
+        saveChanges(false, null);
         super.onClose();
     }
 }

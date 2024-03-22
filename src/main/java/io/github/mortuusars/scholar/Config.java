@@ -30,7 +30,7 @@ public class Config {
         // EDIT
         public static final ForgeConfigSpec.BooleanValue SCHOLAR_EDIT_SCREEN_ENABLED;
         public static final ForgeConfigSpec.BooleanValue SNEAK_OPENS_VANILLA_EDIT_SCREEN;
-//        public static final ForgeConfigSpec.BooleanValue BOOK_EDIT_SCREEN_SHOW_DONE_BUTTON;
+        public static final ForgeConfigSpec.BooleanValue BOOK_EDIT_SCREEN_SHOW_DONE_BUTTON;
         public static final ForgeConfigSpec.BooleanValue BOOK_EDIT_SCREEN_PAUSE;
 
         // VIEW
@@ -62,9 +62,9 @@ public class Config {
                     .comment("Vanilla book edit screen will open when the player is sneaking. Default: false")
                     .define("VanillaBookEditScreenWhenSneaking", false);
 
-//            BOOK_EDIT_SCREEN_SHOW_DONE_BUTTON = builder
-//                    .comment("Show 'Done' button in the Scholar book edit screen. Default: false")
-//                    .define("ShowDoneButton", false);
+            BOOK_EDIT_SCREEN_SHOW_DONE_BUTTON = builder
+                    .comment("Show 'Done' button in the Scholar book edit screen. Default: false")
+                    .define("ShowDoneButton", false);
 
             BOOK_EDIT_SCREEN_PAUSE = builder
                     .comment("Singleplayer game will be paused when book edit screen is open.",
