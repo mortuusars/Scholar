@@ -303,7 +303,7 @@ public class SpreadBookEditScreen extends Screen {
                 && Screen.hasShiftDown()
                 && keyCode == InputConstants.KEY_F) {
             textBox.textFieldHelper.insertText("§");
-            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.LEVER_CLICK, 1f, 0.5f));
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.FORMATTING_CLICK.get(), 1f, 0.5f));
         }
 
         if (!(getFocused() instanceof TextBox)) {
@@ -352,7 +352,7 @@ public class SpreadBookEditScreen extends Screen {
 
         for (Formatting formatting : Formatting.values()) {
             if (formatting.getCode().equals(enteredFormattingCode)) {
-                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.LEVER_CLICK, 1f, 0.5f));
+                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.FORMATTING_CLICK.get(), 1f, 0.5f));
                 return;
             }
         }

@@ -1,0 +1,15 @@
+{
+  "book.formatting_click": {
+    "sounds": [
+      "minecraft:random/click"
+    ]
+  },
+  "book.signed": {
+    "sounds": [
+      "minecraft:ui/cartography_table/drawmap1",
+      "minecraft:ui/cartography_table/drawmap2",
+      "minecraft:ui/cartography_table/drawmap3"
+    ],
+    "subtitle": "subtitle.scholar.book.signed"
+  }
+}

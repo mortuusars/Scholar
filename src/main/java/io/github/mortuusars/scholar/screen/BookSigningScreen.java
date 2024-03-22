@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -141,6 +142,7 @@ public class BookSigningScreen extends Screen {
     protected void signAlbum() {
         if (canSign()) {
             parentScreen.saveChanges(true, titleText.trim());
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.BOOK_SIGNED.get(), 1f, 0.8f));
             this.onClose();
         }
     }
