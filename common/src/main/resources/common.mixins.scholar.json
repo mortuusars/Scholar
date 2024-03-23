@@ -2,8 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "io.github.mortuusars.scholar.mixin",
-  "compatibilityLevel": "JAVA_16",
-  "refmap": "mixins.scholar.refmap.json",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [
     "WrittenBookItemMixin"
   ],

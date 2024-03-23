@@ -304,6 +304,7 @@ public class SpreadBookEditScreen extends Screen {
                 && keyCode == InputConstants.KEY_F) {
             textBox.textFieldHelper.insertText("§");
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.FORMATTING_CLICK.get(), 1f, 0.5f));
+            return true;
         }
 
         if (!(getFocused() instanceof TextBox)) {

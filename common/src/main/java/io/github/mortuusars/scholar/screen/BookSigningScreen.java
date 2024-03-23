@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.screen.textbox.HorizontalAlignment;
 import io.github.mortuusars.scholar.screen.textbox.TextBox;
+import io.github.mortuusars.scholar.visual.Formatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -161,9 +162,50 @@ public class BookSigningScreen extends Screen {
             return true;
         }
 
-        if (titleTextBox.isFocused())
-            return titleTextBox.keyPressed(keyCode, scanCode, modifiers);
+        if (getFocused() instanceof TextBox textBox
+                && Screen.hasControlDown()
+                && Screen.hasShiftDown()
+                && keyCode == InputConstants.KEY_F) {
+            textBox.textFieldHelper.insertText("§");
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.FORMATTING_CLICK.get(), 1f, 0.5f));
+            return true;
+        }
+
+//        if (titleTextBox.isFocused())
+//            return titleTextBox.keyPressed(keyCode, scanCode, modifiers);
 
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char pCodePoint, int pModifiers) {
+        boolean handled = super.charTyped(pCodePoint, pModifiers);
+
+        if (handled && getFocused() instanceof TextBox textBox) {
+            onTextBoxCharTyped(textBox);
+        }
+
+        return handled;
+    }
+
+    private static void onTextBoxCharTyped(TextBox textBox) {
+        // Plays a sound when formatting code char is typed:
+
+        int cursorPos = textBox.textFieldHelper.getCursorPos();
+        String text = textBox.getText();
+
+        if (cursorPos < 2 || cursorPos > text.length())
+            return;
+
+        int sectionSymbolIndex = cursorPos - 2;
+        int formattingCharIndex = sectionSymbolIndex + 1;
+        String enteredFormattingCode = text.substring(sectionSymbolIndex, formattingCharIndex + 1);
+
+        for (Formatting formatting : Formatting.values()) {
+            if (formatting.getCode().equals(enteredFormattingCode)) {
+                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.FORMATTING_CLICK.get(), 1f, 0.5f));
+                return;
+            }
+        }
     }
 }
