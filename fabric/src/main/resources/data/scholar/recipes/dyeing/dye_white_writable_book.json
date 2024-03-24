@@ -1,0 +1,14 @@
+{
+   "type": "scholar:nbt_transferring",
+   "source": {
+     "tag": "scholar:writable_books"
+   },
+   "ingredients": [
+     {
+       "tag": "c:white_dyes"
+     }
+   ],
+   "result": {
+     "item": "scholar:white_writable_book"
+   }
+ }

@@ -72,4 +72,13 @@ public class ScholarBookHandler {
         player.getInventory().setItem(slot, signedBook);
         return true;
     }
+
+    public static boolean handleBookContentsUpdating(ServerPlayer player, ItemStack editableBook, List<FilteredText> pages,
+                                                     int slot, TriConsumer<List<FilteredText>, UnaryOperator<String>, ItemStack> bookPagesUpdater) {
+        if (!(editableBook.getItem() instanceof ColoredWritableBookItem writableBookItem))
+            return false;
+
+        bookPagesUpdater.accept(pages, UnaryOperator.identity(), editableBook);
+        return true;
+    }
 }

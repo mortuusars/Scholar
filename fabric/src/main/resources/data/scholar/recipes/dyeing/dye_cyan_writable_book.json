@@ -1,0 +1,14 @@
+{
+   "type": "scholar:nbt_transferring",
+   "source": {
+     "tag": "scholar:writable_books"
+   },
+   "ingredients": [
+     {
+       "tag": "c:cyan_dyes"
+     }
+   ],
+   "result": {
+     "item": "scholar:cyan_writable_book"
+   }
+ }

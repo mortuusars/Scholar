@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "category": "misc",
+    "group": "colored_books",
+    "ingredients": [
+      {
+        "item": "minecraft:book"
+      },
+      {
+        "item": "minecraft:ink_sac"
+      },
+      {
+        "item": "minecraft:feather"
+      },
+      {
+        "tag": "c:cyan_dyes"
+      }
+    ],
+    "result": {
+      "item": "scholar:cyan_writable_book"
+    }
+}

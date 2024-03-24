@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "category": "misc",
+    "group": "colored_books",
+    "ingredients": [
+      {
+        "item": "minecraft:book"
+      },
+      {
+        "item": "minecraft:ink_sac"
+      },
+      {
+        "item": "minecraft:feather"
+      },
+      {
+        "tag": "c:light_gray_dyes"
+      }
+    ],
+    "result": {
+      "item": "scholar:light_gray_writable_book"
+    }
+}

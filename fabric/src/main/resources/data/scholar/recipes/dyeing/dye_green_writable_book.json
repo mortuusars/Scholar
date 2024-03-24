@@ -1,0 +1,14 @@
+{
+   "type": "scholar:nbt_transferring",
+   "source": {
+     "tag": "scholar:writable_books"
+   },
+   "ingredients": [
+     {
+       "tag": "c:green_dyes"
+     }
+   ],
+   "result": {
+     "item": "scholar:green_writable_book"
+   }
+ }

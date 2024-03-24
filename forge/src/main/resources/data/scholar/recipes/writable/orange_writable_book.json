@@ -1,0 +1,22 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "category": "misc",
+    "group": "colored_books",
+    "ingredients": [
+      {
+        "item": "minecraft:book"
+      },
+      {
+        "item": "minecraft:ink_sac"
+      },
+      {
+        "item": "minecraft:feather"
+      },
+      {
+        "tag": "forge:dyes/orange"
+      }
+    ],
+    "result": {
+      "item": "scholar:orange_writable_book"
+    }
+}

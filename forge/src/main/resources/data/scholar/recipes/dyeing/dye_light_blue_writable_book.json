@@ -1,0 +1,14 @@
+{
+   "type": "scholar:nbt_transferring",
+   "source": {
+     "tag": "scholar:writable_books"
+   },
+   "ingredients": [
+     {
+       "tag": "forge:dyes/light_blue"
+     }
+   ],
+   "result": {
+     "item": "scholar:light_blue_writable_book"
+   }
+ }

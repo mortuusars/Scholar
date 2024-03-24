@@ -25,4 +25,11 @@ public abstract class ServerGamePacketListenerImplMixin {
         if (ScholarBookHandler.handleBookSigning(player, itemStack, title, pages, slot, this::updateBookPages))
             ci.cancel();
     }
+
+    @Inject(method = "updateBookContents", at = @At("HEAD"), cancellable = true)
+    private void onUpdateBookContents(List<FilteredText> pages, int slot, CallbackInfo ci) {
+        ItemStack itemStack = this.player.getInventory().getItem(slot);
+        if (ScholarBookHandler.handleBookContentsUpdating(player, itemStack, pages, slot, this::updateBookPages))
+            ci.cancel();
+    }
 }

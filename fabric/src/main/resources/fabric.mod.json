@@ -17,6 +17,9 @@
   "entrypoints": {
     "main": [
       "io.github.mortuusars.scholar.fabric.ScholarFabric"
+    ],
+    "jei_mod_plugin": [
+      "io.github.mortuusars.scholar.integration.jei.ScholarJeiPlugin"
     ]
   },
   "mixins": [
