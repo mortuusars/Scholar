@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.screen.textbox.HorizontalAlignment;
 import io.github.mortuusars.scholar.screen.textbox.TextBox;
+import io.github.mortuusars.scholar.util.RenderUtil;
 import io.github.mortuusars.scholar.visual.Formatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -33,6 +34,7 @@ public class BookSigningScreen extends Screen {
     protected final Player player;
 
     protected final SpreadBookEditScreen parentScreen;
+    protected final int bookColor;
 
     protected int imageWidth, imageHeight, leftPos, topPos, textureWidth, textureHeight;
 
@@ -42,9 +44,10 @@ public class BookSigningScreen extends Screen {
 
     protected String titleText = "";
 
-    public BookSigningScreen(SpreadBookEditScreen parentScreen) {
+    public BookSigningScreen(SpreadBookEditScreen parentScreen, int bookColor) {
         super(Component.empty());
         this.parentScreen = parentScreen;
+        this.bookColor = bookColor;
 
         minecraft = Minecraft.getInstance();
         player = Objects.requireNonNull(minecraft.player);
@@ -111,18 +114,10 @@ public class BookSigningScreen extends Screen {
 
         renderBackground(guiGraphics);
 
-        RenderSystem.enableBlend();
-
-        int col = 0xFF99422b;
-        int alpha = col >> 24 & 0xFF;
-        int red = col >> 16 & 0xFF;
-        int green = col >> 8 & 0xFF;
-        int blue = col & 0xFF;
-
-        RenderSystem.setShaderColor(red / 255f, green / 255f, blue / 255f, alpha / 255f);
-        guiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, 0,
-                imageWidth, imageHeight, textureWidth, textureHeight);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderUtil.withColorMultiplied(bookColor, () -> {
+            guiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, 0,
+                    imageWidth, imageHeight, textureWidth, textureHeight);
+        });
 
         guiGraphics.blit(TEXTURE, leftPos, topPos + 31, 0, 0, 180,
                 imageWidth, 76, textureWidth, textureHeight);

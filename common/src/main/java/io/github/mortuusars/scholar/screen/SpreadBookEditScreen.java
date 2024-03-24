@@ -3,10 +3,10 @@ package io.github.mortuusars.scholar.screen;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.screen.textbox.TextBox;
+import io.github.mortuusars.scholar.util.RenderUtil;
 import io.github.mortuusars.scholar.visual.BookColors;
 import io.github.mortuusars.scholar.visual.Formatting;
 import io.netty.util.internal.StringUtil;
@@ -29,7 +29,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -73,6 +72,7 @@ public class SpreadBookEditScreen extends Screen {
 
     protected final Player owner;
     protected final ItemStack bookStack;
+    protected final int bookColor;
     protected final InteractionHand hand;
     protected final int mainFontColor;
     protected final int secondaryFontColor;
@@ -92,6 +92,7 @@ public class SpreadBookEditScreen extends Screen {
         super(GameNarrator.NO_TITLE);
         this.owner = owner;
         this.bookStack = bookStack;
+        this.bookColor = BookColors.fromStack(bookStack);
         this.hand = hand;
         this.mainFontColor = Config.Client.getColor(Config.Client.MAIN_FONT_COLOR);
         this.secondaryFontColor = Config.Client.getColor(Config.Client.SECONDARY_FONT_COLOR);
@@ -165,7 +166,7 @@ public class SpreadBookEditScreen extends Screen {
     }
 
     protected void enterSignMode() {
-        Objects.requireNonNull(minecraft).setScreen(new BookSigningScreen(this));
+        Objects.requireNonNull(minecraft).setScreen(new BookSigningScreen(this, bookColor));
     }
 
     private void updateButtonVisibility() {
@@ -258,24 +259,15 @@ public class SpreadBookEditScreen extends Screen {
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.renderBackground(guiGraphics);
 
-        RenderSystem.enableBlend();
+        RenderUtil.withColorMultiplied(bookColor, () -> {
+            // Cover
+            guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
+                    0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
 
-        int col = BookColors.REGULAR;
-        int red = col >> 16 & 0xFF;
-        int green = col >> 8 & 0xFF;
-        int blue = col & 0xFF;
-
-        RenderSystem.setShaderColor(red / 255f, green / 255f, blue / 255f, 1.0f);
-
-        // Cover
-        guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
-                0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
-
-        // Enter Sign Mode bg
-        guiGraphics.blit(TEXTURE, leftPos - 29, topPos + 14, 0, 360,
-                29, 28, 512, 512);
-
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+            // Enter Sign Mode BG
+            guiGraphics.blit(TEXTURE, leftPos - 29, topPos + 14, 0, 360,
+                    29, 28, 512, 512);
+        });
 
         // Pages
         guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,

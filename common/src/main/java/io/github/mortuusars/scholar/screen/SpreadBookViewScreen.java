@@ -6,6 +6,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.util.RenderUtil;
+import io.github.mortuusars.scholar.visual.BookColors;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
@@ -57,6 +59,8 @@ public class SpreadBookViewScreen extends Screen {
     public static final int TEXT_HEIGHT = 128;
 
     protected BookAccess bookAccess;
+    protected final int bookColor;
+
     protected int currentSpread;
     protected Pair<List<FormattedCharSequence>, List<FormattedCharSequence>> cachedPageComponents;
     protected int cachedSpread;
@@ -69,8 +73,9 @@ public class SpreadBookViewScreen extends Screen {
     protected Button nextButton;
     protected Button prevButton;
 
-    public SpreadBookViewScreen(BookAccess bookAccess) {
+    public SpreadBookViewScreen(BookAccess bookAccess, int bookColor) {
         super(GameNarrator.NO_TITLE);
+        this.bookColor = bookColor;
         this.cachedPageComponents = Pair.of(Collections.emptyList(), Collections.emptyList());
         this.cachedSpread = -1;
         this.bookAccess = bookAccess;
@@ -80,7 +85,7 @@ public class SpreadBookViewScreen extends Screen {
     }
 
     public SpreadBookViewScreen() {
-        this(EMPTY_ACCESS);
+        this(EMPTY_ACCESS, BookColors.REGULAR);
     }
 
     public void setBookAccess(BookAccess bookAccess) {
@@ -194,21 +199,11 @@ public class SpreadBookViewScreen extends Screen {
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.renderBackground(guiGraphics);
 
-        RenderSystem.enableBlend();
-
-        int col = 0xFF99422b;
-        int alpha = col >> 24 & 0xFF;
-        int red = col >> 16 & 0xFF;
-        int green = col >> 8 & 0xFF;
-        int blue = col & 0xFF;
-
-        RenderSystem.setShaderColor(red / 255f, green / 255f, blue / 255f, alpha / 255f);
-
-        // Cover
-        guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
-                0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
-
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderUtil.withColorMultiplied(bookColor, () -> {
+            // Cover
+            guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
+                    0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
+        });
 
         // Pages
         guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,

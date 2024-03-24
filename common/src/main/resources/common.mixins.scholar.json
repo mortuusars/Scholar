@@ -4,6 +4,7 @@
   "package": "io.github.mortuusars.scholar.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ServerGamePacketListenerImplMixin",
     "WrittenBookItemMixin"
   ],
   "injectors": {

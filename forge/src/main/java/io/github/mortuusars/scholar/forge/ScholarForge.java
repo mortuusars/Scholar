@@ -2,6 +2,8 @@ package io.github.mortuusars.scholar.forge;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.forge.event.CommonEvents;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -25,5 +27,8 @@ public class ScholarForge {
         RegisterImpl.MENU_TYPES.register(modEventBus);
         RegisterImpl.RECIPE_SERIALIZERS.register(modEventBus);
         RegisterImpl.SOUND_EVENTS.register(modEventBus);
+
+        modEventBus.register(CommonEvents.ModBus.class);
+        MinecraftForge.EVENT_BUS.register(CommonEvents.ForgeBus.class);
     }
 }

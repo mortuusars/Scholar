@@ -1,14 +1,15 @@
 package io.github.mortuusars.scholar.visual;
 
+import com.google.common.collect.ImmutableMap;
+import io.github.mortuusars.scholar.item.IColoredBook;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class BookColors {
     public static final int REGULAR = 0x99452e;
-    public static final Map<DyeColor, Integer> COLORS = new HashMap<>() {{
+    private static final Map<DyeColor, Integer> COLORS = Collections.unmodifiableMap(new LinkedHashMap<>() {{
         put(DyeColor.WHITE, 0xfffafeff);
         put(DyeColor.LIGHT_GRAY, 0xffccccc8);
         put(DyeColor.GRAY, 0xff898d8f);
@@ -25,9 +26,16 @@ public class BookColors {
         put(DyeColor.PURPLE, 0xff8b35b9);
         put(DyeColor.MAGENTA, 0xffc65fbd);
         put(DyeColor.PINK, 0xfff588a7);
-    }};
+    }});
+
+    public static Map<DyeColor, Integer> getSortedColors() {
+        return COLORS;
+    }
 
     public static int fromStack(ItemStack stack) {
+        if (stack.getItem() instanceof IColoredBook coloredBook)
+            return COLORS.get(coloredBook.getColor());
+
         return REGULAR;
     }
 }
