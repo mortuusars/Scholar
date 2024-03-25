@@ -27,18 +27,20 @@ public class Config {
         public static final ForgeConfigSpec.ConfigValue<String> MAIN_FONT_COLOR;
         public static final ForgeConfigSpec.ConfigValue<String> SECONDARY_FONT_COLOR;
 
-        // EDIT
-        public static final ForgeConfigSpec.BooleanValue SCHOLAR_EDIT_SCREEN_ENABLED;
-        public static final ForgeConfigSpec.BooleanValue SNEAK_OPENS_VANILLA_EDIT_SCREEN;
-        public static final ForgeConfigSpec.BooleanValue BOOK_EDIT_SCREEN_SHOW_DONE_BUTTON;
-        public static final ForgeConfigSpec.BooleanValue BOOK_EDIT_SCREEN_PAUSE;
+        public static final ForgeConfigSpec.BooleanValue WRITABLE_REPLACE_VANILLA_SCREEN;
+        public static final ForgeConfigSpec.BooleanValue WRITABLE_SNEAK_OPENS_VANILLA_SCREEN;
+        public static final ForgeConfigSpec.BooleanValue WRITABLE_SHOW_DONE_BUTTON;
+        public static final ForgeConfigSpec.BooleanValue WRITABLE_PAUSE;
 
-        // VIEW
-        public static final ForgeConfigSpec.BooleanValue SCHOLAR_VIEW_SCREEN_ENABLED;
-        public static final ForgeConfigSpec.BooleanValue SNEAK_OPENS_VANILLA_VIEW_SCREEN;
-        public static final ForgeConfigSpec.BooleanValue BOOK_VIEW_SCREEN_SHOW_DONE_BUTTON;
-        public static final ForgeConfigSpec.BooleanValue BOOK_VIEW_SCREEN_PAUSE;
+        public static final ForgeConfigSpec.BooleanValue WRITTEN_REPLACE_VANILLA_SCREEN;
+        public static final ForgeConfigSpec.BooleanValue WRITTEN_SNEAK_OPENS_VANILLA_SCREEN;
+        public static final ForgeConfigSpec.BooleanValue WRITTEN_SHOW_DONE_BUTTON;
+        public static final ForgeConfigSpec.BooleanValue WRITTEN_PAUSE;
 
+        public static final ForgeConfigSpec.BooleanValue LECTERN_REPLACE_VANILLA_SCREEN;
+        public static final ForgeConfigSpec.BooleanValue LECTERN_SNEAK_OPENS_VANILLA_SCREEN;
+        public static final ForgeConfigSpec.BooleanValue LECTERN_SHOW_DONE_BUTTON;
+        public static final ForgeConfigSpec.BooleanValue LECTERN_PAUSE;
 
         static {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -53,46 +55,68 @@ public class Config {
                     .comment("Color of the secondary text (page numbers, etc). Default: " + defaultSecondaryFontColor)
                     .define("SecondaryFontColor", defaultSecondaryFontColor);
 
-            builder.push("BookEditScreen");
-            SCHOLAR_EDIT_SCREEN_ENABLED = builder
+
+            builder.push("WritableBookScreen");
+            WRITABLE_REPLACE_VANILLA_SCREEN = builder
                     .comment("Scholar book edit screen will replace the vanilla one. Default: true")
-                    .define("ReplaceBookEditScreen", true);
+                    .define("ReplaceVanillaScreen", true);
 
-            SNEAK_OPENS_VANILLA_EDIT_SCREEN = builder
+            WRITABLE_SNEAK_OPENS_VANILLA_SCREEN = builder
                     .comment("Vanilla book edit screen will open when the player is sneaking. Default: false")
-                    .define("VanillaBookEditScreenWhenSneaking", false);
+                    .define("SneakingOpensVanillaScreen", false);
 
-            BOOK_EDIT_SCREEN_SHOW_DONE_BUTTON = builder
+            WRITABLE_SHOW_DONE_BUTTON = builder
                     .comment("Show 'Done' button in the Scholar book edit screen. Default: false")
                     .define("ShowDoneButton", false);
 
-            BOOK_EDIT_SCREEN_PAUSE = builder
+            WRITABLE_PAUSE = builder
                     .comment("Singleplayer game will be paused when book edit screen is open.",
                             "This will affect vanilla book edit screen as well",
                             "Set to 'true' to restore vanilla behavior.",
                             "Default: false")
-                    .define("BookEditScreenPause", false);
+                    .define("Pause", false);
             builder.pop();
 
-            builder.push("BookViewScreen");
-            SCHOLAR_VIEW_SCREEN_ENABLED = builder
+            builder.push("WrittenBookScreen");
+            WRITTEN_REPLACE_VANILLA_SCREEN = builder
                     .comment("Scholar book view screen will replace the vanilla one. Default: true")
-                    .define("ReplaceBookViewScreen", true);
+                    .define("ReplaceVanillaScreen", true);
 
-            SNEAK_OPENS_VANILLA_VIEW_SCREEN = builder
+            WRITTEN_SNEAK_OPENS_VANILLA_SCREEN = builder
                     .comment("Vanilla book view screen will open when the player is sneaking. Default: false")
-                    .define("VanillaBookViewScreenWhenSneaking", false);
+                    .define("SneakingOpensVanillaScreen", false);
 
-            BOOK_VIEW_SCREEN_SHOW_DONE_BUTTON = builder
+            WRITTEN_SHOW_DONE_BUTTON = builder
                     .comment("Show 'Done' button in the Scholar book view screen. Default: false")
                     .define("ShowDoneButton", false);
 
-            BOOK_VIEW_SCREEN_PAUSE = builder
+            WRITTEN_PAUSE = builder
                     .comment("Singleplayer game will be paused when book view screen is open.",
                             "This will affect vanilla book view screen as well",
                             "Set to 'true' to restore vanilla behavior.",
                             "Default: false")
-                    .define("BookViewScreenPause", false);
+                    .define("Pause", false);
+            builder.pop();
+
+            builder.push("LecternScreen");
+            LECTERN_REPLACE_VANILLA_SCREEN = builder
+                    .comment("Scholar lectern screen will replace the vanilla one. Default: true")
+                    .define("ReplaceVanillaScreen", true);
+
+            LECTERN_SNEAK_OPENS_VANILLA_SCREEN = builder
+                    .comment("Vanilla lectern screen will open when the player is sneaking. Default: false")
+                    .define("SneakingOpensVanillaScreen", false);
+
+            LECTERN_SHOW_DONE_BUTTON = builder
+                    .comment("Show 'Done' button in the Scholar lectern screen. Default: false")
+                    .define("ShowDoneButton", false);
+
+            LECTERN_PAUSE = builder
+                    .comment("Singleplayer game will be paused when lectern screen is open.",
+                            "This will affect vanilla lectern screen as well",
+                            "Set to 'true' to restore vanilla behavior.",
+                            "Default: false")
+                    .define("Pause", false);
             builder.pop();
 
             SPEC = builder.build();

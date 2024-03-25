@@ -61,7 +61,8 @@ public class RegisterImpl {
     }
 
     public static <T extends MenuType<E>, E extends AbstractContainerMenu> Supplier<MenuType<E>> menuType(String id, Register.MenuTypeSupplier<E> supplier) {
-        ExtendedScreenHandlerType<E> type = Registry.register(BuiltInRegistries.MENU, Scholar.resource(id), new ExtendedScreenHandlerType<>(supplier::create));
+        ExtendedScreenHandlerType<E> type = Registry.register(BuiltInRegistries.MENU, Scholar.resource(id),
+                new ExtendedScreenHandlerType<>(supplier::create));
         return () -> type;
     }
 

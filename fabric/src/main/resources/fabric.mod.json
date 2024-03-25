@@ -18,6 +18,9 @@
     "main": [
       "io.github.mortuusars.scholar.fabric.ScholarFabric"
     ],
+    "client": [
+      "io.github.mortuusars.scholar.fabric.ScholarFabricClient"
+    ],
     "jei_mod_plugin": [
       "io.github.mortuusars.scholar.integration.jei.ScholarJeiPlugin"
     ]

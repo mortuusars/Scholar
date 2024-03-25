@@ -5,6 +5,8 @@ import io.github.mortuusars.scholar.screen.SpreadBookEditScreen;
 import io.github.mortuusars.scholar.screen.SpreadBookViewScreen;
 import io.github.mortuusars.scholar.visual.BookColors;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.inventory.BookEditScreen;
+import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
@@ -25,24 +27,24 @@ public class ScholarBookHandler {
         ItemStack itemStack = player.getItemInHand(hand);
 
         if (itemStack.getItem() instanceof WritableBookItem) {
-            if (!Config.Client.SCHOLAR_EDIT_SCREEN_ENABLED.get())
-                return false;
+            if (Config.Client.WRITABLE_REPLACE_VANILLA_SCREEN.get()
+                    && (!Config.Client.WRITABLE_SNEAK_OPENS_VANILLA_SCREEN.get() || !player.isSecondaryUseActive())) {
+                Minecraft.getInstance().setScreen(new SpreadBookEditScreen(player, itemStack, hand));
+            }
+            else
+                Minecraft.getInstance().setScreen(new BookEditScreen(player, itemStack, hand));
 
-            if (Config.Client.SNEAK_OPENS_VANILLA_EDIT_SCREEN.get() && player.isSecondaryUseActive())
-                return false;
-
-            Minecraft.getInstance().setScreen(new SpreadBookEditScreen(player, itemStack, hand));
             return true;
         }
 
         if (itemStack.getItem() instanceof WrittenBookItem) {
-            if (!Config.Client.SCHOLAR_VIEW_SCREEN_ENABLED.get())
-                return false;
+            if (Config.Client.WRITTEN_REPLACE_VANILLA_SCREEN.get()
+                    && (!Config.Client.WRITTEN_SNEAK_OPENS_VANILLA_SCREEN.get() || !player.isSecondaryUseActive())) {
+                Minecraft.getInstance().setScreen(new SpreadBookViewScreen(new SpreadBookViewScreen.WrittenBookAccess(itemStack), BookColors.fromStack(itemStack)));
+            }
+            else
+                Minecraft.getInstance().setScreen(new BookViewScreen(new BookViewScreen.WrittenBookAccess(itemStack)));
 
-            if (Config.Client.SNEAK_OPENS_VANILLA_VIEW_SCREEN.get() && player.isSecondaryUseActive())
-                return false;
-
-            Minecraft.getInstance().setScreen(new SpreadBookViewScreen(new SpreadBookViewScreen.WrittenBookAccess(itemStack), BookColors.fromStack(itemStack)));
             return true;
         }
 
@@ -75,7 +77,7 @@ public class ScholarBookHandler {
 
     public static boolean handleBookContentsUpdating(ServerPlayer player, ItemStack editableBook, List<FilteredText> pages,
                                                      int slot, TriConsumer<List<FilteredText>, UnaryOperator<String>, ItemStack> bookPagesUpdater) {
-        if (!(editableBook.getItem() instanceof ColoredWritableBookItem writableBookItem))
+        if (!(editableBook.getItem() instanceof ColoredWritableBookItem))
             return false;
 
         bookPagesUpdater.accept(pages, UnaryOperator.identity(), editableBook);

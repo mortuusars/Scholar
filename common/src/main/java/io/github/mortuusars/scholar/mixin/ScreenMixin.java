@@ -4,6 +4,7 @@ import io.github.mortuusars.scholar.Config;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookEditScreen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
+import net.minecraft.client.gui.screens.inventory.LecternScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -15,11 +16,14 @@ public abstract class ScreenMixin {
     private void onIsPauseScreen(CallbackInfoReturnable<Boolean> cir) {
         Screen screen = (Screen) (Object) this;
 
-        if (screen instanceof BookEditScreen && !Config.Client.BOOK_EDIT_SCREEN_PAUSE.get()) {
-            cir.setReturnValue(false);
+        if (screen instanceof LecternScreen) {
+            cir.setReturnValue(!Config.Client.LECTERN_PAUSE.get());
         }
-        else if (screen instanceof BookViewScreen && !Config.Client.BOOK_VIEW_SCREEN_PAUSE.get()) {
-            cir.setReturnValue(false);
+        if (screen instanceof BookEditScreen) {
+            cir.setReturnValue(!Config.Client.WRITABLE_PAUSE.get());
+        }
+        if (screen instanceof BookViewScreen) {
+            cir.setReturnValue(!Config.Client.WRITTEN_PAUSE.get());
         }
     }
 }

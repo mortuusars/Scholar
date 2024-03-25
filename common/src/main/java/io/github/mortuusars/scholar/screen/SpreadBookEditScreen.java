@@ -108,7 +108,7 @@ public class SpreadBookEditScreen extends Screen {
 
     @Override
     public boolean isPauseScreen() {
-        return Config.Client.BOOK_EDIT_SCREEN_PAUSE.get();
+        return Config.Client.WRITABLE_PAUSE.get();
     }
 
     @Override
@@ -159,7 +159,7 @@ public class SpreadBookEditScreen extends Screen {
     }
 
     protected void createMenuControls() {
-        if (Config.Client.BOOK_EDIT_SCREEN_SHOW_DONE_BUTTON.get()) {
+        if (Config.Client.WRITABLE_SHOW_DONE_BUTTON.get()) {
             this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE,
                     (button) -> this.onClose()).bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20).build());
         }

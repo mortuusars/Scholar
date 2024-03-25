@@ -2,12 +2,10 @@ package io.github.mortuusars.scholar.screen;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.util.RenderUtil;
-import io.github.mortuusars.scholar.visual.BookColors;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
@@ -25,7 +23,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.WritableBookItem;
 import net.minecraft.world.item.WrittenBookItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -84,10 +82,6 @@ public class SpreadBookViewScreen extends Screen {
         this.secondaryFontColor = Config.Client.getColor(Config.Client.SECONDARY_FONT_COLOR);
     }
 
-    public SpreadBookViewScreen() {
-        this(EMPTY_ACCESS, BookColors.REGULAR);
-    }
-
     public void setBookAccess(BookAccess bookAccess) {
         this.bookAccess = bookAccess;
         this.currentSpread = Mth.clamp(this.currentSpread, 0, bookAccess.getPageCount());
@@ -105,11 +99,11 @@ public class SpreadBookViewScreen extends Screen {
 
     @Override
     public boolean isPauseScreen() {
-        return Config.Client.BOOK_VIEW_SCREEN_PAUSE.get();
+        return Config.Client.WRITTEN_PAUSE.get();
     }
 
     protected void createMenuControls() {
-        if (Config.Client.BOOK_VIEW_SCREEN_SHOW_DONE_BUTTON.get()) {
+        if (Config.Client.WRITTEN_SHOW_DONE_BUTTON.get()) {
             this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE,
                     (button) -> this.onClose()).bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20).build());
         }
@@ -367,10 +361,10 @@ public class SpreadBookViewScreen extends Screen {
         }
 
         static BookAccess fromItem(ItemStack itemStack) {
-            if (itemStack.is(Items.WRITTEN_BOOK)) {
+            if (itemStack.getItem() instanceof WrittenBookItem) {
                 return new WrittenBookAccess(itemStack);
             } else {
-                return (itemStack.is(Items.WRITABLE_BOOK) ? new WritableBookAccess(itemStack) : EMPTY_ACCESS);
+                return (itemStack.getItem() instanceof WritableBookItem ? new WritableBookAccess(itemStack) : EMPTY_ACCESS);
             }
         }
     }
