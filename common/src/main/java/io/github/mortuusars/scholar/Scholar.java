@@ -6,12 +6,14 @@ import io.github.mortuusars.scholar.item.ColoredWritableBookItem;
 import io.github.mortuusars.scholar.item.ColoredWrittenBookItem;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
 import io.github.mortuusars.scholar.recipe.NbtTransferringRecipe;
+import io.github.mortuusars.scholar.recipe.ScholarBookCloningRecipe;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -125,6 +127,8 @@ public class Scholar {
     public static class RecipeSerializers {
         public static final Supplier<RecipeSerializer<?>> NBT_TRANSFERRING = Register.recipeSerializer("nbt_transferring",
                 NbtTransferringRecipe.Serializer::new);
+        public static final Supplier<RecipeSerializer<?>> BOOK_CLONING = Register.recipeSerializer("crafting_special_bookcloning",
+                () -> new SimpleCraftingRecipeSerializer<>(ScholarBookCloningRecipe::new));
         static void init() { }
     }
 

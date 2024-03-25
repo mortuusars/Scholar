@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "scholar:nbt_transferring",
+      "required": false
+    },
+    {
+      "id": "scholar:book_cloning",
+      "required": false
+    }
+  ]
+}
