@@ -31,6 +31,7 @@ public class Config {
         public static final ForgeConfigSpec.BooleanValue WRITABLE_SNEAK_OPENS_VANILLA_SCREEN;
         public static final ForgeConfigSpec.BooleanValue WRITABLE_SHOW_DONE_BUTTON;
         public static final ForgeConfigSpec.BooleanValue WRITABLE_PAUSE;
+        public static final ForgeConfigSpec.BooleanValue WRITABLE_SURVIVAL_FORMATTING;
 
         public static final ForgeConfigSpec.BooleanValue WRITTEN_REPLACE_VANILLA_SCREEN;
         public static final ForgeConfigSpec.BooleanValue WRITTEN_SNEAK_OPENS_VANILLA_SCREEN;
@@ -75,6 +76,13 @@ public class Config {
                             "Set to 'true' to restore vanilla behavior.",
                             "Default: false")
                     .define("Pause", false);
+
+            WRITABLE_SURVIVAL_FORMATTING = builder
+                    .comment("Allow inserting formatting symbol (section sign) for players in survival mode." +
+                            "When set to true - hotkey or a button can be used to paste a formatting symbol.",
+                            "Default: true")
+                    .define("SurvivalFormatting", true);
+
             builder.pop();
 
             builder.push("WrittenBookScreen");

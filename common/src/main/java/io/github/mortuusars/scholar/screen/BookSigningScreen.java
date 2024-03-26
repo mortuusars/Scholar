@@ -1,7 +1,6 @@
 package io.github.mortuusars.scholar.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.screen.textbox.HorizontalAlignment;
 import io.github.mortuusars.scholar.screen.textbox.TextBox;
@@ -157,17 +156,12 @@ public class BookSigningScreen extends Screen {
             return true;
         }
 
-        if (getFocused() instanceof TextBox textBox
-                && Screen.hasControlDown()
-                && Screen.hasShiftDown()
-                && keyCode == InputConstants.KEY_F) {
+        if (parentScreen.isFormattingAllowed() && getFocused() instanceof TextBox textBox
+                && Screen.hasControlDown() && keyCode == InputConstants.KEY_F) {
             textBox.textFieldHelper.insertText("§");
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.FORMATTING_CLICK.get(), 1f, 0.5f));
             return true;
         }
-
-//        if (titleTextBox.isFocused())
-//            return titleTextBox.keyPressed(keyCode, scanCode, modifiers);
 
         return super.keyPressed(keyCode, scanCode, modifiers);
     }

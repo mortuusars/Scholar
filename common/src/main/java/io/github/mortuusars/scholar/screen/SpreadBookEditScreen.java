@@ -2,7 +2,9 @@ package io.github.mortuusars.scholar.screen;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.logging.LogUtils;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.screen.textbox.TextBox;
@@ -10,12 +12,15 @@ import io.github.mortuusars.scholar.util.RenderUtil;
 import io.github.mortuusars.scholar.visual.BookColors;
 import io.github.mortuusars.scholar.visual.Formatting;
 import io.netty.util.internal.StringUtil;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -24,6 +29,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -33,10 +39,9 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Objects;
-import java.util.Optional;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 
 public class SpreadBookEditScreen extends Screen {
 
@@ -84,6 +89,8 @@ public class SpreadBookEditScreen extends Screen {
     protected Button nextButton;
     protected Button prevButton;
     protected Button enterSignModeButton;
+    @Nullable
+    protected Button insertSectionSignButton;
 
     protected int currentSpread;
     protected boolean isModified;
@@ -152,6 +159,25 @@ public class SpreadBookEditScreen extends Screen {
                 b -> enterSignMode(), Component.translatable("book.signButton"));
         this.enterSignModeButton.setTooltip(Tooltip.create(Component.translatable("book.signButton")));
         addRenderableWidget(this.enterSignModeButton);
+
+        if (isFormattingAllowed()) {
+            this.insertSectionSignButton = new ImageButton(width - 22, 2, 22, 22, 343, 0,
+                    22, TEXTURE, 512, 512,
+                    b -> insertSectionSign(), Component.translatable("gui.scholar.insert_section_sign"));
+            MutableComponent tooltip = Component.translatable("gui.scholar.insert_section_sign")
+                    .append(Component.literal(" [").withStyle(ChatFormatting.DARK_GRAY)
+                        .append(Component.literal("CTRL+F").withStyle(ChatFormatting.GRAY))
+                        .append(Component.literal("]").withStyle(ChatFormatting.DARK_GRAY))
+                    .append("\n\n")
+                    .append(Component.translatable("gui.scholar.insert_section_sign.help1")
+                            .withStyle(ChatFormatting.GRAY))
+                    .append("\n\n")
+                    .append(Component.translatable("gui.scholar.insert_section_sign.help2",
+                                    Component.literal("F1").withStyle(ChatFormatting.GRAY))
+                            .withStyle(ChatFormatting.DARK_GRAY)));
+            this.insertSectionSignButton.setTooltip(Tooltip.create(tooltip));
+            addRenderableOnly(this.insertSectionSignButton);
+        }
 
         this.updateButtonVisibility();
 
@@ -259,6 +285,9 @@ public class SpreadBookEditScreen extends Screen {
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         this.renderBackground(guiGraphics);
 
+        if (insertSectionSignButton != null)
+            insertSectionSignButton.active = getFocused() instanceof TextBox;
+
         RenderUtil.withColorMultiplied(bookColor, () -> {
             // Cover
             guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
@@ -290,16 +319,19 @@ public class SpreadBookEditScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (getFocused() instanceof TextBox textBox
+        if (getFocused() instanceof TextBox
                 && Screen.hasControlDown()
-                && Screen.hasShiftDown()
                 && keyCode == InputConstants.KEY_F) {
-            textBox.textFieldHelper.insertText("§");
-            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.FORMATTING_CLICK.get(), 1f, 0.5f));
+            insertSectionSign();
             return true;
         }
 
         if (!(getFocused() instanceof TextBox)) {
+            if (insertSectionSignButton != null && insertSectionSignButton.isHovered() && keyCode == InputConstants.KEY_F1) {
+                openFormattingWikiPage();
+                return true;
+            }
+
             if (Minecraft.getInstance().options.keyInventory.matches(keyCode, scanCode)) {
                 this.onClose();
                 return true;
@@ -317,6 +349,38 @@ public class SpreadBookEditScreen extends Screen {
         }
 
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    protected void insertSectionSign() {
+        if (isFormattingAllowed() && getFocused() instanceof TextBox textBox) {
+            textBox.textFieldHelper.insertText("§");
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.FORMATTING_CLICK.get(), 1f, 0.5f));
+        }
+    }
+
+    protected boolean isFormattingAllowed() {
+        return Config.Client.WRITABLE_SURVIVAL_FORMATTING.get() || (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative());
+    }
+
+    protected void openFormattingWikiPage() {
+        String page = "https://minecraft.wiki/Formatting_codes";
+
+        try {
+            URI uri = new URI(page);
+            String protocol = uri.getScheme();
+            if (protocol == null)
+                throw new URISyntaxException(page, "Missing protocol");
+            if (!Sets.newHashSet("http", "https").contains(protocol.toLowerCase(Locale.ROOT)))
+                throw new URISyntaxException(page, "Unsupported protocol: " + protocol.toLowerCase(Locale.ROOT));
+
+            Minecraft.getInstance().setScreen(new ConfirmLinkScreen(shouldOpen -> {
+                if (shouldOpen)
+                    Util.getPlatform().openUri(uri);
+                Minecraft.getInstance().setScreen(this);
+            }, page, true));
+        } catch (URISyntaxException uRISyntaxException) {
+            LogUtils.getLogger().error("Can't open url {} - {}", page, uRISyntaxException);
+        }
     }
 
     @Override
@@ -349,6 +413,16 @@ public class SpreadBookEditScreen extends Screen {
                 return;
             }
         }
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (insertSectionSignButton != null && insertSectionSignButton.isHovered()) {
+            insertSectionSign();
+            return true;
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
