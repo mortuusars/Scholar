@@ -326,12 +326,12 @@ public class SpreadBookEditScreen extends Screen {
             return true;
         }
 
-        if (!(getFocused() instanceof TextBox)) {
-            if (insertSectionSignButton != null && insertSectionSignButton.isHovered() && keyCode == InputConstants.KEY_F1) {
-                openFormattingWikiPage();
-                return true;
-            }
+        if (insertSectionSignButton != null && insertSectionSignButton.isHovered() && keyCode == InputConstants.KEY_F1) {
+            openFormattingWikiPage();
+            return true;
+        }
 
+        if (!(getFocused() instanceof TextBox)) {
             if (Minecraft.getInstance().options.keyInventory.matches(keyCode, scanCode)) {
                 this.onClose();
                 return true;
@@ -359,7 +359,7 @@ public class SpreadBookEditScreen extends Screen {
     }
 
     protected boolean isFormattingAllowed() {
-        return Config.Client.WRITABLE_SURVIVAL_FORMATTING.get() || (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative());
+        return Config.Common.WRITABLE_SURVIVAL_FORMATTING.get() || (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative());
     }
 
     protected void openFormattingWikiPage() {

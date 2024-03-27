@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class WrittenBookItemMixin {
     @Inject(method = "isFoil", at = @At("HEAD"), cancellable = true)
     private void onIsFoil(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-        if (!Config.Common.WRITTEN_BOOK_GLINT_ENABLED.get())
+        if (!Config.Common.WRITTEN_GLINT_ENABLED.get())
             cir.setReturnValue(false);
     }
 }

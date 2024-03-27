@@ -13,6 +13,22 @@ loom {
     forge {
         convertAccessWideners = true
         extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+
+        mixinConfig "common.mixins.scholar.json"
+    }
+
+    runs {
+        create("client2") {
+            inherit(getByName("client"))
+
+            name("Second Client")
+            programArgs("--username", "AnotherDev")
+
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            client()
+        }
     }
 }
 
@@ -66,6 +82,7 @@ shadowJar {
 }
 
 remapJar {
+    archiveClassifier = "forge"
     input.set shadowJar.archiveFile
     dependsOn shadowJar
 }

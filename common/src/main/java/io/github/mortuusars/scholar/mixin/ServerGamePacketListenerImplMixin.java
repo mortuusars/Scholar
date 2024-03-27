@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar.mixin;
 
-import io.github.mortuusars.scholar.ScholarBookHandler;
+import com.mojang.logging.LogUtils;
+import io.github.mortuusars.scholar.BookHandlerServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.FilteredText;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -21,15 +22,23 @@ public abstract class ServerGamePacketListenerImplMixin {
 
     @Inject(method = "signBook", at = @At("HEAD"), cancellable = true)
     private void onSignBook(FilteredText title, List<FilteredText> pages, int slot, CallbackInfo ci) {
-        ItemStack itemStack = this.player.getInventory().getItem(slot);
-        if (ScholarBookHandler.handleBookSigning(player, itemStack, title, pages, slot, this::updateBookPages))
-            ci.cancel();
+        try {
+            ItemStack itemStack = this.player.getInventory().getItem(slot);
+            if (BookHandlerServer.handleBookSigning(player, itemStack, title, pages, slot, this::updateBookPages))
+                ci.cancel();
+        } catch (Exception e) {
+            LogUtils.getLogger().error("Signing Book failed: " + e);
+        }
     }
 
     @Inject(method = "updateBookContents", at = @At("HEAD"), cancellable = true)
     private void onUpdateBookContents(List<FilteredText> pages, int slot, CallbackInfo ci) {
-        ItemStack itemStack = this.player.getInventory().getItem(slot);
-        if (ScholarBookHandler.handleBookContentsUpdating(player, itemStack, pages, slot, this::updateBookPages))
-            ci.cancel();
+        try {
+            ItemStack itemStack = this.player.getInventory().getItem(slot);
+            if (BookHandlerServer.handleBookContentsUpdating(player, itemStack, pages, slot, this::updateBookPages))
+                ci.cancel();
+        } catch (Exception e) {
+            LogUtils.getLogger().error("Updating Book Contents failed: " + e);
+        }
     }
 }

@@ -31,7 +31,7 @@ public abstract class LecternBlockMixin {
     private void openScreen(Level level, BlockPos pos, Player player, CallbackInfo ci) {
         if (level.getBlockEntity(pos) instanceof LecternBlockEntity lecternBlockEntity
                 && player instanceof ServerPlayer serverPlayer
-                && (!player.isSecondaryUseActive() || !Config.Client.LECTERN_SNEAK_OPENS_VANILLA_SCREEN.get())
+                && (!player.isSecondaryUseActive() || !Config.Common.LECTERN_SNEAK_OPENS_VANILLA_SCREEN.get())
                 && scholar$shouldOpenScholarScreenForBook(lecternBlockEntity.getBook())) {
             scholar$openSpreadGUI(serverPlayer, lecternBlockEntity, lecternBlockEntity.getBook());
             player.awardStat(Stats.INTERACT_WITH_LECTERN);
@@ -41,7 +41,7 @@ public abstract class LecternBlockMixin {
 
     @Unique
     private boolean scholar$shouldOpenScholarScreenForBook(ItemStack bookStack) {
-        return Config.Client.LECTERN_REPLACE_VANILLA_SCREEN.get()
+        return Config.Common.LECTERN_REPLACE_VANILLA_SCREEN.get()
                 && (bookStack.getItem() instanceof WritableBookItem || bookStack.getItem() instanceof WrittenBookItem);
     }
 
@@ -62,9 +62,7 @@ public abstract class LecternBlockMixin {
         };
 
         PlatformHelper.openMenu(player, menuProvider, buffer -> {
-            buffer.writeBlockPos(lecternBlockEntity.getBlockPos());
             buffer.writeItem(bookStack);
-            buffer.writeInt(bookColor);
         });
     }
 }

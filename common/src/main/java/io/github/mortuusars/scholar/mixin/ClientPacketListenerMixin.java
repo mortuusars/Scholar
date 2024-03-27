@@ -1,6 +1,6 @@
 package io.github.mortuusars.scholar.mixin;
 
-import io.github.mortuusars.scholar.ScholarBookHandler;
+import io.github.mortuusars.scholar.BookHandlerClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundOpenBookPacket;
@@ -19,7 +19,7 @@ public abstract class ClientPacketListenerMixin {
         if (minecraft.player == null)
             return;
 
-        if (ScholarBookHandler.handleBookOpening(minecraft.player, clientboundOpenBookPacket.getHand())) {
+        if (BookHandlerClient.handleBookOpening(minecraft.player, clientboundOpenBookPacket.getHand())) {
             ci.cancel();
         }
     }

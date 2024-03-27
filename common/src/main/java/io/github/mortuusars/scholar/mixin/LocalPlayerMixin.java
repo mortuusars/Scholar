@@ -1,7 +1,7 @@
 package io.github.mortuusars.scholar.mixin;
 
 import com.mojang.authlib.GameProfile;
-import io.github.mortuusars.scholar.ScholarBookHandler;
+import io.github.mortuusars.scholar.BookHandlerClient;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -21,7 +21,7 @@ public abstract class LocalPlayerMixin extends Player {
 
     @Inject(method = "openItemGui", at = @At("HEAD"), cancellable = true)
     private void onOpenItemGui(ItemStack stack, InteractionHand hand, CallbackInfo ci) {
-        if (ScholarBookHandler.handleBookOpening(this, hand))
+        if (BookHandlerClient.handleBookOpening(this, hand))
             ci.cancel();
     }
 }

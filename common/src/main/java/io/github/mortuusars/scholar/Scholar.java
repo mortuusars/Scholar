@@ -1,7 +1,6 @@
 package io.github.mortuusars.scholar;
 
 import com.google.common.base.Preconditions;
-import com.mojang.logging.LogUtils;
 import io.github.mortuusars.scholar.item.ColoredWritableBookItem;
 import io.github.mortuusars.scholar.item.ColoredWrittenBookItem;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
@@ -15,9 +14,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -34,67 +30,6 @@ public class Scholar {
         MenuTypes.init();
         RecipeSerializers.init();
         SoundEvents.init();
-
-        try {
-            String template = """
-            {
-               "parent": "minecraft:recipes/root",
-               "criteria": {
-                 "has_book": {
-                   "conditions": {
-                     "items": [
-                       {
-                         "items": [
-                           "minecraft:book"
-                         ]
-                       }
-                     ]
-                   },
-                   "trigger": "minecraft:inventory_changed"
-                 },
-                 "has_the_recipe": {
-                   "conditions": {
-                     "recipe": "scholar:writable/<COLOR>_writable_book"
-                   },
-                   "trigger": "minecraft:recipe_unlocked"
-                 }
-               },
-               "requirements": [
-                 [
-                   "has_book",
-                   "has_the_recipe"
-                 ]
-               ],
-               "rewards": {
-                 "recipes": [
-                   "scholar:writable/<COLOR>_writable_book"
-                 ]
-               },
-               "sends_telemetry_event": false
-            }
-            """;
-
-            String desktopPath = System.getProperty("user.home") + File.separator + "Desktop";
-
-            for (DyeColor color : DyeColor.values()) {
-                String colorReplaced = template.replace("<COLOR>", color.getSerializedName());
-//                String writableJson = colorReplaced.replace("<TYPE>", "writable");
-//                String writtenJson = colorReplaced.replace("<TYPE>", "written");
-
-                String writableFileName = desktopPath + File.separator + color.getSerializedName() + "_writable_book.json";
-                Files.write(Paths.get(writableFileName), colorReplaced.getBytes());
-
-//                String writableFileName = desktopPath + File.separator + color.getSerializedName() + "_writable_book.json";
-//                Files.write(Paths.get(writableFileName), writableJson.getBytes());
-//
-//                String writtenFileName = desktopPath + File.separator + color.getSerializedName() + "_written_book.json";
-//                Files.write(Paths.get(writtenFileName), writtenJson.getBytes());
-            }
-        }
-        catch (Exception e) {
-            LogUtils.getLogger().error(e.toString());
-        }
-
     }
 
     public static class Items {
