@@ -54,6 +54,7 @@ processResources {
     // input variables of this task:
     var replaceProperties = [
             minecraft_version    : minecraft_version,
+            minecraft_version_range    : minecraft_version_range,
             loader_version_range  : loader_version_range,
             forge_version_range   : forge_version_range,
             mod_id               : mod_id,
