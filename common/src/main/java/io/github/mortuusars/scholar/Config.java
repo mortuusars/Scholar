@@ -70,6 +70,8 @@ public class Config {
 
         public static final ForgeConfigSpec.ConfigValue<String> MAIN_FONT_COLOR;
         public static final ForgeConfigSpec.ConfigValue<String> SECONDARY_FONT_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<String> ENTER_TITLE_FONT_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<String> BY_AUTHOR_FONT_COLOR;
 
         public static final ForgeConfigSpec.BooleanValue WRITABLE_SHOW_DONE_BUTTON;
         public static final ForgeConfigSpec.BooleanValue WRITABLE_PAUSE;
@@ -92,6 +94,16 @@ public class Config {
             SECONDARY_FONT_COLOR = builder
                     .comment("Color of the secondary text (page numbers, etc). Default: " + defaultSecondaryFontColor)
                     .define("SecondaryFontColor", defaultSecondaryFontColor);
+
+            String defaultEnterTitleFontColor = "FFF5EBD0";
+            ENTER_TITLE_FONT_COLOR = builder
+                    .comment("Color of the 'Enter Book Title' text on a signing screen. Default: " + defaultEnterTitleFontColor)
+                    .define("EnterTitleFontColor", defaultEnterTitleFontColor);
+
+            String defaultByAuthorFontColor = "FFC7B496";
+            BY_AUTHOR_FONT_COLOR = builder
+                    .comment("Color of the 'by <author>' text on a signing screen. Default: " + defaultByAuthorFontColor)
+                    .define("ByAuthorFontColor", defaultByAuthorFontColor);
 
 
             builder.push("WritableBookScreen");

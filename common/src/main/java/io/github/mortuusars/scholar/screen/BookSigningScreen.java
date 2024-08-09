@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.screen.textbox.HorizontalAlignment;
 import io.github.mortuusars.scholar.screen.textbox.TextBox;
@@ -34,8 +35,13 @@ public class BookSigningScreen extends Screen {
 
     protected final SpreadBookEditScreen parentScreen;
     protected final int bookColor;
+    private final int mainFontColor;
+
+    protected int enterBookTitleFontColor;
+    protected int byAuthorFontColor;
 
     protected int imageWidth, imageHeight, leftPos, topPos, textureWidth, textureHeight;
+
 
     protected TextBox titleTextBox;
     protected ImageButton signButton;
@@ -47,6 +53,10 @@ public class BookSigningScreen extends Screen {
         super(Component.empty());
         this.parentScreen = parentScreen;
         this.bookColor = bookColor;
+
+        this.mainFontColor = Config.Client.getColor(Config.Client.MAIN_FONT_COLOR);
+        this.enterBookTitleFontColor = Config.Client.getColor(Config.Client.ENTER_TITLE_FONT_COLOR);
+        this.byAuthorFontColor = Config.Client.getColor(Config.Client.BY_AUTHOR_FONT_COLOR);
 
         minecraft = Minecraft.getInstance();
         player = Objects.requireNonNull(minecraft.player);
@@ -64,7 +74,7 @@ public class BookSigningScreen extends Screen {
         // TITLE
         titleTextBox = new TextBox(font, leftPos + 21, topPos + 71, 108, 9,
                 () -> titleText, text -> titleText = text)
-                .setFontColor(0xFF856036, 0xFF856036)
+                .setFontColor(mainFontColor, mainFontColor)
                 .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
         titleTextBox.textValidator = text -> text != null && font.wordWrapHeight(text, 108) <= 9 && !text.contains("\n");
         titleTextBox.horizontalAlignment = HorizontalAlignment.CENTER;
@@ -128,10 +138,12 @@ public class BookSigningScreen extends Screen {
 
     private void renderLabels(GuiGraphics guiGraphics) {
         MutableComponent component = Component.translatable("book.editTitle");
-        guiGraphics.drawString(font, component,  leftPos + 149 / 2 - font.width(component) / 2, topPos + 51, 0xf5ebd0, false);
+        guiGraphics.drawString(font, component,  leftPos + 149 / 2 - font.width(component) / 2, topPos + 51,
+                enterBookTitleFontColor, false);
 
         component = Component.translatable("book.byAuthor", player.getName());
-        guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 81, 0xc7b496, false);
+        guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 81,
+                byAuthorFontColor, false);
     }
 
     protected void signAlbum() {
