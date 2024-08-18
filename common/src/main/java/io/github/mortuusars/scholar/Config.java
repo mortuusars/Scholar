@@ -20,6 +20,8 @@ public class Config {
         public static final ForgeConfigSpec.BooleanValue LECTERN_REPLACE_VANILLA_SCREEN;
         public static final ForgeConfigSpec.BooleanValue LECTERN_SNEAK_OPENS_VANILLA_SCREEN;
 
+        public static final ForgeConfigSpec.BooleanValue CHISELED_BOOKSHELF_TOOLTIP;
+
         static {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
@@ -59,6 +61,12 @@ public class Config {
             LECTERN_SNEAK_OPENS_VANILLA_SCREEN = builder
                     .comment("Vanilla lectern screen will open when the player is sneaking. Default: false")
                     .define("SneakingOpensVanillaScreen", false);
+            builder.pop();
+
+            builder.push("Misc");
+            CHISELED_BOOKSHELF_TOOLTIP = builder
+                    .comment("Hovering over a slot in a Chiseled Bookshelf will show tooltip of a book that's stored in that slot. Default: true")
+                    .define("ChiseledBookshelfTooltip", true);
             builder.pop();
 
             SPEC = builder.build();

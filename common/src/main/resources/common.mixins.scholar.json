@@ -3,12 +3,15 @@
   "minVersion": "0.8",
   "package": "io.github.mortuusars.scholar.mixin",
   "compatibilityLevel": "JAVA_17",
+  "plugin": "io.github.mortuusars.scholar.mixin.ScholarMixinPlugin",
   "mixins": [
     "LecternBlockEntityAccessor",
     "LecternBlockEntityMixin",
     "LecternBlockMixin",
     "ServerGamePacketListenerImplMixin",
-    "WrittenBookItemMixin"
+    "WrittenBookItemMixin",
+    "chiseled_bookshelf_tooltip.BlockEntityParentMixin",
+    "chiseled_bookshelf_tooltip.ChiseledBookShelfBlockEntityMixin"
   ],
   "injectors": {
     "defaultRequire": -1

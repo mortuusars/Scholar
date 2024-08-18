@@ -5,6 +5,7 @@ import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.forge.event.ClientEvents;
 import io.github.mortuusars.scholar.forge.event.CommonEvents;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;

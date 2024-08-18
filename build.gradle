@@ -14,7 +14,7 @@ subprojects {
         silentMojangMappingsLicense()
         runs {
             client {
-                vmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:HotswapAgent=fatjar'
+//                vmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:HotswapAgent=fatjar'
             }
         }
     }
@@ -26,6 +26,8 @@ subprojects {
             officialMojangMappings()
             parchment("org.parchmentmc.data:parchment-${parchment_version}@zip")
         }
+
+        modCompileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
 
         // compile against the JEI API but do not include it at runtime
         modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
