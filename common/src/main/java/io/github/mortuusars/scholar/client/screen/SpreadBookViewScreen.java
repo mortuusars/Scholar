@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.screen;
+package io.github.mortuusars.scholar.client.screen;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.InputConstants;

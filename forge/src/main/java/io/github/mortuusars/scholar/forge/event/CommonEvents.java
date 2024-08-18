@@ -2,18 +2,11 @@ package io.github.mortuusars.scholar.forge.event;
 
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.item.ColoredWritableBookItem;
-import io.github.mortuusars.scholar.visual.BookColors;
-import net.minecraft.commands.synchronization.ArgumentTypeInfos;
-import net.minecraft.commands.synchronization.SingletonArgumentInfo;
+import io.github.mortuusars.scholar.visual.BookColor;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 public class CommonEvents {
     public static class ModBus {
@@ -26,7 +19,7 @@ public class CommonEvents {
         @SubscribeEvent
         public static void onCreativeTabsBuild(BuildCreativeModeTabContentsEvent event) {
             if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
-                for (DyeColor color : BookColors.getSortedColors().keySet()) {
+                for (DyeColor color : BookColor.getSortedColors().keySet()) {
                     ColoredWritableBookItem coloredBook = Scholar.Items.COLORED_WRITABLE_BOOKS.get(color).get();
                     event.accept(coloredBook);
                 }

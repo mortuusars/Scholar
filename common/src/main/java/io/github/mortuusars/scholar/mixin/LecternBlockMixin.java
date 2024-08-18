@@ -3,7 +3,7 @@ package io.github.mortuusars.scholar.mixin;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.PlatformHelper;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
-import io.github.mortuusars.scholar.visual.BookColors;
+import io.github.mortuusars.scholar.visual.BookColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -47,7 +47,7 @@ public abstract class LecternBlockMixin {
 
     @Unique
     private void scholar$openSpreadGUI(ServerPlayer player, LecternBlockEntity lecternBlockEntity, ItemStack bookStack) {
-        int bookColor = BookColors.fromStack(bookStack);
+        int bookColor = BookColor.fromStack(bookStack);
         MenuProvider menuProvider = new MenuProvider() {
             @Override
             public @NotNull Component getDisplayName() {

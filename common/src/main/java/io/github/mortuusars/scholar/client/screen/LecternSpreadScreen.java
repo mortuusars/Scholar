@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.screen;
+package io.github.mortuusars.scholar.client.screen;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;

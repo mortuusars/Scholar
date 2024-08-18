@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.screen;
+package io.github.mortuusars.scholar.client.screen;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -7,9 +7,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.screen.textbox.TextBox;
+import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
 import io.github.mortuusars.scholar.util.RenderUtil;
-import io.github.mortuusars.scholar.visual.BookColors;
+import io.github.mortuusars.scholar.visual.BookColor;
 import io.github.mortuusars.scholar.visual.Formatting;
 import io.netty.util.internal.StringUtil;
 import net.minecraft.ChatFormatting;
@@ -99,7 +99,7 @@ public class SpreadBookEditScreen extends Screen {
         super(GameNarrator.NO_TITLE);
         this.owner = owner;
         this.bookStack = bookStack;
-        this.bookColor = BookColors.fromStack(bookStack);
+        this.bookColor = BookColor.fromStack(bookStack);
         this.hand = hand;
         this.mainFontColor = Config.Client.getColor(Config.Client.MAIN_FONT_COLOR);
         this.secondaryFontColor = Config.Client.getColor(Config.Client.SECONDARY_FONT_COLOR);

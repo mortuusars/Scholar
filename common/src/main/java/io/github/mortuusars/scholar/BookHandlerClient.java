@@ -1,8 +1,8 @@
 package io.github.mortuusars.scholar;
 
-import io.github.mortuusars.scholar.screen.SpreadBookEditScreen;
-import io.github.mortuusars.scholar.screen.SpreadBookViewScreen;
-import io.github.mortuusars.scholar.visual.BookColors;
+import io.github.mortuusars.scholar.client.screen.SpreadBookEditScreen;
+import io.github.mortuusars.scholar.client.screen.SpreadBookViewScreen;
+import io.github.mortuusars.scholar.visual.BookColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.BookEditScreen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
@@ -30,7 +30,7 @@ public class BookHandlerClient {
         if (itemStack.getItem() instanceof WrittenBookItem) {
             if (Config.Common.WRITTEN_REPLACE_VANILLA_SCREEN.get()
                     && (!Config.Common.WRITTEN_SNEAK_OPENS_VANILLA_SCREEN.get() || !player.isSecondaryUseActive())) {
-                Minecraft.getInstance().setScreen(new SpreadBookViewScreen(new SpreadBookViewScreen.WrittenBookAccess(itemStack), BookColors.fromStack(itemStack)));
+                Minecraft.getInstance().setScreen(new SpreadBookViewScreen(new SpreadBookViewScreen.WrittenBookAccess(itemStack), BookColor.fromStack(itemStack)));
             }
             else
                 Minecraft.getInstance().setScreen(new BookViewScreen(new BookViewScreen.WrittenBookAccess(itemStack)));

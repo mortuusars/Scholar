@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.screen.textbox;
+package io.github.mortuusars.scholar.client.screen.textbox;
 
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.client.StringSplitter;

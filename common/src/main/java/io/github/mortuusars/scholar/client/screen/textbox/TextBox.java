@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.screen.textbox;
+package io.github.mortuusars.scholar.client.screen.textbox;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;

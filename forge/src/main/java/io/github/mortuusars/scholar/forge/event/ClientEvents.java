@@ -2,7 +2,7 @@ package io.github.mortuusars.scholar.forge.event;
 
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.render.ChiseledBookShelfOverlay;
-import io.github.mortuusars.scholar.screen.LecternSpreadScreen;
+import io.github.mortuusars.scholar.client.screen.LecternSpreadScreen;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGuiEvent;

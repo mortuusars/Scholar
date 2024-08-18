@@ -1,13 +1,12 @@
 package io.github.mortuusars.scholar.visual;
 
-import com.google.common.collect.ImmutableMap;
 import io.github.mortuusars.scholar.item.IColoredBook;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
 
-public class BookColors {
+public class BookColor {
     public static final int REGULAR = 0x99452e;
     private static final Map<DyeColor, Integer> COLORS = Collections.unmodifiableMap(new LinkedHashMap<>() {{
         put(DyeColor.WHITE, 0xfffafeff);

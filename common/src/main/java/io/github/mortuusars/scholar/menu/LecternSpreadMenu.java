@@ -2,7 +2,7 @@ package io.github.mortuusars.scholar.menu;
 
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.util.BookHelper;
-import io.github.mortuusars.scholar.visual.BookColors;
+import io.github.mortuusars.scholar.visual.BookColor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
@@ -37,7 +37,7 @@ public class LecternSpreadMenu extends LecternMenu {
 
     public static LecternSpreadMenu fromBuffer(int containerId, Inventory inventory, FriendlyByteBuf buffer) {
         ItemStack bookStack = buffer.readItem();
-        int bookColor = BookColors.fromStack(bookStack);
+        int bookColor = BookColor.fromStack(bookStack);
         return new LecternSpreadMenu(containerId, new SimpleContainer(bookStack), new SimpleContainerData(1), bookColor);
     }
 
