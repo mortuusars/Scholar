@@ -1,9 +1,15 @@
 package io.github.mortuusars.scholar.mixin;
 
-import io.github.mortuusars.scholar.BookHandlerClient;
+import io.github.mortuusars.scholar.Config;
+import io.github.mortuusars.scholar.client.screen.SpreadBookViewScreen;
+import io.github.mortuusars.scholar.visual.BookColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundOpenBookPacket;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -15,12 +21,23 @@ public abstract class ClientPacketListenerMixin {
             target = "Lnet/minecraft/client/player/LocalPlayer;getItemInHand(Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/item/ItemStack;"),
             cancellable = true)
     private void handleOpenBook(ClientboundOpenBookPacket clientboundOpenBookPacket, CallbackInfo ci) {
-        Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null)
+        InteractionHand hand = clientboundOpenBookPacket.getHand();
+        Player player = Minecraft.getInstance().player;
+        if (player == null) {
             return;
-
-        if (BookHandlerClient.handleBookOpening(minecraft.player, clientboundOpenBookPacket.getHand())) {
-            ci.cancel();
         }
+
+        ItemStack stack = player.getItemInHand(hand);
+
+        if (!Config.Common.TWO_PAGE_SCREEN.get() || !stack.is(Items.WRITTEN_BOOK)) {
+            return;
+        }
+
+        if (Config.Common.SNEAK_OPENS_VANILLA_SCREEN.get() && player.isSecondaryUseActive()) {
+            return;
+        }
+
+        Minecraft.getInstance().setScreen(new SpreadBookViewScreen(new SpreadBookViewScreen.WrittenBookAccess(stack), BookColor.get(stack)));
+        ci.cancel();
     }
 }

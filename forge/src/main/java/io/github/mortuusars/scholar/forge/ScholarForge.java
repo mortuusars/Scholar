@@ -31,13 +31,5 @@ public class ScholarForge {
         RegisterImpl.MENU_TYPES.register(modEventBus);
         RegisterImpl.RECIPE_SERIALIZERS.register(modEventBus);
         RegisterImpl.SOUND_EVENTS.register(modEventBus);
-
-        modEventBus.register(CommonEvents.ModBus.class);
-        MinecraftForge.EVENT_BUS.register(CommonEvents.ForgeBus.class);
-
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
-            modEventBus.register(ClientEvents.ModBus.class);
-            MinecraftForge.EVENT_BUS.register(ClientEvents.ForgeBus.class);
-        });
     }
 }

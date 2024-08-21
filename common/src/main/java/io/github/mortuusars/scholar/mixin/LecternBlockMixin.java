@@ -31,7 +31,7 @@ public abstract class LecternBlockMixin {
     private void openScreen(Level level, BlockPos pos, Player player, CallbackInfo ci) {
         if (level.getBlockEntity(pos) instanceof LecternBlockEntity lecternBlockEntity
                 && player instanceof ServerPlayer serverPlayer
-                && (!player.isSecondaryUseActive() || !Config.Common.LECTERN_SNEAK_OPENS_VANILLA_SCREEN.get())
+                && (!player.isSecondaryUseActive() || !Config.Common.SNEAK_OPENS_VANILLA_SCREEN.get())
                 && scholar$shouldOpenScholarScreenForBook(lecternBlockEntity.getBook())) {
             scholar$openSpreadGUI(serverPlayer, lecternBlockEntity, lecternBlockEntity.getBook());
             player.awardStat(Stats.INTERACT_WITH_LECTERN);
@@ -47,7 +47,7 @@ public abstract class LecternBlockMixin {
 
     @Unique
     private void scholar$openSpreadGUI(ServerPlayer player, LecternBlockEntity lecternBlockEntity, ItemStack bookStack) {
-        int bookColor = BookColor.fromStack(bookStack);
+        int bookColor = BookColor.get(bookStack);
         MenuProvider menuProvider = new MenuProvider() {
             @Override
             public @NotNull Component getDisplayName() {

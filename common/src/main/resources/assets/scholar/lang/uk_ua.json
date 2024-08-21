@@ -33,6 +33,9 @@
   "item.scholar.red_written_book": "Червона написана книга",
   "item.scholar.black_written_book": "Чорна написана книга",
 
+  "item.scholar.deprecated_book_message": "Цей предмет застарілий та буде видалений у майбутньому.",
+  "item.scholar.convert_book_message": "[Використайте], щоб замінити на правильний предмет.",
+
   "gui.scholar.insert_section_sign": "Вставити символ форматування",
   "gui.scholar.insert_section_sign.help1": "Символ 'розділ' в поєднанні з кодовою літерою використовується для форматування частини тексту.",
   "gui.scholar.insert_section_sign.help2": "Нажміть [%s] щоб дізнатися більше",

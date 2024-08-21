@@ -8,47 +8,53 @@ public class Config {
     public static class Common {
         public static final ForgeConfigSpec SPEC;
 
-        public static final ForgeConfigSpec.BooleanValue WRITABLE_REPLACE_VANILLA_SCREEN;
-        public static final ForgeConfigSpec.BooleanValue WRITABLE_SNEAK_OPENS_VANILLA_SCREEN;
-        public static final ForgeConfigSpec.BooleanValue WRITABLE_SURVIVAL_FORMATTING;
+        // Coloring
+        public static final ForgeConfigSpec.BooleanValue WRITABLE_BOOK_COLORING;
+        public static final ForgeConfigSpec.BooleanValue WRITTEN_BOOK_COLORING;
 
+        // UI
+        public static final ForgeConfigSpec.BooleanValue TWO_PAGE_SCREEN;
+        public static final ForgeConfigSpec.BooleanValue SNEAK_OPENS_VANILLA_SCREEN;
+        public static final ForgeConfigSpec.BooleanValue SURVIVAL_FORMATTING;
 
-        public static final ForgeConfigSpec.BooleanValue WRITTEN_REPLACE_VANILLA_SCREEN;
-        public static final ForgeConfigSpec.BooleanValue WRITTEN_SNEAK_OPENS_VANILLA_SCREEN;
-        public static final ForgeConfigSpec.BooleanValue WRITTEN_GLINT_ENABLED;
-
+        //TODO: REMOVE
         public static final ForgeConfigSpec.BooleanValue LECTERN_REPLACE_VANILLA_SCREEN;
-        public static final ForgeConfigSpec.BooleanValue LECTERN_SNEAK_OPENS_VANILLA_SCREEN;
 
+        // QOL
         public static final ForgeConfigSpec.BooleanValue CHISELED_BOOKSHELF_TOOLTIP;
+        public static final ForgeConfigSpec.BooleanValue BOOK_ENCHANTMENT_GLINT;
 
         static {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
-            builder.push("WritableBookScreen");
-            WRITABLE_REPLACE_VANILLA_SCREEN = builder
-                    .comment("Scholar book edit screen will replace the vanilla one. Scholar signing screen will not be available if disabled. Default: true")
-                    .define("ReplaceVanillaScreen", true);
+            builder.push("BookColoring");
+            WRITABLE_BOOK_COLORING = builder
+                    .comment("Writable Book (Book and Quill) can be colored like Leather armor. Default: true")
+                    .define("WritableBookColoring", true);
+            WRITTEN_BOOK_COLORING = builder
+                    .comment("Written Book can be colored like Leather armor. Default: false")
+                    .define("WrittenBookColoring", false);
+            builder.pop();
 
-            WRITABLE_SNEAK_OPENS_VANILLA_SCREEN = builder
-                    .comment("Vanilla book edit screen will open when the player is sneaking. Default: false")
+            builder.push("UI");
+            TWO_PAGE_SCREEN = builder
+                    .comment("Vanilla book screens will be replaced with a two-paged ones. Default: true")
+                    .define("TwoPageScreen", true);
+            SNEAK_OPENS_VANILLA_SCREEN = builder
+                    .comment("Holding sneak while using a book screen will show vanilla screen. Default: false")
                     .define("SneakingOpensVanillaScreen", false);
-            WRITABLE_SURVIVAL_FORMATTING = builder
+            SURVIVAL_FORMATTING = builder
                     .comment("Allow inserting formatting symbol (section sign) for players in survival mode." +
                                     "When set to true - hotkey or a button can be used to paste a formatting symbol.",
                             "Default: true")
                     .define("SurvivalFormatting", true);
             builder.pop();
 
-            builder.push("WrittenBookScreen");
-            WRITTEN_REPLACE_VANILLA_SCREEN = builder
-                    .comment("Scholar book view screen will replace the vanilla one. Default: true")
-                    .define("ReplaceVanillaScreen", true);
-
-            WRITTEN_SNEAK_OPENS_VANILLA_SCREEN = builder
-                    .comment("Vanilla book view screen will open when the player is sneaking. Default: false")
-                    .define("SneakingOpensVanillaScreen", false);
-            WRITTEN_GLINT_ENABLED = builder
+            builder.push("QOL");
+            CHISELED_BOOKSHELF_TOOLTIP = builder
+                    .comment("Hovering over a slot in a Chiseled Bookshelf will show tooltip of a book that's stored in that slot. Default: true")
+                    .define("ChiseledBookshelfTooltip", true);
+            BOOK_ENCHANTMENT_GLINT = builder
                     .comment("Written books will have an enchantment glint on them. Default: false")
                     .define("EnchantmentGlint", false);
             builder.pop();
@@ -57,16 +63,10 @@ public class Config {
             LECTERN_REPLACE_VANILLA_SCREEN = builder
                     .comment("Scholar lectern screen will replace the vanilla one. Default: true")
                     .define("ReplaceVanillaScreen", true);
-
-            LECTERN_SNEAK_OPENS_VANILLA_SCREEN = builder
-                    .comment("Vanilla lectern screen will open when the player is sneaking. Default: false")
-                    .define("SneakingOpensVanillaScreen", false);
             builder.pop();
 
             builder.push("Misc");
-            CHISELED_BOOKSHELF_TOOLTIP = builder
-                    .comment("Hovering over a slot in a Chiseled Bookshelf will show tooltip of a book that's stored in that slot. Default: true")
-                    .define("ChiseledBookshelfTooltip", true);
+
             builder.pop();
 
             SPEC = builder.build();

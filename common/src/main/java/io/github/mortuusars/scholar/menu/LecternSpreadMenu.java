@@ -37,7 +37,7 @@ public class LecternSpreadMenu extends LecternMenu {
 
     public static LecternSpreadMenu fromBuffer(int containerId, Inventory inventory, FriendlyByteBuf buffer) {
         ItemStack bookStack = buffer.readItem();
-        int bookColor = BookColor.fromStack(bookStack);
+        int bookColor = BookColor.get(bookStack);
         return new LecternSpreadMenu(containerId, new SimpleContainer(bookStack), new SimpleContainerData(1), bookColor);
     }
 

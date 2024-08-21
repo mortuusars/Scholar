@@ -44,7 +44,6 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 public class SpreadBookEditScreen extends Screen {
-
     private TextBox leftPageTextBox;
     private TextBox rightPageTextBox;
 
@@ -66,8 +65,8 @@ public class SpreadBookEditScreen extends Screen {
     public static final int BOOK_WIDTH = 295;
     public static final int BOOK_HEIGHT = 180;
 
-    public static final int TEXT_LEFT_X = 23;
-    public static final int TEXT_RIGHT_X = 158;
+    public static final int TEXT_LEFT_X = 22;
+    public static final int TEXT_RIGHT_X = 159;
     public static final int TEXT_Y = 21;
     public static final int TEXT_WIDTH = 114;
     public static final int TEXT_HEIGHT = 128;
@@ -99,7 +98,7 @@ public class SpreadBookEditScreen extends Screen {
         super(GameNarrator.NO_TITLE);
         this.owner = owner;
         this.bookStack = bookStack;
-        this.bookColor = BookColor.fromStack(bookStack);
+        this.bookColor = BookColor.get(bookStack);
         this.hand = hand;
         this.mainFontColor = Config.Client.getColor(Config.Client.MAIN_FONT_COLOR);
         this.secondaryFontColor = Config.Client.getColor(Config.Client.SECONDARY_FONT_COLOR);
@@ -359,7 +358,7 @@ public class SpreadBookEditScreen extends Screen {
     }
 
     protected boolean isFormattingAllowed() {
-        return Config.Common.WRITABLE_SURVIVAL_FORMATTING.get() || (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative());
+        return Config.Common.SURVIVAL_FORMATTING.get() || (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative());
     }
 
     protected void openFormattingWikiPage() {

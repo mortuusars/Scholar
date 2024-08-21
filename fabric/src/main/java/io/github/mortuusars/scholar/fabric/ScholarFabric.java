@@ -3,14 +3,9 @@ package io.github.mortuusars.scholar.fabric;
 import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.item.ColoredWritableBookItem;
-import io.github.mortuusars.scholar.visual.BookColor;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
+import net.minecraft.core.cauldron.CauldronInteraction;
+import net.minecraft.world.item.*;
 import net.minecraftforge.fml.config.ModConfig;
 
 public class ScholarFabric implements ModInitializer {
@@ -21,17 +16,7 @@ public class ScholarFabric implements ModInitializer {
 
         Scholar.init();
 
-        addItemsToCreativeTab();
-    }
-
-    private static void addItemsToCreativeTab() {
-        ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(content -> {
-            Item lastItem = Items.WRITABLE_BOOK;
-            for (DyeColor color : BookColor.getSortedColors().keySet()) {
-                ColoredWritableBookItem coloredBook = Scholar.Items.COLORED_WRITABLE_BOOKS.get(color).get();
-                content.addAfter(lastItem, coloredBook);
-                lastItem = coloredBook;
-            }
-        });
+        CauldronInteraction.WATER.put(Items.WRITABLE_BOOK, CauldronInteraction.DYED_ITEM);
+        CauldronInteraction.WATER.put(Items.WRITTEN_BOOK, CauldronInteraction.DYED_ITEM);
     }
 }

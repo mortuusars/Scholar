@@ -1,12 +1,15 @@
 package io.github.mortuusars.scholar.mixin;
 
 import com.mojang.authlib.GameProfile;
-import io.github.mortuusars.scholar.BookHandlerClient;
+import io.github.mortuusars.scholar.Config;
+import io.github.mortuusars.scholar.client.screen.SpreadBookEditScreen;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +24,15 @@ public abstract class LocalPlayerMixin extends Player {
 
     @Inject(method = "openItemGui", at = @At("HEAD"), cancellable = true)
     private void onOpenItemGui(ItemStack stack, InteractionHand hand, CallbackInfo ci) {
-        if (BookHandlerClient.handleBookOpening(this, hand))
-            ci.cancel();
+        if (!Config.Common.TWO_PAGE_SCREEN.get() || !stack.is(Items.WRITABLE_BOOK)) {
+            return;
+        }
+
+        if (Config.Common.SNEAK_OPENS_VANILLA_SCREEN.get() && isSecondaryUseActive()) {
+            return;
+        }
+
+        Minecraft.getInstance().setScreen(new SpreadBookEditScreen(this, stack, hand));
+        ci.cancel();
     }
 }

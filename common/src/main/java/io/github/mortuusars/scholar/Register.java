@@ -69,7 +69,7 @@ public class Register {
     }
 
     @ExpectPlatform
-    public static Supplier<RecipeSerializer<?>> recipeSerializer(String filmDeveloping, Supplier<RecipeSerializer<?>> supplier) {
+    public static Supplier<RecipeSerializer<?>> recipeSerializer(String name, Supplier<RecipeSerializer<?>> supplier) {
         throw new AssertionError();
     }
 }
