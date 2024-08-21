@@ -3,7 +3,7 @@ package io.github.mortuusars.scholar.fabric;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.render.ChiseledBookShelfOverlay;
 import io.github.mortuusars.scholar.client.screen.LecternSpreadScreen;
-import io.github.mortuusars.scholar.visual.BookColor;
+import io.github.mortuusars.scholar.book.BookColor;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;

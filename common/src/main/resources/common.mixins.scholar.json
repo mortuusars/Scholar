@@ -5,10 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "io.github.mortuusars.scholar.mixin.ScholarMixinPlugin",
   "mixins": [
-    "AbstractCauldronBlockMixin",
     "ArmorDyeRecipeMixin",
     "BookCloningRecipeMixin",
-    "LecternBlockEntityAccessor",
     "LecternBlockMixin",
     "WritableBookItemMixin",
     "WrittenBookItemMixin",

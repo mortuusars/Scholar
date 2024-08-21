@@ -14,11 +14,9 @@ public class Config {
 
         // UI
         public static final ForgeConfigSpec.BooleanValue TWO_PAGE_SCREEN;
+        public static final ForgeConfigSpec.BooleanValue LECTERN_TWO_PAGE_SCREEN;
         public static final ForgeConfigSpec.BooleanValue SNEAK_OPENS_VANILLA_SCREEN;
         public static final ForgeConfigSpec.BooleanValue SURVIVAL_FORMATTING;
-
-        //TODO: REMOVE
-        public static final ForgeConfigSpec.BooleanValue LECTERN_REPLACE_VANILLA_SCREEN;
 
         // QOL
         public static final ForgeConfigSpec.BooleanValue CHISELED_BOOKSHELF_TOOLTIP;
@@ -40,6 +38,9 @@ public class Config {
             TWO_PAGE_SCREEN = builder
                     .comment("Vanilla book screens will be replaced with a two-paged ones. Default: true")
                     .define("TwoPageScreen", true);
+            LECTERN_TWO_PAGE_SCREEN = builder
+                    .comment("Lectern book screen will replace the vanilla one. Can be disabled if you want to use different screen for lectern (such as from Amendments). Default: true")
+                    .define("LecternTwoPageScreen", true);
             SNEAK_OPENS_VANILLA_SCREEN = builder
                     .comment("Holding sneak while using a book screen will show vanilla screen. Default: false")
                     .define("SneakingOpensVanillaScreen", false);
@@ -60,9 +61,7 @@ public class Config {
             builder.pop();
 
             builder.push("LecternScreen");
-            LECTERN_REPLACE_VANILLA_SCREEN = builder
-                    .comment("Scholar lectern screen will replace the vanilla one. Default: true")
-                    .define("ReplaceVanillaScreen", true);
+
             builder.pop();
 
             builder.push("Misc");

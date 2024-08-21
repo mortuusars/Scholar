@@ -1,14 +1,9 @@
 package io.github.mortuusars.scholar.forge.event;
 
+import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.item.ColoredWritableBookItem;
-import io.github.mortuusars.scholar.visual.BookColor;
 import net.minecraft.core.cauldron.CauldronInteraction;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -20,8 +15,13 @@ public class CommonEvents {
         @SubscribeEvent
         public static void commonSetup(FMLCommonSetupEvent event) {
             event.enqueueWork(() -> {
-                CauldronInteraction.WATER.put(Items.WRITABLE_BOOK, CauldronInteraction.DYED_ITEM);
-                CauldronInteraction.WATER.put(Items.WRITTEN_BOOK, CauldronInteraction.DYED_ITEM);
+                if (Config.Common.WRITABLE_BOOK_COLORING.get()) {
+                    CauldronInteraction.WATER.put(Items.WRITABLE_BOOK, CauldronInteraction.DYED_ITEM);
+                }
+
+                if (Config.Common.WRITTEN_BOOK_COLORING.get()) {
+                    CauldronInteraction.WATER.put(Items.WRITTEN_BOOK, CauldronInteraction.DYED_ITEM);
+                }
             });
         }
     }

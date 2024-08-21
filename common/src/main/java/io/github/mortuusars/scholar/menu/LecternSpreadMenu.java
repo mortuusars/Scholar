@@ -1,8 +1,7 @@
 package io.github.mortuusars.scholar.menu;
 
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.util.BookHelper;
-import io.github.mortuusars.scholar.visual.BookColor;
+import io.github.mortuusars.scholar.book.BookColor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
@@ -14,6 +13,7 @@ import net.minecraft.world.inventory.LecternMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.WrittenBookItem;
 import org.jetbrains.annotations.NotNull;
 
 public class LecternSpreadMenu extends LecternMenu {
@@ -26,7 +26,7 @@ public class LecternSpreadMenu extends LecternMenu {
     public LecternSpreadMenu(int containerId, Container lectern, ContainerData lecternData, int bookColor) {
         super(containerId, lectern, lecternData);
         this.bookColor = bookColor;
-        this.spreads = (int) Math.ceil(BookHelper.getPageCount(getBook()) / 2f);
+        this.spreads = (int)(WrittenBookItem.getPageCount(getBook()) / 2f);
 
         // Corrects page to the closest even number (down)
         if (getPage() % 2 != 0) {

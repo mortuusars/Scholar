@@ -16,7 +16,12 @@ public class ScholarFabric implements ModInitializer {
 
         Scholar.init();
 
-        CauldronInteraction.WATER.put(Items.WRITABLE_BOOK, CauldronInteraction.DYED_ITEM);
-        CauldronInteraction.WATER.put(Items.WRITTEN_BOOK, CauldronInteraction.DYED_ITEM);
+        if (Config.Common.WRITABLE_BOOK_COLORING.get()) {
+            CauldronInteraction.WATER.put(Items.WRITABLE_BOOK, CauldronInteraction.DYED_ITEM);
+        }
+
+        if (Config.Common.WRITTEN_BOOK_COLORING.get()) {
+            CauldronInteraction.WATER.put(Items.WRITTEN_BOOK, CauldronInteraction.DYED_ITEM);
+        }
     }
 }

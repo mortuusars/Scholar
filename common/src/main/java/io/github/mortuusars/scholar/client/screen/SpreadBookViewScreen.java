@@ -5,7 +5,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Pair;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.util.RenderUtil;
+import io.github.mortuusars.scholar.client.util.RenderUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;

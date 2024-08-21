@@ -1,7 +1,7 @@
 package io.github.mortuusars.scholar.item;
 
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.visual.BookColor;
+import io.github.mortuusars.scholar.book.BookColor;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+@Deprecated(forRemoval = true)
 public class ColoredWritableBookItem extends WritableBookItem implements IColoredBook {
     private final DyeColor color;
 

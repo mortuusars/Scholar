@@ -1,6 +1,6 @@
 package io.github.mortuusars.scholar.mixin;
 
-import io.github.mortuusars.scholar.visual.BookColor;
+import io.github.mortuusars.scholar.book.BookColor;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.inventory.CraftingContainer;
@@ -16,7 +16,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BookCloningRecipe.class)
 public class BookCloningRecipeMixin {
-    @Inject(method = "assemble(Lnet/minecraft/world/inventory/CraftingContainer;Lnet/minecraft/core/RegistryAccess;)Lnet/minecraft/world/item/ItemStack;", at = @At("HEAD"), cancellable = true)
+    // 'BookCloningRecipe#matches' may need to be changed as well. But it seems to work fine without it.
+
+    /**
+     * Purpose of this mixin is to disallow writable books of different colors to be in a craft.
+     * And set the color of a result book to color of writable book.
+     * -
+     * This mixin basically overrides whole method which may cause compatibility issues. But it would require more mixins to change it in specific parts.
+     * Mods that modify this recipe should be very rare anyway.
+     */
+    @Inject(method = "assemble(Lnet/minecraft/world/inventory/CraftingContainer;Lnet/minecraft/core/RegistryAccess;)Lnet/minecraft/world/item/ItemStack;",
+            at = @At("HEAD"), cancellable = true)
     private void onAssemble(CraftingContainer container, RegistryAccess registryAccess, CallbackInfoReturnable<ItemStack> cir) {
         ItemStack inputBook = ItemStack.EMPTY;
         @Nullable Integer resultColor = null;

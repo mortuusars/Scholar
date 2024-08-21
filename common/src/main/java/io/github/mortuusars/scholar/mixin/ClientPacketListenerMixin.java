@@ -2,7 +2,7 @@ package io.github.mortuusars.scholar.mixin;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.client.screen.SpreadBookViewScreen;
-import io.github.mortuusars.scholar.visual.BookColor;
+import io.github.mortuusars.scholar.book.BookColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundOpenBookPacket;

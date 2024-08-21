@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.visual;
+package io.github.mortuusars.scholar.book;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;

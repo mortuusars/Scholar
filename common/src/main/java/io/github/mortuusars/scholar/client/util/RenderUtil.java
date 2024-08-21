@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.util;
+package io.github.mortuusars.scholar.client.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
