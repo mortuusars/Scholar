@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar;
 
 import com.google.common.base.Preconditions;
+import com.mojang.logging.LogUtils;
 import io.github.mortuusars.scholar.item.ColoredWritableBookItem;
 import io.github.mortuusars.scholar.item.ColoredWrittenBookItem;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
@@ -11,6 +12,7 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,7 @@ import java.util.function.Supplier;
 
 public class Scholar {
     public static final String ID = "scholar";
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public static ResourceLocation resource(String path) {
         return new ResourceLocation(Scholar.ID, path);

@@ -5,3 +5,12 @@ accessible method net/minecraft/world/level/block/ChiseledBookShelfBlock getHitS
 
 accessible field net/minecraft/world/level/block/entity/LecternBlockEntity bookAccess Lnet/minecraft/world/Container;
 accessible field net/minecraft/world/level/block/entity/LecternBlockEntity dataAccess Lnet/minecraft/world/inventory/ContainerData;
+
+accessible field net/minecraft/client/gui/font/TextFieldHelper getMessageFn Ljava/util/function/Supplier;
+accessible field net/minecraft/client/gui/font/TextFieldHelper setMessageFn Ljava/util/function/Consumer;
+accessible field net/minecraft/client/gui/font/TextFieldHelper getClipboardFn Ljava/util/function/Supplier;
+accessible field net/minecraft/client/gui/font/TextFieldHelper setClipboardFn Ljava/util/function/Consumer;
+accessible field net/minecraft/client/gui/font/TextFieldHelper stringValidator Ljava/util/function/Predicate;
+accessible field net/minecraft/client/gui/font/TextFieldHelper cursorPos I
+accessible field net/minecraft/client/gui/font/TextFieldHelper selectionPos I
+extendable method net/minecraft/client/gui/font/TextFieldHelper resetSelectionIfNeeded (Z)V

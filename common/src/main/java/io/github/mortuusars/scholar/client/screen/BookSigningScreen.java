@@ -3,7 +3,7 @@ package io.github.mortuusars.scholar.client.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.client.screen.textbox.HorizontalAlignment;
+import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
 import io.github.mortuusars.scholar.book.Formatting;
