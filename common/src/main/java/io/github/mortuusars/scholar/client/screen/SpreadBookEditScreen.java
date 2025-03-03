@@ -304,6 +304,17 @@ public class SpreadBookEditScreen extends Screen {
         drawPageNumbers(guiGraphics, currentSpread);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+
+        if (Minecraft.getInstance().options.renderDebug) {
+            String text = leftPageTextBox.getText().replace("§", "&");
+            try {
+                int cursorPos = leftPageTextBox.getTextHandler().getCursorPos();
+                text = new StringBuilder(text).insert(cursorPos, "_").toString();
+            } catch (Exception e) {
+                Scholar.LOGGER.error(e.toString());
+            }
+            guiGraphics.drawString(font, text, 5, 5, 0xFFFFFFFF);
+        }
     }
 
     protected void drawPageNumbers(GuiGraphics guiGraphics, int currentSpreadIndex) {
@@ -318,13 +329,6 @@ public class SpreadBookEditScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (getFocused() instanceof TextBox
-                && Screen.hasControlDown()
-                && keyCode == InputConstants.KEY_F) {
-            insertSectionSign();
-            return true;
-        }
-
         if (insertSectionSignButton != null && insertSectionSignButton.isHovered() && keyCode == InputConstants.KEY_F1) {
             openFormattingWikiPage();
             return true;
@@ -384,34 +388,33 @@ public class SpreadBookEditScreen extends Screen {
 
     @Override
     public boolean charTyped(char pCodePoint, int pModifiers) {
-        boolean handled = super.charTyped(pCodePoint, pModifiers);
-
-        if (handled && getFocused() instanceof TextBox textBox) {
+        if ( super.charTyped(pCodePoint, pModifiers) && getFocused() instanceof TextBox textBox) {
             onTextBoxCharTyped(textBox);
+            return true;
         }
 
-        return handled;
+        return false;
     }
 
     private static void onTextBoxCharTyped(TextBox textBox) {
         // Plays a sound when formatting code char is typed:
 
-        int cursorPos = textBox.textFieldHelper.getCursorPos();
-        String text = textBox.getText();
-
-        if (cursorPos < 2 || cursorPos > text.length())
-            return;
-
-        int sectionSymbolIndex = cursorPos - 2;
-        int formattingCharIndex = sectionSymbolIndex + 1;
-        String enteredFormattingCode = text.substring(sectionSymbolIndex, formattingCharIndex + 1);
-
-        for (Formatting formatting : Formatting.values()) {
-            if (formatting.getCode().equals(enteredFormattingCode)) {
-                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.FORMATTING_CLICK.get(), 1f, 0.5f));
-                return;
-            }
-        }
+//        int cursorPos = textBox.textFieldHelper.getCursorPos();
+//        String text = textBox.getText();
+//
+//        if (cursorPos < 2 || cursorPos > text.length())
+//            return;
+//
+//        int sectionSymbolIndex = cursorPos - 2;
+//        int formattingCharIndex = sectionSymbolIndex + 1;
+//        String enteredFormattingCode = text.substring(sectionSymbolIndex, formattingCharIndex + 1);
+//
+//        for (Formatting formatting : Formatting.values()) {
+//            if (formatting.getChar().equals(enteredFormattingCode)) {
+//                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.FORMATTING_CLICK.get(), 1f, 0.5f));
+//                return;
+//            }
+//        }
     }
 
     @Override

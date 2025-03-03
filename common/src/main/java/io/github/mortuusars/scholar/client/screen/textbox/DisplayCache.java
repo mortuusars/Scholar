@@ -1,5 +1,7 @@
 package io.github.mortuusars.scholar.client.screen.textbox;
 
+import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
+import io.github.mortuusars.scholar.client.util.Pos2i;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;

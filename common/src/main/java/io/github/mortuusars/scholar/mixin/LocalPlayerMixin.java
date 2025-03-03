@@ -3,6 +3,7 @@ package io.github.mortuusars.scholar.mixin;
 import com.mojang.authlib.GameProfile;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.client.screen.SpreadBookEditScreen;
+import io.github.mortuusars.scholar.client.screen.TestScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -32,7 +33,11 @@ public abstract class LocalPlayerMixin extends Player {
             return;
         }
 
-        Minecraft.getInstance().setScreen(new SpreadBookEditScreen(this, stack, hand));
+        if (isSecondaryUseActive()){
+            Minecraft.getInstance().setScreen(new TestScreen());
+        } else {
+            Minecraft.getInstance().setScreen(new SpreadBookEditScreen(this, stack, hand));
+        }
         ci.cancel();
     }
 }

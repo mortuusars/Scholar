@@ -192,21 +192,21 @@ public class BookSigningScreen extends Screen {
     private static void onTextBoxCharTyped(TextBox textBox) {
         // Plays a sound when formatting code char is typed:
 
-        int cursorPos = textBox.textFieldHelper.getCursorPos();
-        String text = textBox.getText();
-
-        if (cursorPos < 2 || cursorPos > text.length())
-            return;
-
-        int sectionSymbolIndex = cursorPos - 2;
-        int formattingCharIndex = sectionSymbolIndex + 1;
-        String enteredFormattingCode = text.substring(sectionSymbolIndex, formattingCharIndex + 1);
-
-        for (Formatting formatting : Formatting.values()) {
-            if (formatting.getCode().equals(enteredFormattingCode)) {
-                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.FORMATTING_CLICK.get(), 1f, 0.5f));
-                return;
-            }
-        }
+//        int cursorPos = textBox.textFieldHelper.getCursorPos();
+//        String text = textBox.getText();
+//
+//        if (cursorPos < 2 || cursorPos > text.length())
+//            return;
+//
+//        int sectionSymbolIndex = cursorPos - 2;
+//        int formattingCharIndex = sectionSymbolIndex + 1;
+//        String enteredFormattingCode = text.substring(sectionSymbolIndex, formattingCharIndex + 1);
+//
+//        for (Formatting formatting : Formatting.values()) {
+//            if (formatting.getChar() == enteredFormattingCode) {
+//                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.FORMATTING_CLICK.get(), 1f, 0.5f));
+//                return;
+//            }
+//        }
     }
 }

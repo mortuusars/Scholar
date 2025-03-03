@@ -14,7 +14,7 @@ subprojects {
         silentMojangMappingsLicense()
         runs {
             client {
-//                vmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:HotswapAgent=fatjar'
+                vmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:HotswapAgent=fatjar'
             }
         }
     }

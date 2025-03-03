@@ -2,6 +2,11 @@ package io.github.mortuusars.scholar.client.screen.textbox;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.book.Formatting;
+import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
+import io.github.mortuusars.scholar.client.util.Pos2i;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
@@ -17,6 +22,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -35,7 +41,7 @@ public class TextBox extends AbstractWidget {
     public int selectionColor = 0xFF0000FF;
     public int selectionUnfocusedColor = 0x880000FF;
 
-    public final TextFieldHelper textFieldHelper;
+    public final FormattableTextFieldHelper textFieldHelper;
     protected DisplayCache displayCache = new DisplayCache();
     protected int frameTick;
     protected long lastClickTime;
@@ -47,7 +53,7 @@ public class TextBox extends AbstractWidget {
         this.font = font;
         this.textGetter = textGetter;
         this.textSetter = textSetter;
-        textFieldHelper = new TextFieldHelper(this::getText, this::setText,
+        textFieldHelper = new FormattableTextFieldHelper(this::getText, this::setText,
                 TextFieldHelper.createClipboardGetter(Minecraft.getInstance()),
                 TextFieldHelper.createClipboardSetter(Minecraft.getInstance()),
                 this::validateText);
@@ -67,7 +73,9 @@ public class TextBox extends AbstractWidget {
 
     public TextBox setText(@NotNull String text) {
         textSetter.accept(text);
-        clearDisplayCache();
+        getTextHandler().setCursorPos(getTextHandler().getCursorPos());
+        getTextHandler().setSelectionPos(getTextHandler().getSelectionPos());
+        refreshDisplayCache();
         return this;
     }
 
@@ -77,10 +85,10 @@ public class TextBox extends AbstractWidget {
 
     public void setHeight(int height) {
         this.height = height;
-        clearDisplayCache();
+        refreshDisplayCache();
     }
 
-    public TextFieldHelper getTextHandler() {
+    public FormattableTextFieldHelper getTextHandler() {
         return textFieldHelper;
     }
 
@@ -91,34 +99,39 @@ public class TextBox extends AbstractWidget {
     public TextBox setFontColor(int fontColor, int fontUnfocusedColor) {
         this.fontColor = fontColor;
         this.fontUnfocusedColor = fontUnfocusedColor;
-        clearDisplayCache();
+        refreshDisplayCache();
         return this;
     }
 
     public TextBox setSelectionColor(int selectionColor, int selectionUnfocusedColor) {
         this.selectionColor = selectionColor;
         this.selectionUnfocusedColor = selectionUnfocusedColor;
-        clearDisplayCache();
+        refreshDisplayCache();
         return this;
     }
 
     public void setCursorToEnd() {
         textFieldHelper.setCursorToEnd();
-        clearDisplayCache();
+        refreshDisplayCache();
     }
 
     public void refresh() {
-        clearDisplayCache();
+        refreshDisplayCache();
     }
 
     protected DisplayCache getDisplayCache() {
-        if (displayCache.needsRebuilding)
-            displayCache.rebuild(font, getText(), textFieldHelper.getCursorPos(), textFieldHelper.getSelectionPos(),
-                    getX(), getY(), getWidth(), getHeight(), horizontalAlignment);
+        if (displayCache.needsRebuilding) {
+            try {
+                displayCache.rebuild(font, getText(), textFieldHelper.getCursorPos(), textFieldHelper.getSelectionPos(),
+                        getX(), getY(), getWidth(), getHeight(), horizontalAlignment);
+            } catch (Exception e) {
+                Scholar.LOGGER.error("Rebuilding Display Cache failed: ", e);
+            }
+        }
         return displayCache;
     }
 
-    protected void clearDisplayCache() {
+    protected void refreshDisplayCache() {
         displayCache.needsRebuilding = true;
     }
 
@@ -176,17 +189,64 @@ public class TextBox extends AbstractWidget {
         return Component.literal(getText());
     }
 
+    boolean suppressNextCharTyped = false;
+
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (!isFocused())
-            return false;
-        boolean handled = handleKeyPressed(keyCode, scanCode, modifiers);
-        if (handled)
-            clearDisplayCache();
-        return handled;
+        try {
+            if (isFocused() && handleKeyPressed(keyCode, scanCode, modifiers)) {
+                refreshDisplayCache();
+                suppressNextCharTyped = true;
+                return true;
+            }
+        } catch (Exception e) {
+            Scholar.LOGGER.error("KeyPressed error: ", e);
+            return true;
+        }
+        suppressNextCharTyped = false;
+        return false;
     }
 
     protected boolean handleKeyPressed(int keyCode, int scanCode, int modifiers) {
+        if (Screen.hasAltDown()) {
+            @Nullable Formatting formatting = switch (keyCode) {
+                case InputConstants.KEY_L -> Formatting.BOLD;
+                case InputConstants.KEY_O -> Formatting.ITALIC;
+                case InputConstants.KEY_N -> Formatting.UNDERLINE;
+                case InputConstants.KEY_M -> Formatting.STRIKETHROUGH;
+                case InputConstants.KEY_K -> Formatting.OBFUSCATED;
+                case InputConstants.KEY_0 -> Formatting.BLACK;
+                case InputConstants.KEY_1 -> Formatting.DARK_BLUE;
+                case InputConstants.KEY_2 -> Formatting.DARK_GREEN;
+                case InputConstants.KEY_3 -> Formatting.DARK_AQUA;
+                case InputConstants.KEY_4 -> Formatting.DARK_RED;
+                case InputConstants.KEY_5 -> Formatting.DARK_PURPLE;
+                case InputConstants.KEY_6 -> Formatting.GOLD;
+                case InputConstants.KEY_7 -> Formatting.GRAY;
+                case InputConstants.KEY_8 -> Formatting.DARK_GRAY;
+                case InputConstants.KEY_9 -> Formatting.BLUE;
+                case InputConstants.KEY_A -> Formatting.GREEN;
+                case InputConstants.KEY_B -> Formatting.AQUA;
+                case InputConstants.KEY_C -> Formatting.RED;
+                case InputConstants.KEY_D -> Formatting.LIGHT_PURPLE;
+                case InputConstants.KEY_E -> Formatting.YELLOW;
+                case InputConstants.KEY_F -> Formatting.WHITE;
+                case InputConstants.KEY_R -> Formatting.RESET;
+                default -> null;
+            };
+
+            if (formatting != null) {
+                if (formatting == Formatting.RESET) {
+                    //noinspection DataFlowIssue
+                    setText(ChatFormatting.stripFormatting(getText()));
+                }
+                else {
+                    getTextHandler().applyFormattingToSelection(formatting);
+                }
+                return true;
+            }
+        }
+
         TextFieldHelper.CursorStep cursorStep = Screen.hasControlDown() ? TextFieldHelper.CursorStep.WORD : TextFieldHelper.CursorStep.CHARACTER;
         if (keyCode == InputConstants.KEY_UP) {
             changeLine(-1);
@@ -215,13 +275,12 @@ public class TextBox extends AbstractWidget {
     }
 
     public boolean charTyped(char codePoint, int modifiers) {
-        if (!isFocused())
-            return false;
-
-        boolean typed = textFieldHelper.charTyped(codePoint);
-        if (typed)
-            clearDisplayCache();
-        return typed;
+        if (suppressNextCharTyped) return true;
+        if (isFocused() && getTextHandler().charTyped(codePoint)) {
+            refreshDisplayCache();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -241,7 +300,7 @@ public class TextBox extends AbstractWidget {
                 } else {
                     textFieldHelper.setCursorPos(index, Screen.hasShiftDown());
                 }
-                clearDisplayCache();
+                refreshDisplayCache();
             }
 
             lastIndex = index;
@@ -258,7 +317,7 @@ public class TextBox extends AbstractWidget {
             DisplayCache displayCache = this.getDisplayCache();
             int index = displayCache.getIndexAtPosition(this.font, this.convertScreenToLocal(new Pos2i((int) mouseX, (int) mouseY)));
             this.textFieldHelper.setCursorPos(index, true);
-            this.clearDisplayCache();
+            this.refreshDisplayCache();
         }
         return true;
     }
