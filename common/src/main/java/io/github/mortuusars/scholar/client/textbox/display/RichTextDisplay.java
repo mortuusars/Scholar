@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar.client.textbox.display;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.mortuusars.scholar.client.screen.textbox.DisplayCache;
 import io.github.mortuusars.scholar.client.textbox.AmazingTextBox;
 import io.github.mortuusars.scholar.client.textbox.internals.Char;
 import io.github.mortuusars.scholar.client.textbox.internals.RichLine;
@@ -46,7 +47,7 @@ public class RichTextDisplay {
         int width = textBox.getWidth();
 
         if (richText.isEmpty()) {
-            cursor = new Pos2i(textBox.horizontalAlignment.align(width, font.width("_")), 0);
+            cursor = new Pos2i(0, 0);
             lines.add(RichLine.EMPTY);
             selection.clear();
             return;
@@ -63,7 +64,7 @@ public class RichTextDisplay {
         boolean endsOnNewLine = richText.getChars().get(lastLine.getLastCharIndex()).character() == '\n';
 
         if (isCursorAtTextEnd && endsOnNewLine) {
-            cursor = new Pos2i(textBox.horizontalAlignment.align(this.width, font.width("_")), this.lines.size() * font.lineHeight);
+            cursor = new Pos2i(0, this.lines.size() * font.lineHeight);
         } else {
             int cursorLineIndex = getLineWithCharIndex(richText.getCursorPos());
             RichLine line = this.lines.get(cursorLineIndex);
@@ -116,13 +117,19 @@ public class RichTextDisplay {
             needsRebuilding = false;
         }
 
+        HorizontalAlignment alignment = textBox.horizontalAlignment;
+
         if (richText.getCursorPos() == richText.length())
-            guiGraphics.drawString(textBox.getFont(), "_", x + cursor.x, y + cursor.y, textBox.getCurrentFontColor(), false);
+            guiGraphics.drawString(textBox.getFont(), "_",
+                    x + alignment.align(textBox.getWidth(), cursor.x) + cursor.x,
+                    y + cursor.y,
+                    textBox.getCurrentFontColor(), false);
         else {
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate(0, 0, 50);
             RenderSystem.disableBlend();
-            guiGraphics.fill(x + cursor.x, y + cursor.y - 1, x + cursor.x + 1, y + cursor.y + textBox.getFont().lineHeight, textBox.getCurrentFontColor());
+            int cx = x + alignment.align(textBox.getWidth(), cursor.x * 2) + cursor.x;
+            guiGraphics.fill(cx, y + cursor.y - 1, cx + 1, y + cursor.y + textBox.getFont().lineHeight, textBox.getCurrentFontColor());
             guiGraphics.pose().popPose();
         }
     }
@@ -215,5 +222,19 @@ public class RichTextDisplay {
 
     public List<RichLine> getLines() {
         return lines;
+    }
+
+    public int getIndexAtPosition(Font font, int x, int y) {
+        int lineIndex = y / font.lineHeight;
+
+        if (lineIndex < 0) {
+            return 0;
+        } else if (lineIndex >= lines.size()) {
+            return richText.length();
+        }
+
+        RichLine line = getLine(lineIndex);
+        int lineWidth = line.width(font, 0, line.getChars().size() - 1);
+        return line.indexAtWidth(font, textBox.horizontalAlignment.align(textBox.getWidth(), lineWidth) + x);
     }
 }

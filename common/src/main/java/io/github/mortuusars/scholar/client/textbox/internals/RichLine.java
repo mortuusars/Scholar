@@ -53,11 +53,21 @@ public class RichLine {
         return width;
     }
 
-//    public void render(GuiGraphics guiGraphics, int x, int y, int color) {
-//        render(guiGraphics, x, y, color, false);
-//    }
-//
-//    public void render(GuiGraphics guiGraphics, int x, int y, int color, boolean shadow) {
-//        guiGraphics.drawString(font, string, x + getX(), y + getY(), color, false);
-//    }
+    public int indexAtWidth(Font font, int width) {
+        if (width <= 0) return getFirstCharIndex();
+
+        int currentWidth = 0;
+
+        for (int i = 0; i < chars.size(); i++) {
+            Char character = chars.get(i);
+            int charWidth = character.getWidth(font);
+            currentWidth += charWidth;
+
+            if (currentWidth - charWidth / 2 > width) {
+                return getFirstCharIndex() + i;
+            }
+        }
+
+        return getLastCharIndex() + 1;
+    }
 }

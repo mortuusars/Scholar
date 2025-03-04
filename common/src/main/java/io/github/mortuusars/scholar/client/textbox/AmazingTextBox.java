@@ -2,11 +2,15 @@ package io.github.mortuusars.scholar.client.textbox;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.client.screen.textbox.DisplayCache;
 import io.github.mortuusars.scholar.client.textbox.internals.RichLine;
 import io.github.mortuusars.scholar.client.textbox.internals.RichText;
 import io.github.mortuusars.scholar.client.textbox.display.RichTextDisplay;
 import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
+import io.github.mortuusars.scholar.client.util.Pos2i;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -29,15 +33,11 @@ public class AmazingTextBox extends AbstractWidget {
             && getFont().wordWrapHeight(text, width) + (text.endsWith("\n") ? getFont().lineHeight : 0) <= height);
 
     protected RichTextDisplay display = new RichTextDisplay(this, text);
-    protected int frameTick;
+    protected int lastIndex;
     protected long lastActionTime;
 
     public AmazingTextBox(int x, int y, int width, int height) {
         super(x, y, width, height, Component.empty());
-    }
-
-    public void tick() {
-        ++frameTick;
     }
 
     public Font getFont() {
@@ -108,6 +108,45 @@ public class AmazingTextBox extends AbstractWidget {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (isHovered && visible && isActive() && button == InputConstants.MOUSE_BUTTON_LEFT) {
+            long currentTime = Util.getMillis();
+            RichTextDisplay display = getDisplay();
+
+            int indexAtMousePos = display.getIndexAtPosition(font, (int) (mouseX - getX()), (int) (mouseY - getY()));
+
+            if (indexAtMousePos == lastIndex && currentTime - lastActionTime < 250L) {
+                if (!getText().isSelecting()) {
+                    getText().selectWord(indexAtMousePos);
+                } else {
+                    getText().selectAll();
+                }
+            } else {
+                getText().setCursorPos(indexAtMousePos, Screen.hasShiftDown());
+            }
+
+            refreshDisplayCache();
+
+            lastIndex = indexAtMousePos;
+            lastActionTime = currentTime;
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (button == 0) {
+            RichTextDisplay display = getDisplay();
+            int indexAtMousePos = display.getIndexAtPosition(font, (int) (mouseX - getX()), (int) (mouseY - getY()));
+            getText().setCursorPos(indexAtMousePos, true);
+            refreshDisplayCache();
+        }
+        return true;
     }
 
     public void changeLine(int yChange) {

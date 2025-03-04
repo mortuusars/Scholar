@@ -17,15 +17,9 @@ public class TestScreen extends Screen {
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        textBox.tick();
-    }
-
-    @Override
     protected void init() {
         textBox = new AmazingTextBox((width / 2) - 80, (height / 2) - 70, 160, 160);
-//        textBox.horizontalAlignment = HorizontalAlignment.CENTER;
+        textBox.horizontalAlignment = HorizontalAlignment.CENTER;
 
         addRenderableWidget(textBox);
         setFocused(textBox);

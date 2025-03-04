@@ -89,12 +89,23 @@ public class RichText {
         selectionAnchor = clampIndex(index);
     }
 
+    public void setSelectionRange(int start, int end) {
+        setSelectionAnchor(start);
+        setCursorPos(end, true);
+    }
+
     public void setCursorToStart(boolean keepSelection) {
         setCursorPos(0, keepSelection);
     }
 
     public void setCursorToEnd(boolean keepSelection) {
         setCursorPos(chars.size(), keepSelection);
+    }
+
+    public void selectWord(int index) {
+        setSelectionRange(
+                StringSplitter.getWordPosition(toStringWithoutFormatting(chars), -1, index, true),
+                StringSplitter.getWordPosition(toStringWithoutFormatting(chars), 1, index, true));
     }
 
     public void moveCursorBy(int direction, boolean keepSelection, CursorStep cursorStep) {
@@ -325,7 +336,7 @@ public class RichText {
         chars.subList(start, end).clear();
         text = toString(chars);
 
-        refreshCursor(false);
+        setCursorPos(start, false);
     }
 
     public String toStringWithoutFormatting(List<Char> chars) {
