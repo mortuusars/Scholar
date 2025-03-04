@@ -2,6 +2,7 @@ package io.github.mortuusars.scholar.client.screen;
 
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.textbox.AmazingTextBox;
+import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -24,6 +25,7 @@ public class TestScreen extends Screen {
     @Override
     protected void init() {
         textBox = new AmazingTextBox((width / 2) - 80, (height / 2) - 70, 160, 160);
+//        textBox.horizontalAlignment = HorizontalAlignment.CENTER;
 
         addRenderableWidget(textBox);
         setFocused(textBox);
@@ -32,7 +34,7 @@ public class TestScreen extends Screen {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(guiGraphics);
-        guiGraphics.fill((width / 2) - 85, (height / 2) - 75, (width / 2) + 85, (height / 2) + 95, 0xAAA6A6A6);
+        guiGraphics.fill((width / 2) - 85, (height / 2) - 75, (width / 2) + 85, (height / 2) + 95, 0xCFEFE9E1);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         if (Minecraft.getInstance().options.renderDebug) {

@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar.client.textbox.internals;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -14,7 +15,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class Text {
+public class RichText {
+    public static final RichText EMPTY = new RichText(s -> false);
+
     protected Predicate<String> validator;
 
     protected ArrayList<Char> chars = new ArrayList<>();
@@ -22,12 +25,29 @@ public class Text {
     protected int cursorPos;
     protected int selectionAnchor;
 
-    public Text(Predicate<String> validator) {
+    public RichText(Predicate<String> validator) {
         this.validator = validator;
     }
 
     public ArrayList<Char> getChars() {
         return chars;
+    }
+
+    public List<Char> getView(int start, int end) {
+        return chars.subList(start, end);
+    }
+
+    public List<Char> getSelectionView() {
+        if (!isSelecting()) return Collections.emptyList();
+        return getView(getSelectionStart(), getSelectionEnd());
+    }
+
+    public int length() {
+        return chars.size();
+    }
+
+    public boolean isEmpty() {
+        return chars.isEmpty();
     }
 
     public String getText() {
@@ -82,20 +102,20 @@ public class Text {
         }
     }
 
-    public void moveCursorByChars(int direction) {
-        this.moveCursorByChars(direction, false);
-    }
-
     public void moveCursorByChars(int direction, boolean keepSelection) {
-        setCursorPos(Util.offsetByCodepoints(toStringWithoutFormatting(chars), getCursorPos(), direction), keepSelection);
-    }
-
-    public void moveCursorByWords(int direction) {
-        this.moveCursorByWords(direction, false);
+        if (!keepSelection && isSelecting()) {
+            setCursorPos(direction < 0 ? getSelectionStart() : getSelectionEnd(), false);
+        } else {
+            setCursorPos(Util.offsetByCodepoints(toStringWithoutFormatting(chars), getCursorPos(), direction), keepSelection);
+        }
     }
 
     public void moveCursorByWords(int direction, boolean keepSelection) {
-        setCursorPos(StringSplitter.getWordPosition(toStringWithoutFormatting(chars), direction, getCursorPos(), true), keepSelection);
+        if (!keepSelection && isSelecting()) {
+            setCursorPos(direction < 0 ? getSelectionStart() : getSelectionEnd(), false);
+        } else {
+            setCursorPos(StringSplitter.getWordPosition(toStringWithoutFormatting(chars), direction, getCursorPos(), true), keepSelection);
+        }
     }
 
     protected void refreshCursor(boolean keepSelection) {
@@ -170,6 +190,10 @@ public class Text {
                 setCursorToEnd(Screen.hasShiftDown());
                 return true;
             }
+            if (key == InputConstants.KEY_RETURN || key == InputConstants.KEY_NUMPADENTER) {
+                insertTextAtCursor("\n");
+                return true;
+            }
         }
 
         if (Screen.hasAltDown()) {
@@ -214,15 +238,6 @@ public class Text {
         return false;
     }
 
-    protected List<Char> getSelectionView() {
-        if (!isSelecting()) return Collections.emptyList();
-        return getView(getSelectionStart(), getSelectionEnd());
-    }
-
-    protected List<Char> getView(int start, int end) {
-        return chars.subList(start, end);
-    }
-
     public void cut() {
         copy();
         removeSelectedText();
@@ -230,7 +245,7 @@ public class Text {
 
     public void paste() {
         String text = Minecraft.getInstance().keyboardHandler.getClipboard();
-        insertTextAtCursor(text);
+        insertTextAtCursor(ChatFormatting.stripFormatting(text));
     }
 
     public void copy() {
@@ -307,7 +322,21 @@ public class Text {
         refreshCursor(false);
     }
 
-    public String toString(List<Char> chars) {
+    public String toStringWithoutFormatting(List<Char> chars) {
+        if (chars.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        for (Char character : chars) {
+            sb.append(character.character());
+        }
+        return sb.toString();
+    }
+
+    public String getSelectedString() {
+        if (!isSelecting()) return "";
+        return text.substring(getSelectionStart(), getSelectionEnd());
+    }
+
+    public static String toString(List<Char> chars) {
         if (chars.isEmpty()) return "";
 
         StringBuilder sb = new StringBuilder();
@@ -326,28 +355,12 @@ public class Text {
             previousChar = character;
         }
 
-        for (int i = chars.size() - 1; i >= 0; i--) {
-            if (chars.get(i).hasFormatting()) {
-                sb.append(Formatting.SECTION_SIGN).append(Formatting.RESET.getChar());
-            }
-            break;
+        Char lastChar = chars.get(chars.size() - 1);
+        if (lastChar.hasFormatting()) {
+            sb.append(Formatting.SECTION_SIGN).append(Formatting.RESET.getChar());
         }
 
         return sb.toString();
-    }
-
-    public String toStringWithoutFormatting(List<Char> chars) {
-        if (chars.isEmpty()) return "";
-        StringBuilder sb = new StringBuilder();
-        for (Char character : chars) {
-            sb.append(character.character());
-        }
-        return sb.toString();
-    }
-
-    public String getSelectedString() {
-        if (!isSelecting()) return "";
-        return text.substring(getSelectionStart(), getSelectionEnd());
     }
 
     // --

@@ -1,26 +1,18 @@
 package io.github.mortuusars.scholar.client.textbox;
 
-import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.book.Formatting;
-import io.github.mortuusars.scholar.client.screen.textbox.DisplayCache;
-import io.github.mortuusars.scholar.client.textbox.internals.Text;
+import io.github.mortuusars.scholar.client.textbox.internals.RichText;
+import io.github.mortuusars.scholar.client.textbox.display.RichTextDisplay;
 import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.util.Pos2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.font.TextFieldHelper;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class AmazingTextBox extends AbstractWidget {
     public final Font font = Minecraft.getInstance().font;
@@ -28,11 +20,12 @@ public class AmazingTextBox extends AbstractWidget {
     public int fontUnfocusedColor = 0xFF000000;
     public int selectionColor = 0xFF0000FF;
     public int selectionUnfocusedColor = 0x880000FF;
+    public HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
 
-    protected final Text text = new Text(text -> text != null
+    protected final RichText text = new RichText(text -> text != null
             && getFont().wordWrapHeight(text, width) + (text.endsWith("\n") ? getFont().lineHeight : 0) <= height);
 
-    protected DisplayCache displayCache = new DisplayCache();
+    protected RichTextDisplay display = new RichTextDisplay(this, text);
     protected int frameTick;
     protected long lastClickTime;
 
@@ -48,64 +41,24 @@ public class AmazingTextBox extends AbstractWidget {
         return font;
     }
 
-    protected DisplayCache getDisplayCache() {
-        if (displayCache.needsRebuilding) {
-            try {
-                displayCache.rebuild(font, getText().getText(), getText().getCursorPos(), getText().getSelectionAnchor(),
-                        getX(), getY(), getWidth(), getHeight(), HorizontalAlignment.LEFT);
-            } catch (Exception e) {
-                Scholar.LOGGER.error("Rebuilding Display Cache failed: ", e);
-            }
-        }
-        return displayCache;
-    }
-
-    public Text getText() {
+    public RichText getText() {
         return text;
     }
 
     protected void refreshDisplayCache() {
-        displayCache.needsRebuilding = true;
+        display.scheduleRebuild();
     }
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        DisplayCache displayCache = this.getDisplayCache();
-        for (DisplayCache.LineInfo lineInfo : displayCache.lines) {
-            guiGraphics.drawString(this.font, lineInfo.asComponent, getX() + lineInfo.x, getY() + lineInfo.y, getCurrentFontColor(), false);
+        display.render(guiGraphics, getX(), getY(), mouseX, mouseY, partialTick);
+        if (isFocused() && frameTick / 6 % 2 == 0) {
+            display.renderCursor(guiGraphics, getX(), getY(), mouseX, mouseY, partialTick);
         }
-        this.renderHighlight(guiGraphics, displayCache.selectionAreas);
-        if (isFocused())
-            this.renderCursor(guiGraphics, displayCache.cursorPos, displayCache.cursorAtEnd);
     }
 
     public int getCurrentFontColor() {
         return isFocused() ? fontColor : fontUnfocusedColor;
-    }
-
-    protected void renderHighlight(GuiGraphics guiGraphics, Rect2i[] highlightAreas) {
-        for (Rect2i selection : highlightAreas) {
-            int x = getX() + selection.getX();
-            int y = getY() + selection.getY();
-            int x1 = x + selection.getWidth();
-            int y1 = y + selection.getHeight();
-            guiGraphics.fill(RenderType.guiTextHighlight(), x, y - 1, x1, y1, isFocused() ? selectionColor : selectionUnfocusedColor);
-        }
-    }
-
-    protected void renderCursor(GuiGraphics guiGraphics, Pos2i cursorPos, boolean isEndOfText) {
-        if (this.frameTick / 6 % 2 == 0) {
-            cursorPos = convertLocalToScreen(cursorPos);
-            if (isEndOfText)
-                guiGraphics.drawString(this.font, "_", cursorPos.x, cursorPos.y, getCurrentFontColor(), false);
-            else {
-                guiGraphics.pose().pushPose();
-                guiGraphics.pose().translate(0, 0, 50);
-                RenderSystem.disableBlend();
-                guiGraphics.fill(cursorPos.x, cursorPos.y - 1, cursorPos.x + 1, cursorPos.y + this.font.lineHeight, getCurrentFontColor());
-                guiGraphics.pose().popPose();
-            }
-        }
     }
 
     @Override

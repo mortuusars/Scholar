@@ -1,5 +1,7 @@
 package io.github.mortuusars.scholar.client.textbox.internals;
 
+import net.minecraft.ChatFormatting;
+
 public interface Formatting {
     char SECTION_SIGN = '§';
 
@@ -16,6 +18,10 @@ public interface Formatting {
 
     default boolean isFormat() {
         return false;
+    }
+
+    default ChatFormatting toChatFormatting() {
+        return ChatFormatting.getByCode(getChar());
     }
 
     Formatting RESET = new Formatting() {

@@ -1,5 +1,6 @@
 package io.github.mortuusars.scholar.client.textbox.internals;
 
+import net.minecraft.client.gui.Font;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -57,5 +58,19 @@ public record Char(char character, @Nullable Formatting.Color color, EnumSet<For
         }
 
         return new Char(character, color, format);
+    }
+
+    public int getWidth(Font font) {
+        return font.width(toStringWithFormatting());
+    }
+
+    public String toStringWithFormatting() {
+        StringBuilder sb = new StringBuilder();
+        appendFormatting(sb);
+        sb.append(character);
+        if (hasFormatting()) {
+            sb.append(Formatting.SECTION_SIGN).append(Formatting.RESET);
+        }
+        return sb.toString();
     }
 }
