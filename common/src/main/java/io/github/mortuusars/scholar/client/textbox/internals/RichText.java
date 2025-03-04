@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar.client.textbox.internals;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.github.mortuusars.scholar.Scholar;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 public class RichText {
@@ -244,8 +246,12 @@ public class RichText {
     }
 
     public void paste() {
-        String text = Minecraft.getInstance().keyboardHandler.getClipboard();
-        insertTextAtCursor(ChatFormatting.stripFormatting(text));
+        try {
+            String text = Minecraft.getInstance().keyboardHandler.getClipboard();
+            insertTextAtCursor(Objects.requireNonNull(ChatFormatting.stripFormatting(text)).replaceAll("\\r", ""));
+        } catch (Exception e) {
+            Scholar.LOGGER.error("Text Paste error: ", e);
+        }
     }
 
     public void copy() {

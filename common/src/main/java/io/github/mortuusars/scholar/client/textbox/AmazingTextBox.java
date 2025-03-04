@@ -1,17 +1,20 @@
 package io.github.mortuusars.scholar.client.textbox;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.client.textbox.internals.RichLine;
 import io.github.mortuusars.scholar.client.textbox.internals.RichText;
 import io.github.mortuusars.scholar.client.textbox.display.RichTextDisplay;
 import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
-import io.github.mortuusars.scholar.client.util.Pos2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 public class AmazingTextBox extends AbstractWidget {
@@ -27,7 +30,7 @@ public class AmazingTextBox extends AbstractWidget {
 
     protected RichTextDisplay display = new RichTextDisplay(this, text);
     protected int frameTick;
-    protected long lastClickTime;
+    protected long lastActionTime;
 
     public AmazingTextBox(int x, int y, int width, int height) {
         super(x, y, width, height, Component.empty());
@@ -45,6 +48,10 @@ public class AmazingTextBox extends AbstractWidget {
         return text;
     }
 
+    public RichTextDisplay getDisplay() {
+        return display;
+    }
+
     protected void refreshDisplayCache() {
         display.scheduleRebuild();
     }
@@ -52,7 +59,7 @@ public class AmazingTextBox extends AbstractWidget {
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         display.render(guiGraphics, getX(), getY(), mouseX, mouseY, partialTick);
-        if (isFocused() && frameTick / 6 % 2 == 0) {
+        if (isFocused() && (System.currentTimeMillis() - lastActionTime < 200 || (System.currentTimeMillis() - lastActionTime) % 600 < 300)) {
             display.renderCursor(guiGraphics, getX(), getY(), mouseX, mouseY, partialTick);
         }
     }
@@ -64,7 +71,8 @@ public class AmazingTextBox extends AbstractWidget {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         try {
-            if (isFocused() && getText().keyPressed(keyCode)) {
+            if (isFocused() && (handleKeyPressed(keyCode, scanCode, modifiers) || getText().keyPressed(keyCode))) {
+                lastActionTime = System.currentTimeMillis();
                 refreshDisplayCache();
                 return true;
             }
@@ -75,20 +83,68 @@ public class AmazingTextBox extends AbstractWidget {
         return false;
     }
 
+    protected boolean handleKeyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == InputConstants.KEY_UP) {
+            changeLine(-1);
+            return true;
+        } else if (keyCode == InputConstants.KEY_DOWN) {
+            changeLine(1);
+            return true;
+        } else if (keyCode == InputConstants.KEY_HOME) {
+            keyHome();
+            return true;
+        } else if (keyCode == InputConstants.KEY_END) {
+            keyEnd();
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean charTyped(char codePoint, int modifiers) {
         if (isFocused() && getText().charTyped(codePoint)) {
+            lastActionTime = System.currentTimeMillis();
             refreshDisplayCache();
             return true;
         }
         return false;
     }
 
-    protected Pos2i convertLocalToScreen(Pos2i pos) {
-        return new Pos2i(getX() + pos.x, getY() + pos.y);
+    public void changeLine(int yChange) {
+        int cursorPos = getText().getCursorPos();
+        int cursorLineIndex = getDisplay().getLineWithCharIndex(cursorPos);
+        RichLine cursorLine = getDisplay().getLine(cursorLineIndex);
+
+        int linePos = cursorPos - cursorLine.getFirstCharIndex();
+
+        int newLineIndex = Mth.clamp(cursorLineIndex + yChange, 0, getDisplay().getLines().size() - 1);
+        RichLine newLine = getDisplay().getLine(newLineIndex);
+
+        int newCursorPos = Mth.clamp(newLine.getFirstCharIndex() + linePos, newLine.getFirstCharIndex(), newLine.getLastCharIndex() + 1);
+
+        getText().setCursorPos(newCursorPos, Screen.hasShiftDown());
     }
 
-    protected Pos2i convertScreenToLocal(Pos2i screenPos) {
-        return new Pos2i(screenPos.x - getX(), screenPos.y - getY());
+    public void keyHome() {
+        if (Screen.hasControlDown()) {
+            getText().setCursorToStart(Screen.hasShiftDown());
+        } else {
+            int cursorPos = getText().getCursorPos();
+            int lineIndex = getDisplay().getLineWithCharIndex(cursorPos);
+            RichLine line = getDisplay().getLine(lineIndex);
+            getText().setCursorPos(line.getFirstCharIndex(), Screen.hasShiftDown());
+        }
+    }
+
+    public void keyEnd() {
+        if (Screen.hasControlDown()) {
+            getText().setCursorToEnd(Screen.hasShiftDown());
+        } else {
+            int cursorPos = getText().getCursorPos();
+            int lineIndex = getDisplay().getLineWithCharIndex(cursorPos);
+            RichLine line = getDisplay().getLine(lineIndex);
+            getText().setCursorPos(line.getLastCharIndex() + 1, Screen.hasShiftDown());
+        }
     }
 
     // --

@@ -45,15 +45,18 @@ public record Char(char character, @Nullable Formatting.Color color, EnumSet<For
         EnumSet<Formatting.Format> format = format();
 
         if (formatting.isColor()) {
-            color = ((Formatting.Color) formatting);
+            Formatting.Color newColor = (Formatting.Color) formatting;
+            color = newColor != color ? newColor : null;
         }
 
         if (formatting.isFormat()) {
-            if (format.isEmpty()) {
-                format = EnumSet.of((Formatting.Format) formatting);
+            format = EnumSet.copyOf(format);
+            Formatting.Format newFormat = (Formatting.Format) formatting;
+
+            if (format.contains(newFormat)) {
+                format.remove(newFormat);
             } else {
-                format = EnumSet.copyOf(format);
-                format.add((Formatting.Format) formatting);
+                format.add(newFormat);
             }
         }
 
@@ -69,7 +72,7 @@ public record Char(char character, @Nullable Formatting.Color color, EnumSet<For
         appendFormatting(sb);
         sb.append(character);
         if (hasFormatting()) {
-            sb.append(Formatting.SECTION_SIGN).append(Formatting.RESET);
+            sb.append(Formatting.SECTION_SIGN).append(Formatting.RESET.getChar());
         }
         return sb.toString();
     }

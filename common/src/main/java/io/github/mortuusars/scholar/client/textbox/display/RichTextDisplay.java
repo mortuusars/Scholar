@@ -44,7 +44,6 @@ public class RichTextDisplay {
 
         Font font = textBox.getFont();
         int width = textBox.getWidth();
-        int height = textBox.getHeight();
 
         if (richText.isEmpty()) {
             cursor = new Pos2i(textBox.horizontalAlignment.align(width, font.width("_")), 0);
@@ -184,24 +183,6 @@ public class RichTextDisplay {
         return Math.max(0, lines.size() - 1);
     }
 
-//    public int findLineStart(int line) {
-//        int i = findLineFromIndex(this.lineStarts, line);
-//        return this.lineStarts[i];
-//    }
-//
-//    public int findLineEnd(int line) {
-//        int i = findLineFromIndex(this.lineStarts, line);
-//        return this.lineStarts[i] + this.lines[i].contents.length();
-//    }
-
-//    protected int findLineFromIndex(int[] lineStarts, int find) {
-//        int i = Arrays.binarySearch(lineStarts, find);
-//        if (i < 0) {
-//            return -(i + 2);
-//        }
-//        return i;
-//    }
-
     protected void refreshSelectionAreas() {
         selection.clear();
 
@@ -226,5 +207,13 @@ public class RichTextDisplay {
 
             selection.add(new Rect2i(x, y, width, height));
         }
+    }
+
+    public RichLine getLine(int line) {
+        return lines.get(line);
+    }
+
+    public List<RichLine> getLines() {
+        return lines;
     }
 }
