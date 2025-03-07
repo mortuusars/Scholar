@@ -12,12 +12,13 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class FormattedStringEditor {
-    protected FormattedString string;
+    protected FormattedString string = new FormattedString();
     protected int cursorPos;
     protected int selectionAnchor;
     protected Predicate<String> validator;
@@ -52,12 +53,12 @@ public class FormattedStringEditor {
         return getString().size();
     }
 
-    public FormattedString getSubString(int start, int end) {
-        return getString().subString(start, end);
+    public List<Char> getSpan(int start, int end) {
+        return getString().subList(start, end);
     }
 
-    public FormattedString getSelected() {
-        return getSubString(getSelectionStart(), getSelectionEnd());
+    public List<Char> getSelectedSpan() {
+        return getSpan(getSelectionStart(), getSelectionEnd());
     }
 
     // -- Cursor
@@ -241,9 +242,9 @@ public class FormattedStringEditor {
 
             if (formatting != null) {
                 if (isSelecting()) {
-                    getSelected().replaceAll(c -> c.applyFormatting(formatting));
+                    getSelectedSpan().replaceAll(c -> c.applyFormatting(formatting));
                 } else if (formatting == Formatting.RESET) {
-                    getSubString(0, length()).replaceAll(c -> c.applyFormatting(Formatting.RESET));
+                    getSpan(0, length()).replaceAll(c -> c.applyFormatting(Formatting.RESET));
                 }
                 return true;
             }
@@ -283,7 +284,7 @@ public class FormattedStringEditor {
         }
 
         FormattedString newString = new FormattedString(getString());
-        newString.addAll(getCursorPos(), text.chars().mapToObj(Char::new).toList());
+        newString.addAll(getCursorPos(), FormattedString.parse(text));
 
         String string = newString.toStringWithoutFormatting();
         if (validator.test(string)) {
@@ -320,7 +321,7 @@ public class FormattedStringEditor {
                 int start = Math.min(removePos, cursor);
                 int end = Math.max(removePos, cursor);
 
-                getSubString(start, end).clear();
+                getSpan(start, end).clear();
                 setCursorPos(start, false);
             }
         }
@@ -332,7 +333,7 @@ public class FormattedStringEditor {
         int start = getSelectionStart();
         int end = getSelectionEnd();
 
-        getSubString(start, end).clear();
+        getSpan(start, end).clear();
         setCursorPos(start, false);
     }
 

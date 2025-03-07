@@ -363,7 +363,7 @@ public class Text {
         Char previousChar = Char.EMPTY;
 
         for (Char character : chars) {
-            if (!character.hasSameFormatting(previousChar)) {
+            if (!character.formattingMatches(previousChar)) {
                 if (previousChar.hasFormatting()) {
                     sb.append(Formatting.SECTION_SIGN).append(Formatting.RESET.getChar());
                 }

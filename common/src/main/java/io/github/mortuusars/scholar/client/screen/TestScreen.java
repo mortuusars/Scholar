@@ -9,8 +9,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 public class TestScreen extends Screen {
-
-    private AmazingTextBox textBox;
+    private AmazingTextBox textBoxLeft;
+    private AmazingTextBox textBoxCenter;
+    private AmazingTextBox textBoxRight;
 
     public TestScreen() {
         super(Component.empty());
@@ -18,23 +19,35 @@ public class TestScreen extends Screen {
 
     @Override
     protected void init() {
-        textBox = new AmazingTextBox((width / 2) - 80, (height / 2) - 70, 160, 160);
-//        textBox.horizontalAlignment = HorizontalAlignment.CENTER;
+        textBoxLeft = new AmazingTextBox((width / 2) - 250, (height / 2) - 70, 140, 160);
+        textBoxLeft.getEditor().insertTextAtCursor("§lbold§r\n§4colored§r");
+        addRenderableWidget(textBoxLeft);
 
-        addRenderableWidget(textBox);
-        setFocused(textBox);
+        textBoxCenter = new AmazingTextBox((width / 2) - 70, (height / 2) - 70, 140, 160);
+        textBoxCenter.getEditor().insertTextAtCursor("§lbold§r\n§4colored§r");
+        textBoxCenter.horizontalAlignment = HorizontalAlignment.CENTER;
+        addRenderableWidget(textBoxCenter);
+
+        textBoxRight = new AmazingTextBox((width / 2) + 110, (height / 2) - 70, 140, 160);
+        textBoxRight.getEditor().insertTextAtCursor("§lbold§r\n§4colored§r");
+        textBoxRight.horizontalAlignment = HorizontalAlignment.RIGHT;
+        addRenderableWidget(textBoxRight);
+
+        setFocused(textBoxCenter);
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(guiGraphics);
-        guiGraphics.fill((width / 2) - 85, (height / 2) - 75, (width / 2) + 85, (height / 2) + 95, 0xCFEFE9E1);
+        guiGraphics.fill((width / 2) - 255, (height / 2) - 75, (width / 2) - 105, (height / 2) + 95, 0xCFEFE9E1);
+        guiGraphics.fill((width / 2) - 75, (height / 2) - 75, (width / 2) + 75, (height / 2) + 95, 0xCFEFE9E1);
+        guiGraphics.fill((width / 2) + 105, (height / 2) - 75, (width / 2) + 255, (height / 2) + 95, 0xCFEFE9E1);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         if (Minecraft.getInstance().options.renderDebug) {
-            String text = textBox.getText().getText().replace("§", "&");
+            String text = textBoxCenter.getEditor().getString().toStringWithoutFormatting().replace("§", "&");
             try {
-                int cursorPos = textBox.getText().getCursorPos();
+                int cursorPos = textBoxCenter.getEditor().getCursorPos();
                 text = new StringBuilder(text).insert(cursorPos, "_").toString();
             } catch (Exception e) {
                 Scholar.LOGGER.error(e.toString());

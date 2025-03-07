@@ -3,9 +3,9 @@ package io.github.mortuusars.scholar.client.textbox;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.client.textbox.display.FormattedStringDisplayCache;
 import io.github.mortuusars.scholar.client.textbox.display.Line;
-import io.github.mortuusars.scholar.client.textbox.internals.Text;
-import io.github.mortuusars.scholar.client.textbox.display.TextDisplayCache;
+import io.github.mortuusars.scholar.client.textbox.internals.FormattedStringEditor;
 import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.util.Pos2i;
 import net.minecraft.Util;
@@ -32,8 +32,9 @@ public class AmazingTextBox extends AbstractWidget {
     public int selectionUnfocusedColor = 0x880000FF;
     public HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
 
-    protected final Text text = new Text(text -> getFont().wordWrapHeight(text, width) + (text.endsWith("\n") ? getFont().lineHeight : 0) <= height);
-    protected TextDisplayCache displayCache = new TextDisplayCache(text);
+    protected FormattedStringEditor editor = new FormattedStringEditor(() ->
+            FormattedStringEditor.Validator.fitInDimensions(getFont(), getWidth(), getHeight()));
+    protected FormattedStringDisplayCache displayCache = new FormattedStringDisplayCache(editor);
 
     protected int lastIndex;
     protected long lastActionTime;
@@ -46,8 +47,8 @@ public class AmazingTextBox extends AbstractWidget {
         return font;
     }
 
-    public Text getText() {
-        return text;
+    public FormattedStringEditor getEditor() {
+        return editor;
     }
 
     public HorizontalAlignment getHorizontalAlignment() {
@@ -64,7 +65,7 @@ public class AmazingTextBox extends AbstractWidget {
 
     // -- Render
 
-    public TextDisplayCache getDisplayCache() {
+    public FormattedStringDisplayCache getDisplayCache() {
         if (displayCache.shouldUpdate()) {
             displayCache.update(getFont(), getWidth(), getHeight(), getHorizontalAlignment());
         }
@@ -78,10 +79,10 @@ public class AmazingTextBox extends AbstractWidget {
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        TextDisplayCache displayCache = getDisplayCache();
+        FormattedStringDisplayCache displayCache = getDisplayCache();
 
         renderLines(guiGraphics, mouseX, mouseY, partialTick, displayCache.getLines(), getCurrentFontColor());
-        renderCursor(guiGraphics, mouseX, mouseY, partialTick, getText(), displayCache.getCursor(), getCurrentFontColor());
+        renderCursor(guiGraphics, mouseX, mouseY, partialTick, getEditor(), displayCache.getCursor(), getCurrentFontColor());
         renderSelection(guiGraphics, mouseX, mouseY, partialTick, displayCache.getSelection(), getCurrentSelectionColor());
     }
 
@@ -101,13 +102,13 @@ public class AmazingTextBox extends AbstractWidget {
         }
     }
 
-    public void renderCursor(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, Text text, Pos2i cursor, int color) {
+    public void renderCursor(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, FormattedStringEditor editor, Pos2i cursor, int color) {
         if (!isFocused()) return;
-        if (text.isSelecting()) return;
+        if (editor.isSelecting()) return;
         if (System.currentTimeMillis() - lastActionTime > 200 && (System.currentTimeMillis() - lastActionTime) % 600 > 300) // Blinking
             return;
 
-        if (text.isCursorAtEnd()) {
+        if (editor.isCursorAtEnd()) {
             guiGraphics.drawString(getFont(), "_", getX() + cursor.x, getY() + cursor.y,
                     getCurrentFontColor(), false);
         } else {
@@ -129,7 +130,7 @@ public class AmazingTextBox extends AbstractWidget {
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         try {
-            if (isFocused() && (handleKeyPressed(keyCode, scanCode, modifiers) || getText().keyPressed(keyCode))) {
+            if (isFocused() && (handleKeyPressed(keyCode, scanCode, modifiers) || getEditor().keyPressed(keyCode))) {
                 lastActionTime = System.currentTimeMillis();
                 refreshDisplayCache();
                 return true;
@@ -160,7 +161,7 @@ public class AmazingTextBox extends AbstractWidget {
     }
 
     public boolean charTyped(char codePoint, int modifiers) {
-        if (isFocused() && getText().charTyped(codePoint)) {
+        if (isFocused() && getEditor().charTyped(codePoint)) {
             lastActionTime = System.currentTimeMillis();
             refreshDisplayCache();
             return true;
@@ -172,18 +173,18 @@ public class AmazingTextBox extends AbstractWidget {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isHovered && visible && isActive() && button == InputConstants.MOUSE_BUTTON_LEFT) {
             long currentTime = Util.getMillis();
-            TextDisplayCache display = getDisplayCache();
+            FormattedStringDisplayCache display = getDisplayCache();
 
             int indexAtMousePos = display.getCharIndexAtPosition(font, (int) (mouseX - getX()), (int) (mouseY - getY()));
 
             if (indexAtMousePos == lastIndex && currentTime - lastActionTime < 250L) {
-                if (!getText().isSelecting()) {
-                    getText().selectWord(indexAtMousePos);
+                if (!getEditor().isSelecting()) {
+                    getEditor().selectWord(indexAtMousePos);
                 } else {
-                    getText().selectAll();
+                    getEditor().selectAll();
                 }
             } else {
-                getText().setCursorPos(indexAtMousePos, Screen.hasShiftDown());
+                getEditor().setCursorPos(indexAtMousePos, Screen.hasShiftDown());
             }
 
             refreshDisplayCache();
@@ -199,9 +200,9 @@ public class AmazingTextBox extends AbstractWidget {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (button == 0) {
-            TextDisplayCache display = getDisplayCache();
+            FormattedStringDisplayCache display = getDisplayCache();
             int indexAtMousePos = display.getCharIndexAtPosition(font, (int) (mouseX - getX()), (int) (mouseY - getY()));
-            getText().setCursorPos(indexAtMousePos, true);
+            getEditor().setCursorPos(indexAtMousePos, true);
             refreshDisplayCache();
         }
         return true;
@@ -210,7 +211,7 @@ public class AmazingTextBox extends AbstractWidget {
     // --
 
     public void changeLine(int yChange) {
-        int cursorPos = getText().getCursorPos();
+        int cursorPos = getEditor().getCursorPos();
         int cursorLineIndex = getDisplayCache().findLineIndexByCharIndex(cursorPos);
         Line cursorLine = getDisplayCache().getLine(cursorLineIndex);
 
@@ -221,28 +222,28 @@ public class AmazingTextBox extends AbstractWidget {
 
         int newCursorPos = Mth.clamp(newLine.firstCharIndex() + linePos, newLine.firstCharIndex(), newLine.lastCharIndex() + 1);
 
-        getText().setCursorPos(newCursorPos, Screen.hasShiftDown());
+        getEditor().setCursorPos(newCursorPos, Screen.hasShiftDown());
     }
 
     public void keyHome() {
         if (Screen.hasControlDown()) {
-            getText().setCursorToStart(Screen.hasShiftDown());
+            getEditor().setCursorToStart(Screen.hasShiftDown());
         } else {
-            int cursorPos = getText().getCursorPos();
+            int cursorPos = getEditor().getCursorPos();
             int lineIndex = getDisplayCache().findLineIndexByCharIndex(cursorPos);
             Line line = getDisplayCache().getLine(lineIndex);
-            getText().setCursorPos(line.firstCharIndex(), Screen.hasShiftDown());
+            getEditor().setCursorPos(line.firstCharIndex(), Screen.hasShiftDown());
         }
     }
 
     public void keyEnd() {
         if (Screen.hasControlDown()) {
-            getText().setCursorToEnd(Screen.hasShiftDown());
+            getEditor().setCursorToEnd(Screen.hasShiftDown());
         } else {
-            int cursorPos = getText().getCursorPos();
+            int cursorPos = getEditor().getCursorPos();
             int lineIndex = getDisplayCache().findLineIndexByCharIndex(cursorPos);
             Line line = getDisplayCache().getLine(lineIndex);
-            getText().setCursorPos(line.lastCharIndex() + 1, Screen.hasShiftDown());
+            getEditor().setCursorPos(line.lastCharIndex() + 1, Screen.hasShiftDown());
         }
     }
 
@@ -250,7 +251,7 @@ public class AmazingTextBox extends AbstractWidget {
 
     @Override
     public @NotNull Component getMessage() {
-        return Component.literal(getText().getText());
+        return Component.literal(getEditor().getString().toStringWithoutFormatting());
     }
 
     @Override

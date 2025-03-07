@@ -16,7 +16,7 @@ public record Char(char character, @Nullable Formatting.Color color, EnumSet<For
         this((char) c);
     }
 
-    public boolean hasSameFormatting(Char other) {
+    public boolean formattingMatches(Char other) {
         return color == other.color && format.equals(other.format);
     }
 

@@ -1,24 +1,21 @@
 package io.github.mortuusars.scholar.client.textbox.display;
 
 import io.github.mortuusars.scholar.client.textbox.internals.Char;
+import io.github.mortuusars.scholar.client.textbox.internals.FormattedString;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.List;
-
-public class Line implements CharSequence {
+public class Line {
     protected Font font;
-    protected List<Char> chars;
+    protected FormattedString string;
     protected int firstCharIndex;
     protected int lastCharIndex;
     protected String renderedString;
     protected int width, x, y;
 
-    public Line(Font font, List<Char> chars, int firstCharIndex, int lastCharIndex, String renderedString, int width, int x, int y) {
+    public Line(Font font, FormattedString string, int firstCharIndex, int lastCharIndex, String renderedString, int width, int x, int y) {
         this.font = font;
-        this.chars = chars;
+        this.string = string;
         this.firstCharIndex = firstCharIndex;
         this.lastCharIndex = lastCharIndex;
         this.renderedString = renderedString;
@@ -28,15 +25,15 @@ public class Line implements CharSequence {
     }
 
     public static Line empty() {
-        return new Line(Minecraft.getInstance().font, Collections.emptyList(), 0, 0, "", 0, 0, 0);
+        return new Line(Minecraft.getInstance().font, new FormattedString(), 0, 0, "", 0, 0, 0);
     }
 
     public Font font() {
         return font;
     }
 
-    public List<Char> chars() {
-        return chars;
+    public FormattedString getString() {
+        return string;
     }
 
     public int firstCharIndex() {
@@ -63,43 +60,29 @@ public class Line implements CharSequence {
         return y;
     }
 
-    // CharSequence
-
-    @Override
-    public int length() {
-        return 0;
-    }
-
-    @Override
-    public char charAt(int index) {
-        return 0;
-    }
-
-    @NotNull
-    @Override
-    public CharSequence subSequence(int start, int end) {
-        return new Line(font, chars.subList(start, end), start, end - 1, );
-    }
-
     // --
 
     public boolean isEmpty() {
-        return chars().isEmpty();
+        return getString().isEmpty();
+    }
+
+    public boolean endsWithNewLine() {
+        return !getString().isEmpty() && getString().get(getString().size() - 1).character() == '\n';
     }
 
     public int width(Font font, int first, int last) {
         int width = 0;
         for (int i = first; i <= last; i++) {
-            width += chars.get(i).getWidth(font);
+            width += string.get(i).getWidth(font);
         }
         return width;
     }
 
     public int widthToIndex(Font font, int index) {
         int width = 0;
-        int endIndex = Math.min(index, chars.size());
+        int endIndex = Math.min(index, string.size());
         for (int i = 0; i < endIndex; i++) {
-            width += chars.get(i).getWidth(font);
+            width += string.get(i).getWidth(font);
         }
         return width;
     }
@@ -109,8 +92,8 @@ public class Line implements CharSequence {
 
         int currentWidth = 0;
 
-        for (int i = 0; i < chars.size(); i++) {
-            Char character = chars.get(i);
+        for (int i = 0; i < string.size(); i++) {
+            Char character = string.get(i);
             int charWidth = character.getWidth(font);
             currentWidth += charWidth;
 
@@ -124,7 +107,6 @@ public class Line implements CharSequence {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        return
+        return getString().toStringWithoutFormatting();
     }
 }

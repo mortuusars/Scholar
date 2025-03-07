@@ -1,13 +1,16 @@
 package io.github.mortuusars.scholar.client.textbox.internals;
 
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.Style;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Optional;
 
-public class FormattedString extends ArrayList<Char> implements CharSequence {
+public class FormattedString extends ArrayList<Char> implements CharSequence, FormattedText {
     public FormattedString() {
         super();
     }
@@ -17,6 +20,10 @@ public class FormattedString extends ArrayList<Char> implements CharSequence {
     }
 
     public static FormattedString parse(String string) {
+        return new FormattedString(parseChars(string));
+    }
+
+    public static ArrayList<Char> parseChars(String string) {
         ArrayList<Char> chars = new ArrayList<>();
 
         @Nullable Formatting.Color currentColor = null;
@@ -44,7 +51,11 @@ public class FormattedString extends ArrayList<Char> implements CharSequence {
             }
         }
 
-        return new FormattedString(chars);
+        return chars;
+    }
+
+    public FormattedString subString(int start, int end) {
+        return new FormattedString(subList(start, end));
     }
 
     // -- CharSequence
@@ -59,14 +70,22 @@ public class FormattedString extends ArrayList<Char> implements CharSequence {
         return get(index).character();
     }
 
-    public FormattedString subString(int start, int end) {
-        return new FormattedString(subList(start, end));
-    }
-
     @NotNull
     @Override
     public CharSequence subSequence(int start, int end) {
         return subString(start, end);
+    }
+
+    // -- FormattedText
+
+    @Override
+    public <T> @NotNull Optional<T> visit(ContentConsumer<T> acceptor) {
+        return acceptor.accept(toStringWithoutFormatting());
+    }
+
+    @Override
+    public <T> @NotNull Optional<T> visit(StyledContentConsumer<T> acceptor, Style style) {
+        return acceptor.accept(style, toString());
     }
 
     // --
@@ -86,7 +105,7 @@ public class FormattedString extends ArrayList<Char> implements CharSequence {
         for (Char character : this) {
             if (skipNewLines && character.character() == '\n') continue;
 
-            if (!character.hasSameFormatting(previousChar)) {
+            if (!character.formattingMatches(previousChar)) {
                 if (previousChar.hasFormatting()) {
                     sb.append(Formatting.SECTION_SIGN).append(Formatting.RESET.getChar());
                 }
