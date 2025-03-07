@@ -36,6 +36,10 @@ public class FormattedStringEditor {
         return string;
     }
 
+    public void setString(FormattedString string) {
+        this.string = string;
+    }
+
     public int getCursorPos() {
         return cursorPos;
     }
@@ -287,7 +291,7 @@ public class FormattedStringEditor {
 
     // --
 
-    public void insertTextAtCursor(String text) {
+    public boolean insertTextAtCursor(String text) {
         if (isSelecting()) {
             removeSelectedText();
         }
@@ -302,7 +306,10 @@ public class FormattedStringEditor {
         if (validator.test(string)) {
             this.string = newString;
             setCursorPos(getCursorPos() + insertedString.length(), false);
+            return true;
         }
+
+        return false;
     }
 
     public void removeFromCursor(int direction, CursorStep step) {

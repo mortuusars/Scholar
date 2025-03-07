@@ -25,22 +25,28 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class AmazingTextBox extends AbstractWidget {
-    public final Font font = Minecraft.getInstance().font;
-    public int fontColor = 0xFF000000;
-    public int fontUnfocusedColor = 0xFF000000;
-    public int selectionColor = 0xFF0000FF;
-    public int selectionUnfocusedColor = 0x880000FF;
-    public HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
+    protected final Font font;
 
     protected FormattedStringEditor editor = new FormattedStringEditor(() ->
             FormattedStringEditor.Validator.fitInDimensions(getFont(), getWidth(), getHeight()));
     protected FormattedStringDisplayCache displayCache = new FormattedStringDisplayCache(editor);
 
-    protected int lastIndex;
+    protected HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
+    protected int fontColor = 0xFF000000;
+    protected int fontUnfocusedColor = 0xFF000000;
+    protected int selectionColor = 0xFF0000FF;
+    protected int selectionUnfocusedColor = 0x880000FF;
+
+    protected Pos2i lastClickPos = new Pos2i(0 , 0);
     protected long lastActionTime;
 
     public AmazingTextBox(int x, int y, int width, int height) {
+        this(Minecraft.getInstance().font, x, y, width, height);
+    }
+
+    public AmazingTextBox(Font font, int x, int y, int width, int height) {
         super(x, y, width, height, Component.empty());
+        this.font = font;
     }
 
     public Font getFont() {
@@ -51,8 +57,62 @@ public class AmazingTextBox extends AbstractWidget {
         return editor;
     }
 
+    public FormattedStringDisplayCache getDisplayCache() {
+        if (displayCache.shouldUpdate()) {
+            displayCache.update(getFont(), getWidth(), getHeight(), getHorizontalAlignment());
+        }
+
+        return displayCache;
+    }
+
     public HorizontalAlignment getHorizontalAlignment() {
         return horizontalAlignment;
+    }
+
+    public AmazingTextBox setHorizontalAlignment(HorizontalAlignment horizontalAlignment) {
+        this.horizontalAlignment = horizontalAlignment;
+        refreshDisplayCache();
+        return this;
+    }
+
+    public int getFontColor() {
+        return fontColor;
+    }
+
+    public AmazingTextBox setFontColor(int fontColor) {
+        this.fontColor = fontColor;
+        refreshDisplayCache();
+        return this;
+    }
+
+    public int getFontUnfocusedColor() {
+        return fontUnfocusedColor;
+    }
+
+    public AmazingTextBox setFontUnfocusedColor(int fontUnfocusedColor) {
+        this.fontUnfocusedColor = fontUnfocusedColor;
+        refreshDisplayCache();
+        return this;
+    }
+
+    public int getSelectionColor() {
+        return selectionColor;
+    }
+
+    public AmazingTextBox setSelectionColor(int selectionColor) {
+        this.selectionColor = selectionColor;
+        refreshDisplayCache();
+        return this;
+    }
+
+    public int getSelectionUnfocusedColor() {
+        return selectionUnfocusedColor;
+    }
+
+    public AmazingTextBox setSelectionUnfocusedColor(int selectionUnfocusedColor) {
+        this.selectionUnfocusedColor = selectionUnfocusedColor;
+        refreshDisplayCache();
+        return this;
     }
 
     public int getCurrentFontColor() {
@@ -64,18 +124,6 @@ public class AmazingTextBox extends AbstractWidget {
     }
 
     // -- Render
-
-    public FormattedStringDisplayCache getDisplayCache() {
-        if (displayCache.shouldUpdate()) {
-            displayCache.update(getFont(), getWidth(), getHeight(), getHorizontalAlignment());
-        }
-
-        return displayCache;
-    }
-
-    protected void refreshDisplayCache() {
-        displayCache.scheduleUpdate();
-    }
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -133,6 +181,10 @@ public class AmazingTextBox extends AbstractWidget {
         }
     }
 
+    protected void refreshDisplayCache() {
+        displayCache.scheduleUpdate();
+    }
+
     // -- Input
 
     @Override
@@ -180,12 +232,12 @@ public class AmazingTextBox extends AbstractWidget {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isHovered && visible && isActive() && button == InputConstants.MOUSE_BUTTON_LEFT) {
-            long currentTime = Util.getMillis();
+            long currentTime = System.currentTimeMillis();
             FormattedStringDisplayCache display = getDisplayCache();
 
             int indexAtMousePos = display.getCharIndexAtPosition(font, (int) (mouseX - getX()), (int) (mouseY - getY()));
 
-            if (indexAtMousePos == lastIndex && currentTime - lastActionTime < 250L) {
+            if (Math.abs(lastClickPos.x - (int)mouseX) < 4 && Math.abs(lastClickPos.y - (int)mouseY) < 4 && currentTime - lastActionTime < 250L) {
                 if (!getEditor().isSelecting()) {
                     getEditor().selectWord(indexAtMousePos);
                 } else {
@@ -197,7 +249,7 @@ public class AmazingTextBox extends AbstractWidget {
 
             refreshDisplayCache();
 
-            lastIndex = indexAtMousePos;
+            lastClickPos = new Pos2i((int) mouseX, (int) mouseY);
             lastActionTime = currentTime;
             return true;
         }
