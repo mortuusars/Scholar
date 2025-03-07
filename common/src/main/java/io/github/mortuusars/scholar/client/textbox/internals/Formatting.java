@@ -1,6 +1,9 @@
 package io.github.mortuusars.scholar.client.textbox.internals;
 
 import net.minecraft.ChatFormatting;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.EnumSet;
 
 public interface Formatting {
     char SECTION_SIGN = '§';
@@ -75,6 +78,13 @@ public interface Formatting {
         public boolean isColor() {
             return true;
         }
+
+        public static @Nullable Color fromChar(char c) {
+            for (Color value : values()) {
+                if (value.c == c) return value;
+            }
+            return null;
+        }
     }
 
     enum Format implements Formatting {
@@ -104,6 +114,20 @@ public interface Formatting {
         @Override
         public boolean isFormat() {
             return true;
+        }
+
+        public static @Nullable Format fromChar(char c) {
+            for (Format value : values()) {
+                if (value.c == c) return value;
+            }
+            return null;
+        }
+
+        public static EnumSet<Format> fromCharAsSet(char c) {
+            for (Format value : values()) {
+                if (value.c == c) return EnumSet.of(value);
+            }
+            return EnumSet.noneOf(Format.class);
         }
     }
 }

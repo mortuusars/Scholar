@@ -7,53 +7,31 @@ import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
-public class RichText {
-    public static final RichText EMPTY = new RichText(s -> false);
-
-    protected Predicate<String> validator;
-
-    protected ArrayList<Char> chars = new ArrayList<>();
-    protected String text = "";
+public class FormattedStringEditor {
+    protected FormattedString string;
     protected int cursorPos;
     protected int selectionAnchor;
+    protected Predicate<String> validator;
 
-    public RichText(Predicate<String> validator) {
+    public FormattedStringEditor(Predicate<String> validator) {
         this.validator = validator;
     }
 
-    public ArrayList<Char> getChars() {
-        return chars;
+    public FormattedStringEditor(Supplier<Predicate<String>> stringValidator) {
+        this.validator = str -> stringValidator.get().test(str);
     }
 
-    public List<Char> getView(int start, int end) {
-        return chars.subList(start, end);
-    }
-
-    public List<Char> getSelectionView() {
-        if (!isSelecting()) return Collections.emptyList();
-        return getView(getSelectionStart(), getSelectionEnd());
-    }
-
-    public int length() {
-        return chars.size();
-    }
-
-    public boolean isEmpty() {
-        return chars.isEmpty();
-    }
-
-    public String getText() {
-        return text;
+    public FormattedString getString() {
+        return string;
     }
 
     public int getCursorPos() {
@@ -64,16 +42,32 @@ public class RichText {
         return selectionAnchor;
     }
 
-    public int getSelectionStart() {
-        return Math.min(getCursorPos(), getSelectionAnchor());
+    public Predicate<String> getValidator() {
+        return validator;
     }
 
-    public int getSelectionEnd() {
-        return Math.max(getCursorPos(), getSelectionAnchor());
+    // -- String
+
+    public int length() {
+        return getString().size();
     }
 
-    public boolean isSelecting() {
-        return getCursorPos() != getSelectionAnchor();
+    public FormattedString getSubString(int start, int end) {
+        return getString().subString(start, end);
+    }
+
+    public FormattedString getSelected() {
+        return getSubString(getSelectionStart(), getSelectionEnd());
+    }
+
+    // -- Cursor
+
+    public boolean isCursorAtStart() {
+        return getCursorPos() == 0;
+    }
+
+    public boolean isCursorAtEnd() {
+        return getCursorPos() == length();
     }
 
     public void setCursorPos(int index) {
@@ -85,27 +79,12 @@ public class RichText {
         resetSelectionIfNeeded(keepSelection);
     }
 
-    public void setSelectionAnchor(int index) {
-        selectionAnchor = clampIndex(index);
-    }
-
-    public void setSelectionRange(int start, int end) {
-        setSelectionAnchor(start);
-        setCursorPos(end, true);
-    }
-
     public void setCursorToStart(boolean keepSelection) {
         setCursorPos(0, keepSelection);
     }
 
     public void setCursorToEnd(boolean keepSelection) {
-        setCursorPos(chars.size(), keepSelection);
-    }
-
-    public void selectWord(int index) {
-        setSelectionRange(
-                StringSplitter.getWordPosition(toStringWithoutFormatting(chars), -1, index, true),
-                StringSplitter.getWordPosition(toStringWithoutFormatting(chars), 1, index, true));
+        setCursorPos(length(), keepSelection);
     }
 
     public void moveCursorBy(int direction, boolean keepSelection, CursorStep cursorStep) {
@@ -119,7 +98,7 @@ public class RichText {
         if (!keepSelection && isSelecting()) {
             setCursorPos(direction < 0 ? getSelectionStart() : getSelectionEnd(), false);
         } else {
-            setCursorPos(Util.offsetByCodepoints(toStringWithoutFormatting(chars), getCursorPos(), direction), keepSelection);
+            setCursorPos(Util.offsetByCodepoints(getString().toStringWithoutFormatting(), getCursorPos(), direction), keepSelection);
         }
     }
 
@@ -127,18 +106,42 @@ public class RichText {
         if (!keepSelection && isSelecting()) {
             setCursorPos(direction < 0 ? getSelectionStart() : getSelectionEnd(), false);
         } else {
-            setCursorPos(StringSplitter.getWordPosition(toStringWithoutFormatting(chars), direction, getCursorPos(), true), keepSelection);
+            setCursorPos(StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), direction, getCursorPos(), true), keepSelection);
         }
     }
 
-    protected void refreshCursor(boolean keepSelection) {
-        setCursorPos(getCursorPos(), keepSelection);
+    // -- Selection
+
+    public boolean isSelecting() {
+        return getCursorPos() != getSelectionAnchor();
     }
 
-    protected void resetSelectionIfNeeded(boolean keepSelection) {
-        if (!keepSelection) {
-            setSelectionAnchor(getCursorPos());
-        }
+    public int getSelectionStart() {
+        return Math.min(getCursorPos(), getSelectionAnchor());
+    }
+
+    public int getSelectionEnd() {
+        return Math.max(getCursorPos(), getSelectionAnchor());
+    }
+
+    public void setSelectionAnchor(int index) {
+        selectionAnchor = clampIndex(index);
+    }
+
+    public void setSelectionRange(int start, int end) {
+        setSelectionAnchor(start);
+        setCursorPos(end, true);
+    }
+
+    public void selectWord(int index) {
+        setSelectionRange(
+                StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), -1, index, true),
+                StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), 1, index, true));
+    }
+
+    public String getSelectedString() {
+        if (!isSelecting()) return "";
+        return getString().subString(getSelectionStart(), getSelectionEnd()).toStringWithoutFormatting();
     }
 
     // --
@@ -238,11 +241,9 @@ public class RichText {
 
             if (formatting != null) {
                 if (isSelecting()) {
-                    getSelectionView().replaceAll(c -> c.applyFormatting(formatting));
-                    text = toString(chars);
+                    getSelected().replaceAll(c -> c.applyFormatting(formatting));
                 } else if (formatting == Formatting.RESET) {
-                    getView(0, chars.size()).replaceAll(c -> c.applyFormatting(Formatting.RESET));
-                    text = toString(chars);
+                    getSubString(0, length()).replaceAll(c -> c.applyFormatting(Formatting.RESET));
                 }
                 return true;
             }
@@ -271,7 +272,7 @@ public class RichText {
 
     public void selectAll() {
         setSelectionAnchor(0);
-        setCursorPos(chars.size(), true);
+        setCursorPos(length(), true);
     }
 
     // --
@@ -281,13 +282,12 @@ public class RichText {
             removeSelectedText();
         }
 
-        ArrayList<Char> newChars = new ArrayList<>(chars);
-        newChars.addAll(getCursorPos(), text.chars().mapToObj(Char::new).toList());
+        FormattedString newString = new FormattedString(getString());
+        newString.addAll(getCursorPos(), text.chars().mapToObj(Char::new).toList());
 
-        String string = toString(newChars);
+        String string = newString.toStringWithoutFormatting();
         if (validator.test(string)) {
-            this.chars = newChars;
-            this.text = string;
+            this.string = newString;
             setCursorPos(getCursorPos() + text.length(), false);
         }
     }
@@ -305,12 +305,12 @@ public class RichText {
     }
 
     public void removeWordsFromCursor(int direction) {
-        int charsCount = StringSplitter.getWordPosition(toStringWithoutFormatting(chars), direction, this.cursorPos, true);
+        int charsCount = StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), direction, this.cursorPos, true);
         this.removeCharsFromCursor(charsCount - this.cursorPos);
     }
 
     public void removeCharsFromCursor(int direction) {
-        String string = toStringWithoutFormatting(chars);
+        String string = getString().toStringWithoutFormatting();
         if (!string.isEmpty()) {
             if (isSelecting()) {
                 removeSelectedText();
@@ -320,9 +320,7 @@ public class RichText {
                 int start = Math.min(removePos, cursor);
                 int end = Math.max(removePos, cursor);
 
-                chars.subList(start, end).clear();
-                text = toString(chars);
-
+                getSubString(start, end).clear();
                 setCursorPos(start, false);
             }
         }
@@ -333,61 +331,31 @@ public class RichText {
 
         int start = getSelectionStart();
         int end = getSelectionEnd();
-        chars.subList(start, end).clear();
-        text = toString(chars);
 
+        getSubString(start, end).clear();
         setCursorPos(start, false);
-    }
-
-    public String toStringWithoutFormatting(List<Char> chars) {
-        if (chars.isEmpty()) return "";
-        StringBuilder sb = new StringBuilder();
-        for (Char character : chars) {
-            sb.append(character.character());
-        }
-        return sb.toString();
-    }
-
-    public String getSelectedString() {
-        if (!isSelecting()) return "";
-        return text.substring(getSelectionStart(), getSelectionEnd());
-    }
-
-    public static String toString(List<Char> chars) {
-        if (chars.isEmpty()) return "";
-
-        StringBuilder sb = new StringBuilder();
-
-        Char previousChar = Char.EMPTY;
-
-        for (Char character : chars) {
-            if (!character.hasSameFormatting(previousChar)) {
-                if (previousChar.hasFormatting()) {
-                    sb.append(Formatting.SECTION_SIGN).append(Formatting.RESET.getChar());
-                }
-                character.appendFormatting(sb);
-            }
-
-            sb.append(character.character());
-            previousChar = character;
-        }
-
-        Char lastChar = chars.get(chars.size() - 1);
-        if (lastChar.hasFormatting()) {
-            sb.append(Formatting.SECTION_SIGN).append(Formatting.RESET.getChar());
-        }
-
-        return sb.toString();
     }
 
     // --
 
+    protected void resetSelectionIfNeeded(boolean keepSelection) {
+        if (!keepSelection) {
+            setSelectionAnchor(getCursorPos());
+        }
+    }
+
     protected int clampIndex(int index) {
-        return Mth.clamp(index, 0, chars.size());
+        return Mth.clamp(index, 0, length());
     }
 
     public enum CursorStep {
         CHARACTER,
         WORD;
+    }
+
+    public interface Validator {
+        static Predicate<String> fitInDimensions(Font font, int width, int height) {
+            return string -> font.wordWrapHeight(string, width) + (string.endsWith("\n") ? font.lineHeight : 0) <= height;
+        }
     }
 }

@@ -64,7 +64,7 @@ public record Char(char character, @Nullable Formatting.Color color, EnumSet<For
     }
 
     public int getWidth(Font font) {
-        return font.width(toStringWithFormatting());
+        return character != '\n' ? font.width(toStringWithFormatting()) : 0;
     }
 
     public String toStringWithFormatting() {
