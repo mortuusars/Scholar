@@ -1,10 +1,8 @@
 package io.github.mortuusars.scholar.client.textbox.display;
 
-import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.textbox.internals.Char;
 import io.github.mortuusars.scholar.client.textbox.internals.FormattedString;
 import io.github.mortuusars.scholar.client.textbox.internals.FormattedStringEditor;
-import io.github.mortuusars.scholar.client.textbox.internals.Text;
 import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.util.Pos2i;
 import net.minecraft.client.gui.Font;
@@ -191,7 +189,7 @@ public class FormattedStringDisplayCache {
             }
 
             FormattedString lineString = string.subString(firstCharIndex, i);
-            String renderedString = Text.toString(lineString).replace("\n", "");
+            String renderedString = lineString.toString(true);
             int x = alignment.align(width, lineWidth);
             int y = lines.size() * font.lineHeight;
 
@@ -204,12 +202,6 @@ public class FormattedStringDisplayCache {
             int y = lines.size() * font.lineHeight;
             lines.add(new Line(font, new FormattedString(), lastLine.lastCharIndex() + 1, lastLine.lastCharIndex() + 1, "", 0, x, y));
         }
-
-//        Scholar.LOGGER.info("------");
-//
-//        for (Line line : lines) {
-//            Scholar.LOGGER.info("{}< First:{}, Last:{}", editor.getString().toStringWithoutFormatting(), line.firstCharIndex(), line.lastCharIndex());
-//        }
 
         return lines;
     }

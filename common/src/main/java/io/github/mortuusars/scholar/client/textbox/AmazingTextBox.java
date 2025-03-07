@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.textbox.display.FormattedStringDisplayCache;
 import io.github.mortuusars.scholar.client.textbox.display.Line;
+import io.github.mortuusars.scholar.client.textbox.formatting.Formatting;
 import io.github.mortuusars.scholar.client.textbox.internals.FormattedStringEditor;
 import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.util.Pos2i;
@@ -19,7 +20,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -82,7 +82,15 @@ public class AmazingTextBox extends AbstractWidget {
         FormattedStringDisplayCache displayCache = getDisplayCache();
 
         renderLines(guiGraphics, mouseX, mouseY, partialTick, displayCache.getLines(), getCurrentFontColor());
-        renderCursor(guiGraphics, mouseX, mouseY, partialTick, getEditor(), displayCache.getCursor(), getCurrentFontColor());
+
+        int cursorColor = getCurrentFontColor();
+        Formatting currentFormatting = getEditor().getFormattingAtCursor();
+        if (currentFormatting.color() != null) {
+            //noinspection DataFlowIssue
+            cursorColor = currentFormatting.color().asChatFormatting().getColor() | 0xFF000000;
+        }
+
+        renderCursor(guiGraphics, mouseX, mouseY, partialTick, getEditor(), displayCache.getCursor(), cursorColor);
         renderSelection(guiGraphics, mouseX, mouseY, partialTick, displayCache.getSelection(), getCurrentSelectionColor());
     }
 
@@ -110,7 +118,7 @@ public class AmazingTextBox extends AbstractWidget {
 
         if (editor.isCursorAtEnd()) {
             guiGraphics.drawString(getFont(), "_", getX() + cursor.x, getY() + cursor.y,
-                    getCurrentFontColor(), false);
+                    color, false);
         } else {
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate(0, 0, 50);
@@ -211,18 +219,12 @@ public class AmazingTextBox extends AbstractWidget {
     // --
 
     public void changeLine(int yChange) {
-        int cursorPos = getEditor().getCursorPos();
-        int cursorLineIndex = getDisplayCache().findLineIndexByCharIndex(cursorPos);
-        Line cursorLine = getDisplayCache().getLine(cursorLineIndex);
+        Pos2i cursor = getDisplayCache().getCursor();
+        int x = cursor.x;
+        int y = cursor.y + (font.lineHeight * yChange);
+        int index = getDisplayCache().getCharIndexAtPosition(font, x, y);
 
-        int linePos = cursorPos - cursorLine.firstCharIndex();
-
-        int newLineIndex = Mth.clamp(cursorLineIndex + yChange, 0, getDisplayCache().getLines().size() - 1);
-        Line newLine = getDisplayCache().getLine(newLineIndex);
-
-        int newCursorPos = Mth.clamp(newLine.firstCharIndex() + linePos, newLine.firstCharIndex(), newLine.lastCharIndex() + 1);
-
-        getEditor().setCursorPos(newCursorPos, Screen.hasShiftDown());
+        getEditor().setCursorPos(index, Screen.hasShiftDown());
     }
 
     public void keyHome() {

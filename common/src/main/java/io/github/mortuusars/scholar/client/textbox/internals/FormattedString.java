@@ -1,13 +1,12 @@
 package io.github.mortuusars.scholar.client.textbox.internals;
 
+import io.github.mortuusars.scholar.client.textbox.formatting.Formatting;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Optional;
 
 public class FormattedString extends ArrayList<Char> implements CharSequence, FormattedText {
@@ -26,8 +25,7 @@ public class FormattedString extends ArrayList<Char> implements CharSequence, Fo
     public static ArrayList<Char> parseChars(String string) {
         ArrayList<Char> chars = new ArrayList<>();
 
-        @Nullable Formatting.Color currentColor = null;
-        EnumSet<Formatting.Format> currentFormat = EnumSet.noneOf(Formatting.Format.class);
+        Formatting formatting = Formatting.EMPTY;
 
         boolean grabbingFormattingChar = false;
 
@@ -36,19 +34,16 @@ public class FormattedString extends ArrayList<Char> implements CharSequence, Fo
 
             if (c == Formatting.SECTION_SIGN) {
                 grabbingFormattingChar = true;
-            } else if (grabbingFormattingChar) {
-                if (c == Formatting.RESET.getChar()) {
-                    currentColor = null;
-                    currentFormat = EnumSet.noneOf(Formatting.Format.class);
-                } else {
-                    currentColor = Formatting.Color.fromChar(c);
-                    currentFormat = Formatting.Format.fromCharAsSet(c);
-                }
-
-                grabbingFormattingChar = false;
-            } else {
-                chars.add(new Char(c, currentColor, currentFormat));
+                continue;
             }
+
+            if (grabbingFormattingChar) {
+                formatting = formatting.with(c);
+                grabbingFormattingChar = false;
+                continue;
+            }
+
+            chars.add(new Char(c, formatting));
         }
 
         return chars;
@@ -112,11 +107,11 @@ public class FormattedString extends ArrayList<Char> implements CharSequence, Fo
         for (Char character : this) {
             if (skipNewLines && character.character() == '\n') continue;
 
-            if (!character.formattingMatches(previousChar)) {
+            if (!character.formatting().equals(previousChar.formatting())) {
                 if (previousChar.hasFormatting()) {
-                    sb.append(Formatting.SECTION_SIGN).append(Formatting.RESET.getChar());
+                    Formatting.RESET.append(sb);
                 }
-                character.appendFormatting(sb);
+                character.formatting().append(sb);
             }
 
             sb.append(character.character());
@@ -125,7 +120,7 @@ public class FormattedString extends ArrayList<Char> implements CharSequence, Fo
 
         Char lastChar = get(size() - 1);
         if (lastChar.hasFormatting()) {
-            sb.append(Formatting.SECTION_SIGN).append(Formatting.RESET.getChar());
+            Formatting.RESET.append(sb);
         }
 
         return sb.toString();

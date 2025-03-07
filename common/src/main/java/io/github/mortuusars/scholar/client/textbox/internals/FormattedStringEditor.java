@@ -2,6 +2,7 @@ package io.github.mortuusars.scholar.client.textbox.internals;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.client.textbox.formatting.Formatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
@@ -111,6 +112,14 @@ public class FormattedStringEditor {
         }
     }
 
+    public Formatting getFormattingAtCursor() {
+        int charBeforeCursor = getCursorPos() - 1;
+        if (charBeforeCursor >= 0 && charBeforeCursor < length()) {
+            return getString().get(charBeforeCursor).formatting();
+        }
+        return Formatting.EMPTY;
+    }
+
     // -- Selection
 
     public boolean isSelecting() {
@@ -215,36 +224,36 @@ public class FormattedStringEditor {
 
         if (Screen.hasAltDown()) {
             @Nullable Formatting formatting = switch (key) {
-                case InputConstants.KEY_L -> Formatting.Format.BOLD;
-                case InputConstants.KEY_O -> Formatting.Format.ITALIC;
-                case InputConstants.KEY_N -> Formatting.Format.UNDERLINE;
-                case InputConstants.KEY_M -> Formatting.Format.STRIKETHROUGH;
-                case InputConstants.KEY_K -> Formatting.Format.OBFUSCATED;
-                case InputConstants.KEY_0 -> Formatting.Color.BLACK;
-                case InputConstants.KEY_1 -> Formatting.Color.DARK_BLUE;
-                case InputConstants.KEY_2 -> Formatting.Color.DARK_GREEN;
-                case InputConstants.KEY_3 -> Formatting.Color.DARK_AQUA;
-                case InputConstants.KEY_4 -> Formatting.Color.DARK_RED;
-                case InputConstants.KEY_5 -> Formatting.Color.DARK_PURPLE;
-                case InputConstants.KEY_6 -> Formatting.Color.GOLD;
-                case InputConstants.KEY_7 -> Formatting.Color.GRAY;
-                case InputConstants.KEY_8 -> Formatting.Color.DARK_GRAY;
-                case InputConstants.KEY_9 -> Formatting.Color.BLUE;
-                case InputConstants.KEY_A -> Formatting.Color.GREEN;
-                case InputConstants.KEY_B -> Formatting.Color.AQUA;
-                case InputConstants.KEY_C -> Formatting.Color.RED;
-                case InputConstants.KEY_D -> Formatting.Color.LIGHT_PURPLE;
-                case InputConstants.KEY_E -> Formatting.Color.YELLOW;
-                case InputConstants.KEY_F -> Formatting.Color.WHITE;
-                case InputConstants.KEY_R -> Formatting.RESET;
+                case InputConstants.KEY_0 -> Formatting.of(Formatting.Color.BLACK);
+                case InputConstants.KEY_1 -> Formatting.of(Formatting.Color.DARK_BLUE);
+                case InputConstants.KEY_2 -> Formatting.of(Formatting.Color.DARK_GREEN);
+                case InputConstants.KEY_3 -> Formatting.of(Formatting.Color.DARK_AQUA);
+                case InputConstants.KEY_4 -> Formatting.of(Formatting.Color.DARK_RED);
+                case InputConstants.KEY_5 -> Formatting.of(Formatting.Color.DARK_PURPLE);
+                case InputConstants.KEY_6 -> Formatting.of(Formatting.Color.GOLD);
+                case InputConstants.KEY_7 -> Formatting.of(Formatting.Color.GRAY);
+                case InputConstants.KEY_8 -> Formatting.of(Formatting.Color.DARK_GRAY);
+                case InputConstants.KEY_9 -> Formatting.of(Formatting.Color.BLUE);
+                case InputConstants.KEY_A -> Formatting.of(Formatting.Color.GREEN);
+                case InputConstants.KEY_B -> Formatting.of(Formatting.Color.AQUA);
+                case InputConstants.KEY_C -> Formatting.of(Formatting.Color.RED);
+                case InputConstants.KEY_D -> Formatting.of(Formatting.Color.LIGHT_PURPLE);
+                case InputConstants.KEY_E -> Formatting.of(Formatting.Color.YELLOW);
+                case InputConstants.KEY_F -> Formatting.of(Formatting.Color.WHITE);
+                case InputConstants.KEY_K -> Formatting.of(Formatting.Format.OBFUSCATED);
+                case InputConstants.KEY_L -> Formatting.of(Formatting.Format.BOLD);
+                case InputConstants.KEY_M -> Formatting.of(Formatting.Format.STRIKETHROUGH);
+                case InputConstants.KEY_N -> Formatting.of(Formatting.Format.UNDERLINE);
+                case InputConstants.KEY_O -> Formatting.of(Formatting.Format.ITALIC);
+                case InputConstants.KEY_R -> Formatting.EMPTY;
                 default -> null;
             };
 
             if (formatting != null) {
                 if (isSelecting()) {
-                    getSelectedSpan().replaceAll(c -> c.applyFormatting(formatting));
-                } else if (formatting == Formatting.RESET) {
-                    getSpan(0, length()).replaceAll(c -> c.applyFormatting(Formatting.RESET));
+                    getSelectedSpan().replaceAll(c -> c.flipFormatting(formatting));
+                } else if (formatting == Formatting.EMPTY) {
+                    getString().replaceAll(c -> c.withFormatting(Formatting.EMPTY));
                 }
                 return true;
             }
@@ -285,13 +294,7 @@ public class FormattedStringEditor {
 
         FormattedString newString = new FormattedString(getString());
         FormattedString insertedString = FormattedString.parse(text);
-
-        int prevCharIndex = getCursorPos() - 1;
-
-        if (prevCharIndex >= 0 && prevCharIndex < length()) {
-            Char character = getString().get(prevCharIndex);
-            insertedString.replaceAll(c -> c.applyFormattingFrom(character));
-        }
+        insertedString.replaceAll(c -> c.withFormatting(getFormattingAtCursor()));
 
         newString.addAll(getCursorPos(), insertedString);
 

@@ -1,66 +1,37 @@
 package io.github.mortuusars.scholar.client.textbox.internals;
 
+import io.github.mortuusars.scholar.client.textbox.formatting.Formatting;
 import net.minecraft.client.gui.Font;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-
-public record Char(char character, @Nullable Formatting.Color color, EnumSet<Formatting.Format> format) {
-    public static final Char EMPTY = new Char('\u0000', null, EnumSet.noneOf(Formatting.Format.class));
+public record Char(char character, Formatting formatting) {
+    public static final Char EMPTY = new Char('\u0000', Formatting.EMPTY);
 
     public Char(char c) {
-        this(c, null, EnumSet.noneOf(Formatting.Format.class));
+        this(c, Formatting.EMPTY);
     }
 
     public Char(int c) {
         this((char) c);
     }
 
-    public boolean formattingMatches(Char other) {
-        return color == other.color && format.equals(other.format);
-    }
-
     public boolean hasFormatting() {
-        return color != null || !format.isEmpty();
+        return !formatting.isEmpty();
     }
 
-    public StringBuilder appendFormatting(StringBuilder sb) {
-        if (color != null) {
-            sb.append(Formatting.SECTION_SIGN).append(color.getChar());
-        }
-
-        for (Formatting.Format format : format) {
-            sb.append(Formatting.SECTION_SIGN).append(format.getChar());
-        }
-
-        return sb;
+    public Char withFormatting(Formatting.Color color) {
+        return new Char(character, formatting.with(color));
     }
 
-    public Char applyFormatting(Formatting formatting) {
-        if (formatting == Formatting.RESET) {
-            return new Char(character);
-        }
+    public Char withFormatting(Formatting.Format format) {
+        return new Char(character, formatting.with(format));
+    }
 
-        @Nullable Formatting.Color color = color();
-        EnumSet<Formatting.Format> format = format();
+    public Char withFormatting(Formatting formatting) {
+        return new Char(character, formatting);
+    }
 
-        if (formatting.isColor()) {
-            Formatting.Color newColor = (Formatting.Color) formatting;
-            color = newColor != color ? newColor : null;
-        }
-
-        if (formatting.isFormat()) {
-            format = EnumSet.copyOf(format);
-            Formatting.Format newFormat = (Formatting.Format) formatting;
-
-            if (format.contains(newFormat)) {
-                format.remove(newFormat);
-            } else {
-                format.add(newFormat);
-            }
-        }
-
-        return new Char(character, color, format);
+    public Char flipFormatting(Formatting formatting) {
+        return new Char(character, formatting().flip(formatting));
     }
 
     public int getWidth(Font font, boolean ignoreNewLine) {
@@ -68,16 +39,16 @@ public record Char(char character, @Nullable Formatting.Color color, EnumSet<For
     }
 
     public String toStringWithFormatting() {
+        if (!hasFormatting()) {
+            return Character.toString(character);
+        }
+
         StringBuilder sb = new StringBuilder();
-        appendFormatting(sb);
+        formatting.append(sb);
         sb.append(character);
         if (hasFormatting()) {
-            sb.append(Formatting.SECTION_SIGN).append(Formatting.RESET.getChar());
+            Formatting.RESET.append(sb);
         }
         return sb.toString();
-    }
-
-    public Char applyFormattingFrom(Char other) {
-        return new Char(character, other.color, other.format);
     }
 }
