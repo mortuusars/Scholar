@@ -63,8 +63,8 @@ public record Char(char character, @Nullable Formatting.Color color, EnumSet<For
         return new Char(character, color, format);
     }
 
-    public int getWidth(Font font) {
-        return character != '\n' ? font.width(toStringWithFormatting()) : 0;
+    public int getWidth(Font font, boolean ignoreNewLine) {
+        return ignoreNewLine && character == '\n' ? 0 : font.width(toStringWithFormatting());
     }
 
     public String toStringWithFormatting() {
@@ -75,5 +75,9 @@ public record Char(char character, @Nullable Formatting.Color color, EnumSet<For
             sb.append(Formatting.SECTION_SIGN).append(Formatting.RESET.getChar());
         }
         return sb.toString();
+    }
+
+    public Char applyFormattingFrom(Char other) {
+        return new Char(character, other.color, other.format);
     }
 }

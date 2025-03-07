@@ -73,7 +73,7 @@ public class Line {
     public int width(Font font, int first, int last) {
         int width = 0;
         for (int i = first; i <= last; i++) {
-            width += string.get(i).getWidth(font);
+            width += string.get(i).getWidth(font, false);
         }
         return width;
     }
@@ -82,7 +82,7 @@ public class Line {
         int width = 0;
         int endIndex = Math.min(index, string.size());
         for (int i = 0; i < endIndex; i++) {
-            width += string.get(i).getWidth(font);
+            width += string.get(i).getWidth(font, false);
         }
         return width;
     }
@@ -94,7 +94,7 @@ public class Line {
 
         for (int i = 0; i < string.size(); i++) {
             Char character = string.get(i);
-            int charWidth = character.getWidth(font);
+            int charWidth = character.getWidth(font, false);
             currentWidth += charWidth;
 
             if (currentWidth - charWidth / 2 > width) {

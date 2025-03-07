@@ -58,6 +58,13 @@ public class FormattedString extends ArrayList<Char> implements CharSequence, Fo
         return new FormattedString(subList(start, end));
     }
 
+//    public @Nullable Char getCharBefore(int index) {
+//        if (isEmpty()) return null;
+//        if (index < 0) return null;
+//        if (index >= length()) return null;
+//        return
+//    }
+
     // -- CharSequence
 
     @Override

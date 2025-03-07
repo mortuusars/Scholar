@@ -136,8 +136,8 @@ public class FormattedStringEditor {
 
     public void selectWord(int index) {
         setSelectionRange(
-                StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), -1, index, true),
-                StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), 1, index, true));
+                StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), -1, index, false),
+                StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), 1, index, false));
     }
 
     public String getSelectedString() {
@@ -284,12 +284,21 @@ public class FormattedStringEditor {
         }
 
         FormattedString newString = new FormattedString(getString());
-        newString.addAll(getCursorPos(), FormattedString.parse(text));
+        FormattedString insertedString = FormattedString.parse(text);
+
+        int prevCharIndex = getCursorPos() - 1;
+
+        if (prevCharIndex >= 0 && prevCharIndex < length()) {
+            Char character = getString().get(prevCharIndex);
+            insertedString.replaceAll(c -> c.applyFormattingFrom(character));
+        }
+
+        newString.addAll(getCursorPos(), insertedString);
 
         String string = newString.toStringWithoutFormatting();
         if (validator.test(string)) {
             this.string = newString;
-            setCursorPos(getCursorPos() + text.length(), false);
+            setCursorPos(getCursorPos() + insertedString.length(), false);
         }
     }
 

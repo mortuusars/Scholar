@@ -85,20 +85,32 @@ public class FormattedStringDisplayCache {
         int lineAtStart = findLineIndexByCharIndex(selectionStartIndex);
         int lineAtEnd = findLineIndexByCharIndex(selectionEndIndex);
 
+
         for (int lineIndex = lineAtStart; lineIndex <= lineAtEnd; lineIndex++) {
             Line line = lines.get(lineIndex);
+
+            if (line.isEmpty() && lineIndex == lineAtEnd) {
+                continue;
+            }
+
             int firstCharIndex = line.firstCharIndex();
 
             int firstLineChar = Math.max(selectionStartIndex - firstCharIndex, 0);
             int lastLineChar = Math.min(selectionEndIndex - 1 - firstCharIndex, line.getString().size() - 1);
-            if (lastLineChar > firstLineChar && line.getString().get(line.getString().size() - 1).character() == '\n') {
-                lastLineChar -= 1;
-            }
 
-            int width = Math.max(line.width(font, firstLineChar, lastLineChar), 8);
+            int width = line.width(font, firstLineChar, lastLineChar);
+
             int height = font.lineHeight;
             int x = line.x + line.widthToIndex(font, firstLineChar);
             int y = line.y;
+
+            if (line.renderedString().isEmpty()) {
+                x -= switch (alignment) {
+                    case LEFT -> 0;
+                    case CENTER -> width / 2;
+                    case RIGHT -> width;
+                };
+            }
 
             selection.add(new Rect2i(x, y, width, height));
         }
@@ -142,8 +154,7 @@ public class FormattedStringDisplayCache {
         }
 
         Line line = getLine(lineIndex);
-        int lineWidth = line.width(font, 0, line.getString().size() - 1);
-        return line.indexAtWidth(font, x);
+        return line.indexAtWidth(font, x - line.x);
     }
 
     // --
@@ -165,7 +176,7 @@ public class FormattedStringDisplayCache {
 
             while (i < string.size()) {
                 Char character = string.get(i);
-                int charWidth = character.getWidth(font);
+                int charWidth = character.getWidth(font, true);
 
                 if (lineWidth + charWidth > width) {
                     break;
