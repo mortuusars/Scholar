@@ -165,13 +165,6 @@ public class FormattedStringEditor {
 
     private boolean suppressNextCharTyped = false;
 
-    public boolean charTyped(char character) {
-        if (!suppressNextCharTyped && SharedConstants.isAllowedChatCharacter(character)) {
-            insertTextAtCursor(Character.toString(character));
-        }
-        return true;
-    }
-
     public boolean keyPressed(int key) {
         if (onKeyPressed(key)) {
             suppressNextCharTyped = true;
@@ -267,6 +260,13 @@ public class FormattedStringEditor {
         }
 
         return false;
+    }
+
+    public boolean charTyped(char character) {
+        if (!suppressNextCharTyped && SharedConstants.isAllowedChatCharacter(character)) {
+            insertTextAtCursor(Character.toString(character));
+        }
+        return true;
     }
 
     public void cut() {

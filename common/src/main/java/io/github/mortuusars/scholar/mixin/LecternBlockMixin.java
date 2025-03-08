@@ -3,7 +3,6 @@ package io.github.mortuusars.scholar.mixin;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.PlatformHelper;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
-import io.github.mortuusars.scholar.book.BookColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,32 +29,28 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class LecternBlockMixin {
     @Inject(method = "openScreen", at = @At(value = "HEAD"), cancellable = true)
     private void openScreen(Level level, BlockPos pos, Player player, CallbackInfo ci) {
-        if (!Config.Common.TWO_PAGE_SCREEN.get() || !Config.Common.LECTERN_TWO_PAGE_SCREEN.get()) {
-            return;
-        }
-
-        if (Config.Common.SNEAK_OPENS_VANILLA_SCREEN.get() && player.isSecondaryUseActive()) {
-            return;
-        }
-
-        if (!(player instanceof ServerPlayer serverPlayer)
-                || !(level.getBlockEntity(pos) instanceof LecternBlockEntity lecternBlockEntity)) {
-            return;
-        }
+        if (!(player instanceof ServerPlayer serverPlayer)) return;
+        if (!(level.getBlockEntity(pos) instanceof LecternBlockEntity lecternBlockEntity)) return;
+        if (!Config.Common.TWO_PAGE_SCREEN.get()) return;
+        if (!Config.Common.LECTERN_TWO_PAGE_SCREEN.get()) return;
+        if (Config.Common.SNEAK_OPENS_VANILLA_SCREEN.get() && player.isSecondaryUseActive()) return;
 
         ItemStack bookStack = lecternBlockEntity.getBook();
-        if (!bookStack.is(Items.WRITABLE_BOOK) && !bookStack.is(Items.WRITTEN_BOOK)) {
-            return;
+
+        if (bookStack.is(Items.WRITABLE_BOOK)) {
+            player.awardStat(Stats.INTERACT_WITH_LECTERN);
+            ci.cancel();
         }
 
-        scholar$openGUI(serverPlayer, lecternBlockEntity, lecternBlockEntity.getBook());
-        player.awardStat(Stats.INTERACT_WITH_LECTERN);
-        ci.cancel();
+        if (bookStack.is(Items.WRITTEN_BOOK)) {
+            scholar$openViewMenu(serverPlayer, lecternBlockEntity, bookStack);
+            player.awardStat(Stats.INTERACT_WITH_LECTERN);
+            ci.cancel();
+        }
     }
 
     @Unique
-    private void scholar$openGUI(ServerPlayer player, LecternBlockEntity lecternBlockEntity, ItemStack bookStack) {
-        int bookColor = BookColor.get(bookStack);
+    private void scholar$openViewMenu(ServerPlayer player, LecternBlockEntity lecternBlockEntity, ItemStack bookStack) {
         MenuProvider menuProvider = new MenuProvider() {
             @Override
             public @NotNull Component getDisplayName() {
@@ -66,7 +61,7 @@ public abstract class LecternBlockMixin {
             public @NotNull AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
                 Container bookAccess = lecternBlockEntity.bookAccess;
                 ContainerData dataAccess = lecternBlockEntity.dataAccess;
-                return new LecternSpreadMenu(containerId, bookAccess, dataAccess, bookColor);
+                return new LecternSpreadMenu(containerId, bookAccess, dataAccess);
             }
         };
 

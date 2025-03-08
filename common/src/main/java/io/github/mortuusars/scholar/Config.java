@@ -75,10 +75,21 @@ public class Config {
     public static class Client {
         public static final ForgeConfigSpec SPEC;
 
-        public static final ForgeConfigSpec.ConfigValue<String> MAIN_FONT_COLOR;
-        public static final ForgeConfigSpec.ConfigValue<String> SECONDARY_FONT_COLOR;
-        public static final ForgeConfigSpec.ConfigValue<String> ENTER_TITLE_FONT_COLOR;
-        public static final ForgeConfigSpec.ConfigValue<String> BY_AUTHOR_FONT_COLOR;
+        // UI
+        public static final ForgeConfigSpec.BooleanValue SCREEN_PAUSE;
+        public static final ForgeConfigSpec.BooleanValue SHOW_DONE_BUTTON;
+
+        // Colors
+        public static final ForgeConfigSpec.ConfigValue<String> TEXT_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<String> PAGE_NUMBERS_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<String> ENTER_TITLE_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<String> BY_AUTHOR_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<String> SELECTION_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<String> SELECTION_UNFOCUSED_COLOR;
+
+
+
+
 
         public static final ForgeConfigSpec.BooleanValue WRITABLE_SHOW_DONE_BUTTON;
         public static final ForgeConfigSpec.BooleanValue WRITABLE_PAUSE;
@@ -92,25 +103,58 @@ public class Config {
         static {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
-            String defaultMainFontColor = "FF7B593D";
-            MAIN_FONT_COLOR = builder
-                    .comment("Color of the book text. Default: " + defaultMainFontColor)
-                    .define("MainFontColor", defaultMainFontColor);
 
-            String defaultSecondaryFontColor = "FFEFE4CA";
-            SECONDARY_FONT_COLOR = builder
-                    .comment("Color of the secondary text (page numbers, etc). Default: " + defaultSecondaryFontColor)
-                    .define("SecondaryFontColor", defaultSecondaryFontColor);
 
-            String defaultEnterTitleFontColor = "FFF5EBD0";
-            ENTER_TITLE_FONT_COLOR = builder
-                    .comment("Color of the 'Enter Book Title' text on a signing screen. Default: " + defaultEnterTitleFontColor)
-                    .define("EnterTitleFontColor", defaultEnterTitleFontColor);
+            {
+                builder.push("ui");
 
-            String defaultByAuthorFontColor = "FFC7B496";
-            BY_AUTHOR_FONT_COLOR = builder
-                    .comment("Color of the 'by <author>' text on a signing screen. Default: " + defaultByAuthorFontColor)
-                    .define("ByAuthorFontColor", defaultByAuthorFontColor);
+                SCREEN_PAUSE = builder
+                        .comment("Singleplayer game will be paused when book screen is open.",
+                                "Default: false, Vanilla: true")
+                        .define("pause", false);
+
+                SHOW_DONE_BUTTON = builder
+                        .comment("Show 'Done' button in the Scholar book screen. Default: false")
+                        .define("show_done_button", false);
+
+                {
+                    builder.push("colors");
+
+                    String defaultMainFontColor = "FF7B593D";
+                    TEXT_COLOR = builder
+                            .comment("Color of the book text. Default: " + defaultMainFontColor)
+                            .define("text_color", defaultMainFontColor);
+
+                    String pageNumberFontColor = "FFEFE4CA";
+                    PAGE_NUMBERS_COLOR = builder
+                            .comment("Color of the page numbers. Default: " + pageNumberFontColor)
+                            .define("page_numbers_color", pageNumberFontColor);
+
+                    String defaultEnterTitleFontColor = "FFF5EBD0";
+                    ENTER_TITLE_COLOR = builder
+                            .comment("Color of the 'Enter Book Title' text in the signing screen. Default: " + defaultEnterTitleFontColor)
+                            .define("enter_title_color", defaultEnterTitleFontColor);
+
+                    String defaultByAuthorFontColor = "FFC7B496";
+                    BY_AUTHOR_COLOR = builder
+                            .comment("Color of the 'by <author>' text in the signing screen. Default: " + defaultByAuthorFontColor)
+                            .define("by_author_color", defaultByAuthorFontColor);
+
+                    String selectionColor = "FF664488";
+                    SELECTION_COLOR = builder
+                            .comment("Color of the selection. Default: " + selectionColor)
+                            .define("selection_color", selectionColor);
+
+                    String selectionUnfocusedColor = "FF664488";
+                    SELECTION_UNFOCUSED_COLOR = builder
+                            .comment("Color of the selection when text box is not focused. Default: " + selectionUnfocusedColor)
+                            .define("selection_unfocused_color", selectionUnfocusedColor);
+
+                    builder.pop();
+                }
+
+                builder.pop();
+            }
 
 
             builder.push("WritableBookScreen");

@@ -48,7 +48,7 @@ public class BookCloningRecipeMixin {
 
             if (stack.is(Items.WRITABLE_BOOK)) {
                 // Since result book will get writable book color - books of different colors are not allowed.
-                int color = BookColor.get(stack);
+                int color = BookColor.of(stack);
                 if (resultColor == null) {
                     resultColor = color;
                 }

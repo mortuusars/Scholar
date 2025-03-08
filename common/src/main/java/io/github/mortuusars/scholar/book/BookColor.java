@@ -55,7 +55,7 @@ public class BookColor {
 
     public static int getTintColor(ItemStack stack, int tintIndex) {
         if (tintIndex == 0) {
-            return get(stack);
+            return of(stack);
         }
 
         return -1;
@@ -68,7 +68,7 @@ public class BookColor {
         return stack.getItem() instanceof DyeableLeatherItem dyeableLeatherItem && dyeableLeatherItem.hasCustomColor(stack);
     }
 
-    public static int get(ItemStack stack) {
+    public static int of(ItemStack stack) {
         // Cannot use DyeableLeatherItem#getColor because it has different default color.
         CompoundTag compoundTag = stack.getTagElement(TAG_DISPLAY);
         if (compoundTag != null && compoundTag.contains(TAG_COLOR, Tag.TAG_ANY_NUMERIC)) {

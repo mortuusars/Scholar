@@ -36,7 +36,7 @@ public abstract class LocalPlayerMixin extends Player {
         if (isSecondaryUseActive()){
             Minecraft.getInstance().setScreen(new TestScreen());
         } else {
-            Minecraft.getInstance().setScreen(new SpreadBookEditScreen(this, stack, hand));
+            Minecraft.getInstance().setScreen(new SpreadBookEditScreen(stack, hand));
         }
         ci.cancel();
     }

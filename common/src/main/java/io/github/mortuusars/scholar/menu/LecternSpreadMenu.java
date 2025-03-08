@@ -1,7 +1,6 @@
 package io.github.mortuusars.scholar.menu;
 
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.book.BookColor;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
@@ -12,7 +11,6 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.LecternMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WrittenBookItem;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,12 +18,10 @@ public class LecternSpreadMenu extends LecternMenu {
     public static final int PREV_PAGE_ID = 1;
     public static final int NEXT_PAGE_ID = 2;
 
-    private final int bookColor;
     private final int spreads;
 
-    public LecternSpreadMenu(int containerId, Container lectern, ContainerData lecternData, int bookColor) {
+    public LecternSpreadMenu(int containerId, Container lectern, ContainerData lecternData) {
         super(containerId, lectern, lecternData);
-        this.bookColor = bookColor;
         this.spreads = (int)(WrittenBookItem.getPageCount(getBook()) / 2f);
 
         // Corrects page to the closest even number (down)
@@ -36,18 +32,12 @@ public class LecternSpreadMenu extends LecternMenu {
     }
 
     public static LecternSpreadMenu fromBuffer(int containerId, Inventory inventory, FriendlyByteBuf buffer) {
-        ItemStack bookStack = buffer.readItem();
-        int bookColor = BookColor.get(bookStack);
-        return new LecternSpreadMenu(containerId, new SimpleContainer(bookStack), new SimpleContainerData(1), bookColor);
-    }
-
-    public int getBookColor() {
-        return bookColor;
+        return new LecternSpreadMenu(containerId, new SimpleContainer(buffer.readItem()), new SimpleContainerData(1));
     }
 
     @Override
     public @NotNull MenuType<?> getType() {
-        return Scholar.MenuTypes.LECTERN.get();
+        return Scholar.MenuTypes.LECTERN_SPREAD_BOOK_VIEW.get();
     }
 
     @Override

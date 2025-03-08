@@ -1,0 +1,334 @@
+package io.github.mortuusars.scholar.client.screen;
+
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.InputConstants;
+import io.github.mortuusars.scholar.Config;
+import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
+import io.github.mortuusars.scholar.client.screen.textbox.text.FormattedString;
+import io.github.mortuusars.scholar.client.util.RenderUtil;
+import io.github.mortuusars.scholar.book.BookColor;
+import io.netty.util.internal.StringUtil;
+import net.minecraft.client.GameNarrator;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.BookViewScreen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+
+public class OldSpreadBookEditScreen extends Screen {
+
+    public enum Side {
+        LEFT,
+        RIGHT;
+
+        public int getSideIndex() {
+            return ordinal();
+        }
+
+        public int getPageIndexFromSpread(int spreadIndex) {
+            return spreadIndex * 2 + getSideIndex();
+        }
+    }
+
+    public static final ResourceLocation TEXTURE = Scholar.resource("textures/gui/book.png");
+
+    public static final int BOOK_WIDTH = 295;
+    public static final int BOOK_HEIGHT = 180;
+
+    public static final int TEXT_LEFT_X = 22;
+    public static final int TEXT_RIGHT_X = 159;
+    public static final int TEXT_Y = 21;
+    public static final int TEXT_WIDTH = 114;
+    public static final int TEXT_HEIGHT = 128;
+
+    public static final int SELECTION_COLOR = 0xFF664488;
+    public static final int SELECTION_UNFOCUSED_COLOR = 0xFF775599;
+
+    protected final Player owner;
+    protected final ItemStack bookStack;
+    protected final int bookColor;
+    protected final InteractionHand hand;
+    protected final int mainFontColor;
+    protected final int secondaryFontColor;
+
+    protected final List<String> pages = Lists.newArrayList();
+
+    protected int leftPos;
+    protected int topPos;
+    protected Button nextButton;
+    protected Button prevButton;
+    protected Button enterSignModeButton;
+
+    protected int currentSpread;
+    protected boolean isModified;
+
+    public OldSpreadBookEditScreen(Player owner, ItemStack bookStack, InteractionHand hand) {
+        super(GameNarrator.NO_TITLE);
+        this.owner = owner;
+        this.bookStack = bookStack;
+        this.bookColor = BookColor.of(bookStack);
+        this.hand = hand;
+        this.mainFontColor = Config.Client.getColor(Config.Client.TEXT_COLOR);
+        this.secondaryFontColor = Config.Client.getColor(Config.Client.PAGE_NUMBERS_COLOR);
+
+        CompoundTag compoundtag = bookStack.getTag();
+        if (compoundtag != null) {
+            BookViewScreen.loadPages(compoundtag, this.pages::add);
+        }
+
+        while (this.pages.size() < 2) {
+            this.pages.add("");
+        }
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return Config.Client.WRITABLE_PAUSE.get();
+    }
+
+    protected void init() {
+        this.leftPos = (this.width - BOOK_WIDTH) / 2;
+        this.topPos = (this.height - BOOK_HEIGHT) / 2;
+
+        TextBox leftPageTextBox = new TextBox(font, leftPos + TEXT_LEFT_X, topPos + TEXT_Y, TEXT_WIDTH, TEXT_HEIGHT)
+                .setFontColor(mainFontColor)
+                .setFontUnfocusedColor(mainFontColor)
+                .setSelectionColor(SELECTION_COLOR)
+                .setSelectionUnfocusedColor(SELECTION_UNFOCUSED_COLOR)
+                .setText(FormattedString.parse(getPageText(Side.LEFT)))
+                .setOnTextChanged(text -> setPageText(Side.LEFT, text.toString()));
+
+        leftPageTextBox.getEditor().setString(FormattedString.parse(getPageText(Side.LEFT)));
+
+        addRenderableWidget(leftPageTextBox);
+
+        TextBox rightPageTextBox = new TextBox(font, leftPos + TEXT_RIGHT_X, topPos + TEXT_Y, TEXT_WIDTH, TEXT_HEIGHT)
+                .setFontColor(mainFontColor)
+                .setFontUnfocusedColor(mainFontColor)
+                .setSelectionColor(SELECTION_COLOR)
+                .setSelectionUnfocusedColor(SELECTION_UNFOCUSED_COLOR)
+                .setText(FormattedString.parse(getPageText(Side.RIGHT)))
+                .setOnTextChanged(text -> setPageText(Side.RIGHT, text.toString()));
+
+        rightPageTextBox.getEditor().setString(FormattedString.parse(getPageText(Side.RIGHT)));
+
+        addRenderableWidget(rightPageTextBox);
+
+        ImageButton prevButton = new ImageButton(leftPos + 12, topPos + 156, 13, 15,
+                295, 0, 15, TEXTURE, 512, 512,
+                (button) -> this.pageBack());
+        prevButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.previous_page")));
+        this.prevButton = addRenderableWidget(prevButton);
+
+        ImageButton nextButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
+                308, 0, 15, TEXTURE, 512, 512,
+                (button) -> this.pageForward());
+        nextButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.next_page")));
+        this.nextButton = addRenderableWidget(nextButton);
+
+        this.enterSignModeButton = new ImageButton(leftPos - 24, topPos + 18, 22, 22, 321, 0,
+                22, TEXTURE, 512, 512,
+                b -> enterSignMode(), Component.translatable("book.signButton"));
+        this.enterSignModeButton.setTooltip(Tooltip.create(Component.translatable("book.signButton")));
+        addRenderableWidget(this.enterSignModeButton);
+
+        this.updateButtonVisibility();
+
+        this.createMenuControls();
+    }
+
+    protected void createMenuControls() {
+        if (Config.Client.WRITABLE_SHOW_DONE_BUTTON.get()) {
+            this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE,
+                    (button) -> this.onClose()).bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20).build());
+        }
+    }
+
+    protected void enterSignMode() {
+//        Objects.requireNonNull(minecraft).setScreen(new BookSigningScreen(this, bookColor));
+    }
+
+    private void updateButtonVisibility() {
+        this.prevButton.visible = this.currentSpread > 0;
+        this.nextButton.visible = this.currentSpread < 49; // 100 pages max
+    }
+
+    private void clearDisplayCacheAfterPageChange() {
+//        leftPageTextBox.setCursorToEnd();
+//        rightPageTextBox.setCursorToEnd();
+    }
+
+    protected void pageBack() {
+        if (this.currentSpread > 0) {
+            this.currentSpread--;
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 0.8f));
+
+            this.updateButtonVisibility();
+            this.clearDisplayCacheAfterPageChange();
+        }
+    }
+
+    protected void pageForward() {
+        if (this.currentSpread < 49) {
+            this.currentSpread++;
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1f));
+
+            while (this.pages.size() < (currentSpread + 1) * 2) {
+                appendEmptyPage();
+            }
+
+            this.updateButtonVisibility();
+            this.clearDisplayCacheAfterPageChange();
+        }
+    }
+
+    private void appendEmptyPage() {
+        if (this.pages.size() < 100) {
+            this.pages.add("");
+            this.isModified = true;
+        }
+    }
+
+    protected String getPageText(Side side) {
+        int pageIndex = side.getPageIndexFromSpread(currentSpread);
+        return pageIndex >= 0 && pageIndex < this.pages.size() ? this.pages.get(pageIndex) : "";
+    }
+
+    protected void setPageText(Side side, String text) {
+        int pageIndex = side.getPageIndexFromSpread(currentSpread);
+        if (pageIndex >= 0 && pageIndex < this.pages.size()) {
+            this.pages.set(pageIndex, text);
+            this.isModified = true;
+        }
+    }
+
+    public void saveChanges(boolean sign, @Nullable String title) {
+        if (this.isModified || sign) {
+            if (!sign)
+                title = null;
+            this.eraseEmptyTrailingPages();
+            this.updateLocalCopy(sign, title);
+            int slotId = this.hand == InteractionHand.MAIN_HAND ? this.owner.getInventory().selected : 40;
+
+            Objects.requireNonNull(Minecraft.getInstance().getConnection()).send(
+                    new ServerboundEditBookPacket(slotId, this.pages, Optional.ofNullable(title)));
+        }
+    }
+
+    protected void eraseEmptyTrailingPages() {
+        ListIterator<String> iterator = this.pages.listIterator(this.pages.size());
+        while (iterator.hasPrevious() && iterator.previous().isEmpty()) {
+            iterator.remove();
+        }
+    }
+
+    protected void updateLocalCopy(boolean sign, @Nullable String title) {
+        ListTag listTag = new ListTag();
+        this.pages.stream().map(StringTag::valueOf).forEach(listTag::add);
+        if (!this.pages.isEmpty()) {
+            this.bookStack.addTagElement("pages", listTag);
+        }
+
+        if (sign) {
+            Preconditions.checkState(!StringUtil.isNullOrEmpty(title), "Title cannot be null or empty when signing a book.");
+            this.bookStack.addTagElement("author", StringTag.valueOf(this.owner.getGameProfile().getName()));
+            this.bookStack.addTagElement("title", StringTag.valueOf(title));
+        }
+
+    }
+
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(guiGraphics);
+
+        RenderUtil.withColorMultiplied(bookColor, () -> {
+            // Cover
+            guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
+                    0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
+
+            // Enter Sign Mode BG
+            guiGraphics.blit(TEXTURE, leftPos - 29, topPos + 14, 0, 360,
+                    29, 28, 512, 512);
+        });
+
+        // Pages
+        guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
+                0, 180, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
+
+        drawPageNumbers(guiGraphics, currentSpread);
+
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+
+//        if (Minecraft.getInstance().options.renderDebug) {
+//            String text = .getText().replace("§", "&");
+//            try {
+//                int cursorPos = leftPageTextBox.getTextHandler().getCursorPos();
+//                text = new StringBuilder(text).insert(cursorPos, "_").toString();
+//            } catch (Exception e) {
+//                Scholar.LOGGER.error(e.toString());
+//            }
+//            guiGraphics.drawString(font, text, 5, 5, 0xFFFFFFFF);
+//        }
+    }
+
+    protected void drawPageNumbers(GuiGraphics guiGraphics, int currentSpreadIndex) {
+        String leftPageNumber = Integer.toString(currentSpreadIndex * 2 + 1);
+        guiGraphics.drawString(font, leftPageNumber, leftPos + 69 + (8 - font.width(leftPageNumber) / 2),
+                topPos + 157, secondaryFontColor, false);
+
+        String rightPageNumber = Integer.toString(currentSpreadIndex * 2 + 2);
+        guiGraphics.drawString(font, rightPageNumber, leftPos + 208 + (8 - font.width(rightPageNumber) / 2),
+                topPos + 157, secondaryFontColor, false);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (!(getFocused() instanceof TextBox)) {
+            if (Minecraft.getInstance().options.keyInventory.matches(keyCode, scanCode)) {
+                this.onClose();
+                return true;
+            }
+
+            if (keyCode == InputConstants.KEY_LEFT || keyCode == InputConstants.KEY_PAGEUP || Minecraft.getInstance().options.keyLeft.matches(keyCode, scanCode)) {
+                pageBack();
+                return true;
+            }
+
+            if (keyCode == InputConstants.KEY_RIGHT || keyCode == InputConstants.KEY_PAGEDOWN || Minecraft.getInstance().options.keyRight.matches(keyCode, scanCode)) {
+                pageForward();
+                return true;
+            }
+        }
+
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    protected boolean isFormattingAllowed() {
+        return Config.Common.SURVIVAL_FORMATTING.get() || (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative());
+    }
+
+    @Override
+    public void onClose() {
+        saveChanges(false, null);
+        super.onClose();
+    }
+}

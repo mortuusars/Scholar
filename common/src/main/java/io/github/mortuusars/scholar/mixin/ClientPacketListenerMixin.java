@@ -1,8 +1,9 @@
 package io.github.mortuusars.scholar.mixin;
 
 import io.github.mortuusars.scholar.Config;
-import io.github.mortuusars.scholar.client.screen.SpreadBookViewScreen;
+import io.github.mortuusars.scholar.client.screen.BookViewAccess;
 import io.github.mortuusars.scholar.book.BookColor;
+import io.github.mortuusars.scholar.client.screen.SpreadBookViewScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundOpenBookPacket;
@@ -37,7 +38,7 @@ public abstract class ClientPacketListenerMixin {
             return;
         }
 
-        Minecraft.getInstance().setScreen(new SpreadBookViewScreen(new SpreadBookViewScreen.WrittenBookAccess(stack), BookColor.get(stack)));
+        Minecraft.getInstance().setScreen(new SpreadBookViewScreen(BookViewAccess.fromItem(stack), BookColor.of(stack)));
         ci.cancel();
     }
 }

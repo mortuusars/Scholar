@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.scholar.item.ColoredWritableBookItem;
 import io.github.mortuusars.scholar.item.ColoredWrittenBookItem;
+import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
 import io.github.mortuusars.scholar.recipe.NbtTransferringRecipe;
 import net.minecraft.resources.ResourceLocation;
@@ -33,6 +34,7 @@ public class Scholar {
         SoundEvents.init();
     }
 
+    @SuppressWarnings("removal")
     public static class Items {
         public static final Map<DyeColor, Supplier<ColoredWritableBookItem>> COLORED_WRITABLE_BOOKS;
         public static final Map<DyeColor, Supplier<ColoredWrittenBookItem>> COLORED_WRITTEN_BOOKS;
@@ -55,7 +57,10 @@ public class Scholar {
     }
 
     public static class MenuTypes {
-        public static final Supplier<MenuType<LecternSpreadMenu>> LECTERN = Register.menuType("lectern_spread", LecternSpreadMenu::fromBuffer);
+        public static final Supplier<MenuType<LecternSpreadMenu>> LECTERN_SPREAD_BOOK_VIEW =
+                Register.menuType("lectern_spread_book_view", LecternSpreadMenu::fromBuffer);
+        public static final Supplier<MenuType<LecternSpreadBookEditMenu>> LECTERN_SPREAD_BOOK_EDIT =
+                Register.menuType("lectern_spread_book_edit", LecternSpreadBookEditMenu::fromBuffer);
 
         static void init() { }
     }
@@ -67,7 +72,6 @@ public class Scholar {
     }
 
     public static class SoundEvents {
-        public static final Supplier<SoundEvent> FORMATTING_CLICK = register("book", "formatting_click");
         public static final Supplier<SoundEvent> BOOK_SIGNED = register("book", "signed");
 
         @SuppressWarnings("SameParameterValue")
@@ -81,4 +85,3 @@ public class Scholar {
         static void init() { }
     }
 }
-

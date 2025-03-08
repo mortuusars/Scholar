@@ -5,6 +5,7 @@ import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.screen.textbox.display.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
+import io.github.mortuusars.scholar.client.screen.textbox.text.FormattedString;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -21,10 +22,9 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class BookSigningScreen extends Screen {
-    public static final int SELECTION_COLOR = 0xFF8888FF;
-    public static final int SELECTION_UNFOCUSED_COLOR = 0xFFBBBBFF;
     public static final ResourceLocation TEXTURE = Scholar.resource("textures/gui/book_signing.png");
 
     @NotNull
@@ -32,16 +32,17 @@ public class BookSigningScreen extends Screen {
     @NotNull
     protected final Player player;
 
-    //TODO: depend on base Screen. Accept onSign as parameter.
-    protected final SpreadBookEditScreen parentScreen;
+    protected final Screen parentScreen;
     protected final int bookColor;
-    private final int mainFontColor;
+    protected final Consumer<String> onSign;
 
+    protected int textColor;
+    protected int selectionColor;
+    protected int selectionUnfocusedColor;
     protected int enterBookTitleFontColor;
     protected int byAuthorFontColor;
 
     protected int imageWidth, imageHeight, leftPos, topPos, textureWidth, textureHeight;
-
 
     protected TextBox titleTextBox;
     protected ImageButton signButton;
@@ -49,19 +50,27 @@ public class BookSigningScreen extends Screen {
 
     protected String titleText = "";
 
-    public BookSigningScreen(SpreadBookEditScreen parentScreen, int bookColor) {
+    public BookSigningScreen(Screen parentScreen, int bookColor, Consumer<String> onSign) {
         super(Component.empty());
         this.parentScreen = parentScreen;
         this.bookColor = bookColor;
+        this.onSign = onSign;
 
-        this.mainFontColor = Config.Client.getColor(Config.Client.MAIN_FONT_COLOR);
-        this.enterBookTitleFontColor = Config.Client.getColor(Config.Client.ENTER_TITLE_FONT_COLOR);
-        this.byAuthorFontColor = Config.Client.getColor(Config.Client.BY_AUTHOR_FONT_COLOR);
+        this.textColor = Config.Client.getColor(Config.Client.TEXT_COLOR);
+        this.selectionColor = Config.Client.getColor(Config.Client.SELECTION_COLOR);
+        this.selectionUnfocusedColor = Config.Client.getColor(Config.Client.SELECTION_UNFOCUSED_COLOR);
+        this.enterBookTitleFontColor = Config.Client.getColor(Config.Client.ENTER_TITLE_COLOR);
+        this.byAuthorFontColor = Config.Client.getColor(Config.Client.BY_AUTHOR_COLOR);
 
-        minecraft = Minecraft.getInstance();
-        player = Objects.requireNonNull(minecraft.player);
-        textureWidth = 256;
-        textureHeight = 256;
+        this.minecraft = Minecraft.getInstance();
+        this.player = Objects.requireNonNull(minecraft.player);
+        this.textureWidth = 256;
+        this.textureHeight = 256;
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return Config.Client.SCREEN_PAUSE.get();
     }
 
     @Override
@@ -73,11 +82,12 @@ public class BookSigningScreen extends Screen {
 
         // TITLE
         titleTextBox = new TextBox(font, leftPos + 21, topPos + 71, 108, 9)
-                .setFontColor(mainFontColor)
-                .setFontUnfocusedColor(mainFontColor)
-                .setSelectionColor(SELECTION_COLOR)
-                .setSelectionUnfocusedColor(SELECTION_UNFOCUSED_COLOR)
+                .setFontColor(textColor)
+                .setFontUnfocusedColor(textColor)
+                .setSelectionColor(selectionColor)
+                .setSelectionUnfocusedColor(selectionUnfocusedColor)
                 .setHorizontalAlignment(HorizontalAlignment.CENTER)
+                .setOnTextChanged(this::setTitleText)
                 .setTextValidator(text -> text != null && font.wordWrapHeight(text, 108) <= 9 && !text.contains("\n"));
         addRenderableWidget(titleTextBox);
 
@@ -100,12 +110,12 @@ public class BookSigningScreen extends Screen {
         setInitialFocus(titleTextBox);
     }
 
-    @Override
-    public boolean isPauseScreen() {
-        return false;
+    protected void setTitleText(FormattedString text) {
+        titleText = text.toString();
+        updateButtons();
     }
 
-    private void updateButtons() {
+    protected void updateButtons() {
         signButton.active = canSign();
     }
 
@@ -132,7 +142,7 @@ public class BookSigningScreen extends Screen {
         renderLabels(guiGraphics);
     }
 
-    private void renderLabels(GuiGraphics guiGraphics) {
+    protected void renderLabels(GuiGraphics guiGraphics) {
         MutableComponent component = Component.translatable("book.editTitle");
         guiGraphics.drawString(font, component,  leftPos + 149 / 2 - font.width(component) / 2, topPos + 51,
                 enterBookTitleFontColor, false);
@@ -144,9 +154,10 @@ public class BookSigningScreen extends Screen {
 
     protected void signAlbum() {
         if (canSign()) {
-            parentScreen.saveChanges(true, titleText.trim());
-            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.BOOK_SIGNED.get(), 1f, 0.8f));
-            this.onClose();
+            onSign.accept(titleText.trim());
+            minecraft.getSoundManager().play(
+                    SimpleSoundInstance.forUI(Scholar.SoundEvents.BOOK_SIGNED.get(), 1f, 0.8f));
+            onClose();
         }
     }
 
