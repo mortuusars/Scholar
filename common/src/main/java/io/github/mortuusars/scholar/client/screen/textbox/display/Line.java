@@ -1,7 +1,7 @@
 package io.github.mortuusars.scholar.client.screen.textbox.display;
 
-import io.github.mortuusars.scholar.client.screen.textbox.internals.Char;
-import io.github.mortuusars.scholar.client.screen.textbox.internals.FormattedString;
+import io.github.mortuusars.scholar.client.screen.textbox.text.Char;
+import io.github.mortuusars.scholar.client.screen.textbox.text.FormattedString;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 

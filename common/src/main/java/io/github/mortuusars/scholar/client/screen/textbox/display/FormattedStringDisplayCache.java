@@ -1,13 +1,11 @@
 package io.github.mortuusars.scholar.client.screen.textbox.display;
 
-import io.github.mortuusars.scholar.client.screen.textbox.internals.FormattedStringEditor;
-import io.github.mortuusars.scholar.client.screen.textbox.internals.Char;
-import io.github.mortuusars.scholar.client.screen.textbox.internals.FormattedString;
-import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
+import io.github.mortuusars.scholar.client.screen.textbox.text.FormattedStringEditor;
+import io.github.mortuusars.scholar.client.screen.textbox.text.Char;
+import io.github.mortuusars.scholar.client.screen.textbox.text.FormattedString;
 import io.github.mortuusars.scholar.client.util.Pos2i;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.network.chat.Style;
 
 import java.util.ArrayList;
 import java.util.List;

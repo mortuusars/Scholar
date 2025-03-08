@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.client.screen.textbox.formatting;
+package io.github.mortuusars.scholar.client.screen.textbox.text;
 
 import net.minecraft.ChatFormatting;
 import org.jetbrains.annotations.NotNull;

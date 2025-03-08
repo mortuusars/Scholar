@@ -1,8 +1,7 @@
-package io.github.mortuusars.scholar.client.screen.textbox.internals;
+package io.github.mortuusars.scholar.client.screen.textbox.text;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.client.screen.textbox.formatting.Formatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;

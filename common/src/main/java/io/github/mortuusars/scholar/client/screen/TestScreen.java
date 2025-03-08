@@ -2,8 +2,8 @@ package io.github.mortuusars.scholar.client.screen;
 
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
-import io.github.mortuusars.scholar.client.screen.textbox.internals.FormattedString;
-import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
+import io.github.mortuusars.scholar.client.screen.textbox.text.FormattedString;
+import io.github.mortuusars.scholar.client.screen.textbox.display.HorizontalAlignment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;

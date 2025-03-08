@@ -6,7 +6,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
-import io.github.mortuusars.scholar.client.screen.textbox.internals.FormattedString;
+import io.github.mortuusars.scholar.client.screen.textbox.text.FormattedString;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
 import io.github.mortuusars.scholar.book.BookColor;
 import io.netty.util.internal.StringUtil;

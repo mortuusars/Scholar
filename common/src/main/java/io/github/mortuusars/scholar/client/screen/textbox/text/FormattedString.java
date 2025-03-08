@@ -1,6 +1,5 @@
-package io.github.mortuusars.scholar.client.screen.textbox.internals;
+package io.github.mortuusars.scholar.client.screen.textbox.text;
 
-import io.github.mortuusars.scholar.client.screen.textbox.formatting.Formatting;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
 import org.jetbrains.annotations.NotNull;

@@ -1,6 +1,5 @@
-package io.github.mortuusars.scholar.client.screen.textbox.internals;
+package io.github.mortuusars.scholar.client.screen.textbox.text;
 
-import io.github.mortuusars.scholar.client.screen.textbox.formatting.Formatting;
 import net.minecraft.client.gui.Font;
 
 public record Char(char character, Formatting formatting) {
