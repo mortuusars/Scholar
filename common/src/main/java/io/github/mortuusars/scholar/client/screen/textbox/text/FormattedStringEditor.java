@@ -277,7 +277,7 @@ public class FormattedStringEditor {
     public void paste() {
         try {
             String text = Minecraft.getInstance().keyboardHandler.getClipboard();
-            insertTextAtCursor(Objects.requireNonNull(ChatFormatting.stripFormatting(text)).replaceAll("\\r", ""));
+            insertTextAtCursor(Objects.requireNonNull(text).replaceAll("\\r", ""));
         } catch (Exception e) {
             Scholar.LOGGER.error("Text Paste error: ", e);
         }
@@ -299,10 +299,15 @@ public class FormattedStringEditor {
             removeSelectedText();
         }
 
-        FormattedString newString = new FormattedString(getString());
         FormattedString insertedString = FormattedString.parse(text);
-        insertedString.replaceAll(c -> c.withFormatting(getFormattingAtCursor()));
+        insertedString.replaceAll(c -> {
+            if (!c.hasFormatting()) {
+                return c.withFormatting(getFormattingAtCursor());
+            }
+            return c;
+        });
 
+        FormattedString newString = new FormattedString(getString());
         newString.addAll(getCursorPos(), insertedString);
 
         String string = newString.toStringWithoutFormatting();
