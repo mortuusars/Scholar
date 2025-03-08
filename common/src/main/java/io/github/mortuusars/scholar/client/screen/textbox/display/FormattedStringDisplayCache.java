@@ -1,12 +1,13 @@
-package io.github.mortuusars.scholar.client.textbox.display;
+package io.github.mortuusars.scholar.client.screen.textbox.display;
 
-import io.github.mortuusars.scholar.client.textbox.internals.Char;
-import io.github.mortuusars.scholar.client.textbox.internals.FormattedString;
-import io.github.mortuusars.scholar.client.textbox.internals.FormattedStringEditor;
+import io.github.mortuusars.scholar.client.screen.textbox.internals.FormattedStringEditor;
+import io.github.mortuusars.scholar.client.screen.textbox.internals.Char;
+import io.github.mortuusars.scholar.client.screen.textbox.internals.FormattedString;
 import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.util.Pos2i;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.Style;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -171,12 +172,21 @@ public class FormattedStringDisplayCache {
         while (i < string.size()) {
             int firstCharIndex = i;
             int lineWidth = 0;
+            int lastSpaceIndex = -1;
 
             while (i < string.size()) {
                 Char character = string.get(i);
                 int charWidth = character.getWidth(font, true);
 
+                if (character.character() == ' ') {
+                    lastSpaceIndex = i;
+                }
+
                 if (lineWidth + charWidth > width) {
+                    // If space exists, break at last space
+                    if (lastSpaceIndex != -1) {
+                        i = lastSpaceIndex + 1; // Move to next word after space
+                    }
                     break;
                 }
 

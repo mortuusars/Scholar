@@ -6,7 +6,6 @@ import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
-import io.github.mortuusars.scholar.book.Formatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -33,6 +32,7 @@ public class BookSigningScreen extends Screen {
     @NotNull
     protected final Player player;
 
+    //TODO: depend on base Screen. Accept onSign as parameter.
     protected final SpreadBookEditScreen parentScreen;
     protected final int bookColor;
     private final int mainFontColor;
@@ -72,12 +72,13 @@ public class BookSigningScreen extends Screen {
         this.topPos = (this.height - this.imageHeight) / 2;
 
         // TITLE
-        titleTextBox = new TextBox(font, leftPos + 21, topPos + 71, 108, 9,
-                () -> titleText, text -> titleText = text)
-                .setFontColor(mainFontColor, mainFontColor)
-                .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
-        titleTextBox.textValidator = text -> text != null && font.wordWrapHeight(text, 108) <= 9 && !text.contains("\n");
-        titleTextBox.horizontalAlignment = HorizontalAlignment.CENTER;
+        titleTextBox = new TextBox(font, leftPos + 21, topPos + 71, 108, 9)
+                .setFontColor(mainFontColor)
+                .setFontUnfocusedColor(mainFontColor)
+                .setSelectionColor(SELECTION_COLOR)
+                .setSelectionUnfocusedColor(SELECTION_UNFOCUSED_COLOR)
+                .setHorizontalAlignment(HorizontalAlignment.CENTER)
+                .setTextValidator(text -> text != null && font.wordWrapHeight(text, 108) <= 9 && !text.contains("\n"));
         addRenderableWidget(titleTextBox);
 
         // SIGN
@@ -102,11 +103,6 @@ public class BookSigningScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
-    }
-
-    @Override
-    public void tick() {
-        titleTextBox.tick();
     }
 
     private void updateButtons() {
@@ -160,53 +156,11 @@ public class BookSigningScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == InputConstants.KEY_TAB)
-            return super.keyPressed(keyCode, scanCode, modifiers);
-
         if (keyCode == InputConstants.KEY_ESCAPE) {
             cancelSigning();
             return true;
         }
 
-        if (parentScreen.isFormattingAllowed() && getFocused() instanceof TextBox textBox
-                && Screen.hasControlDown() && keyCode == InputConstants.KEY_F) {
-            textBox.textFieldHelper.insertText("§");
-            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.FORMATTING_CLICK.get(), 1f, 0.5f));
-            return true;
-        }
-
         return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
-    public boolean charTyped(char pCodePoint, int pModifiers) {
-        boolean handled = super.charTyped(pCodePoint, pModifiers);
-
-        if (handled && getFocused() instanceof TextBox textBox) {
-            onTextBoxCharTyped(textBox);
-        }
-
-        return handled;
-    }
-
-    private static void onTextBoxCharTyped(TextBox textBox) {
-        // Plays a sound when formatting code char is typed:
-
-//        int cursorPos = textBox.textFieldHelper.getCursorPos();
-//        String text = textBox.getText();
-//
-//        if (cursorPos < 2 || cursorPos > text.length())
-//            return;
-//
-//        int sectionSymbolIndex = cursorPos - 2;
-//        int formattingCharIndex = sectionSymbolIndex + 1;
-//        String enteredFormattingCode = text.substring(sectionSymbolIndex, formattingCharIndex + 1);
-//
-//        for (Formatting formatting : Formatting.values()) {
-//            if (formatting.getChar() == enteredFormattingCode) {
-//                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Scholar.SoundEvents.FORMATTING_CLICK.get(), 1f, 0.5f));
-//                return;
-//            }
-//        }
     }
 }

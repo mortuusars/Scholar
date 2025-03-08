@@ -3,251 +3,237 @@ package io.github.mortuusars.scholar.client.screen.textbox;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.book.Formatting;
+import io.github.mortuusars.scholar.client.screen.textbox.display.FormattedStringDisplayCache;
+import io.github.mortuusars.scholar.client.screen.textbox.formatting.Formatting;
+import io.github.mortuusars.scholar.client.screen.textbox.internals.FormattedString;
+import io.github.mortuusars.scholar.client.screen.textbox.internals.FormattedStringEditor;
+import io.github.mortuusars.scholar.client.screen.textbox.display.Line;
 import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.util.Pos2i;
-import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.font.TextFieldHelper;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public class TextBox extends AbstractWidget {
-    public final Font font;
-    public Supplier<String> textGetter;
-    public Consumer<String> textSetter;
-    public Predicate<String> textValidator = text -> text != null
-            && getFont().wordWrapHeight(text, width) + (text.endsWith("\n") ? getFont().lineHeight : 0) <= height;
+    protected final Font font;
 
-    public HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
-    public int fontColor = 0xFF000000;
-    public int fontUnfocusedColor = 0xFF000000;
-    public int selectionColor = 0xFF0000FF;
-    public int selectionUnfocusedColor = 0x880000FF;
+    protected FormattedStringEditor editor = new FormattedStringEditor(() ->
+            FormattedStringEditor.Validator.fitInDimensions(getFont(), getWidth(), getHeight()));
+    protected FormattedStringDisplayCache displayCache = new FormattedStringDisplayCache(editor);
 
-    public final FormattableTextFieldHelper textFieldHelper;
-    protected DisplayCache displayCache = new DisplayCache();
-    protected int frameTick;
-    protected long lastClickTime;
-    protected int lastIndex = -1;
+    protected HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
+    protected int fontColor = 0xFF000000;
+    protected int fontUnfocusedColor = 0xFF000000;
+    protected int selectionColor = 0xFF0000FF;
+    protected int selectionUnfocusedColor = 0x880000FF;
+    protected Consumer<FormattedString> onTextChanged = text -> { };
 
-    public TextBox(@NotNull Font font, int x, int y, int width, int height,
-                   Supplier<String> textGetter, Consumer<String> textSetter) {
-        super(x, y, width, height, Component.empty());
-        this.font = font;
-        this.textGetter = textGetter;
-        this.textSetter = textSetter;
-        textFieldHelper = new FormattableTextFieldHelper(this::getText, this::setText,
-                TextFieldHelper.createClipboardGetter(Minecraft.getInstance()),
-                TextFieldHelper.createClipboardSetter(Minecraft.getInstance()),
-                this::validateText);
+    protected Pos2i lastClickPos = new Pos2i(0, 0);
+    protected long lastActionTime;
+
+    public TextBox(int x, int y, int width, int height) {
+        this(Minecraft.getInstance().font, x, y, width, height);
     }
 
-    public void tick() {
-        ++frameTick;
+    public TextBox(Font font, int x, int y, int width, int height) {
+        super(x, y, width, height, Component.empty());
+        this.font = font;
     }
 
     public Font getFont() {
         return font;
     }
 
-    public @NotNull String getText() {
-        return textGetter.get();
+    public FormattedStringEditor getEditor() {
+        return editor;
     }
 
-    public TextBox setText(@NotNull String text) {
-        textSetter.accept(text);
-        getTextHandler().setCursorPos(getTextHandler().getCursorPos());
-        getTextHandler().setSelectionPos(getTextHandler().getSelectionPos());
+    public FormattedStringDisplayCache getDisplayCache() {
+        if (displayCache.shouldUpdate()) {
+            displayCache.update(getFont(), getWidth(), getHeight(), getHorizontalAlignment());
+        }
+
+        return displayCache;
+    }
+
+    public HorizontalAlignment getHorizontalAlignment() {
+        return horizontalAlignment;
+    }
+
+    public TextBox setHorizontalAlignment(HorizontalAlignment horizontalAlignment) {
+        this.horizontalAlignment = horizontalAlignment;
         refreshDisplayCache();
         return this;
     }
 
-    protected boolean validateText(String text) {
-        return textValidator.test(text);
+    public int getFontColor() {
+        return fontColor;
     }
 
-    public void setHeight(int height) {
-        this.height = height;
+    public TextBox setFontColor(int fontColor) {
+        this.fontColor = fontColor;
         refreshDisplayCache();
+        return this;
     }
 
-    public FormattableTextFieldHelper getTextHandler() {
-        return textFieldHelper;
+    public int getFontUnfocusedColor() {
+        return fontUnfocusedColor;
+    }
+
+    public TextBox setFontUnfocusedColor(int fontUnfocusedColor) {
+        this.fontUnfocusedColor = fontUnfocusedColor;
+        refreshDisplayCache();
+        return this;
+    }
+
+    public int getSelectionColor() {
+        return selectionColor;
+    }
+
+    public TextBox setSelectionColor(int selectionColor) {
+        this.selectionColor = selectionColor;
+        refreshDisplayCache();
+        return this;
+    }
+
+    public int getSelectionUnfocusedColor() {
+        return selectionUnfocusedColor;
+    }
+
+    public TextBox setSelectionUnfocusedColor(int selectionUnfocusedColor) {
+        this.selectionUnfocusedColor = selectionUnfocusedColor;
+        refreshDisplayCache();
+        return this;
     }
 
     public int getCurrentFontColor() {
         return isFocused() ? fontColor : fontUnfocusedColor;
     }
 
-    public TextBox setFontColor(int fontColor, int fontUnfocusedColor) {
-        this.fontColor = fontColor;
-        this.fontUnfocusedColor = fontUnfocusedColor;
-        refreshDisplayCache();
+    public int getCurrentSelectionColor() {
+        return isFocused() ? selectionColor : selectionUnfocusedColor;
+    }
+
+    public TextBox setTextValidator(Predicate<String> validator) {
+        getEditor().setValidator(validator);
         return this;
     }
 
-    public TextBox setSelectionColor(int selectionColor, int selectionUnfocusedColor) {
-        this.selectionColor = selectionColor;
-        this.selectionUnfocusedColor = selectionUnfocusedColor;
-        refreshDisplayCache();
+    public Consumer<FormattedString> onTextChanged() {
+        return onTextChanged;
+    }
+
+    public TextBox setOnTextChanged(Consumer<FormattedString> onTextChanged) {
+        this.onTextChanged = onTextChanged;
         return this;
     }
 
-    public void setCursorToEnd() {
-        textFieldHelper.setCursorToEnd();
-        refreshDisplayCache();
+    public TextBox setText(FormattedString text) {
+        getEditor().setString(text);
+        return this;
     }
 
-    public void refresh() {
-        refreshDisplayCache();
-    }
-
-    protected DisplayCache getDisplayCache() {
-        if (displayCache.needsRebuilding) {
-            try {
-                displayCache.rebuild(font, getText(), textFieldHelper.getCursorPos(), textFieldHelper.getSelectionPos(),
-                        getX(), getY(), getWidth(), getHeight(), horizontalAlignment);
-            } catch (Exception e) {
-                Scholar.LOGGER.error("Rebuilding Display Cache failed: ", e);
-            }
-        }
-        return displayCache;
-    }
-
-    protected void refreshDisplayCache() {
-        displayCache.needsRebuilding = true;
-    }
-
-    protected Pos2i convertLocalToScreen(Pos2i pos) {
-        return new Pos2i(getX() + pos.x, getY() + pos.y);
-    }
-
-    protected Pos2i convertScreenToLocal(Pos2i screenPos) {
-        return new Pos2i(screenPos.x - getX(), screenPos.y - getY());
-    }
+    // -- Render
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        DisplayCache displayCache = this.getDisplayCache();
-        for (DisplayCache.LineInfo lineInfo : displayCache.lines) {
-            guiGraphics.drawString(this.font, lineInfo.asComponent, getX() + lineInfo.x, getY() + lineInfo.y, getCurrentFontColor(), false);
+        FormattedStringDisplayCache displayCache = getDisplayCache();
+
+        renderLines(guiGraphics, mouseX, mouseY, partialTick, displayCache.getLines(), getCurrentFontColor());
+
+        int cursorColor = getCurrentFontColor();
+        Formatting currentFormatting = getEditor().getFormattingAtCursor();
+        if (currentFormatting.color() != null) {
+            //noinspection DataFlowIssue
+            cursorColor = currentFormatting.color().asChatFormatting().getColor() | 0xFF000000;
         }
-        this.renderHighlight(guiGraphics, displayCache.selectionAreas);
-        if (isFocused())
-            this.renderCursor(guiGraphics, displayCache.cursorPos, displayCache.cursorAtEnd);
+
+        renderCursor(guiGraphics, mouseX, mouseY, partialTick, getEditor(), displayCache.getCursor(), cursorColor);
+        renderSelection(guiGraphics, mouseX, mouseY, partialTick, displayCache.getSelection(), getCurrentSelectionColor());
     }
 
-    protected void renderHighlight(GuiGraphics guiGraphics, Rect2i[] highlightAreas) {
-        for (Rect2i selection : highlightAreas) {
-            int x = getX() + selection.getX();
-            int y = getY() + selection.getY();
-            int x1 = x + selection.getWidth();
-            int y1 = y + selection.getHeight();
-            guiGraphics.fill(RenderType.guiTextHighlight(), x, y - 1, x1, y1, isFocused() ? selectionColor : selectionUnfocusedColor);
+    public void renderLines(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, List<Line> lines, int color) {
+        for (Line line : lines) {
+            guiGraphics.drawString(font, line.renderedString(), getX() + line.x(), getY() + line.y(), color, false);
         }
     }
 
-    protected void renderCursor(GuiGraphics guiGraphics, Pos2i cursorPos, boolean isEndOfText) {
-        if (this.frameTick / 6 % 2 == 0) {
-            cursorPos = convertLocalToScreen(cursorPos);
-            if (isEndOfText)
-                guiGraphics.drawString(this.font, "_", cursorPos.x, cursorPos.y, getCurrentFontColor(), false);
-            else {
-                guiGraphics.pose().pushPose();
-                guiGraphics.pose().translate(0, 0, 50);
-                RenderSystem.disableBlend();
-                guiGraphics.fill(cursorPos.x, cursorPos.y - 1, cursorPos.x + 1, cursorPos.y + this.font.lineHeight, getCurrentFontColor());
-                guiGraphics.pose().popPose();
+    public void renderSelection(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, List<Rect2i> selection, int color) {
+        for (Rect2i rect : selection) {
+            int x0 = getX() + rect.getX();
+            int y0 = getY() + rect.getY();
+            int x1 = x0 + rect.getWidth();
+            int y1 = y0 + rect.getHeight();
+            guiGraphics.fill(RenderType.guiTextHighlight(), x0, y0, x1, y1, color);
+        }
+    }
+
+    public void renderCursor(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, FormattedStringEditor editor, Pos2i cursor, int color) {
+        if (!isFocused()) return;
+        if (editor.isSelecting()) return;
+        if (System.currentTimeMillis() - lastActionTime > 200 && (System.currentTimeMillis() - lastActionTime) % 600 > 300) // Blinking
+            return;
+
+        if (editor.isCursorAtEnd()) {
+            Line line = getDisplayCache().getLine(getDisplayCache().getLines().size() - 1);
+            if (cursor.y + font.lineHeight > getHeight()) {
+                int x = line.x() + line.width();
+                int y = line.y();
+                guiGraphics.drawString(getFont(), "<", getX() + x, getY() + y,
+                        color, false);
+            } else {
+                guiGraphics.drawString(getFont(), "_", getX() + cursor.x, getY() + cursor.y,
+                        color, false);
             }
+        } else {
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().translate(0, 0, 50);
+            RenderSystem.disableBlend();
+            guiGraphics.fill(
+                    getX() + cursor.x,
+                    getY() + cursor.y - 1,
+                    getX() + cursor.x + 1,
+                    getY() + cursor.y + font.lineHeight,
+                    color);
+            guiGraphics.pose().popPose();
         }
     }
 
-    @Override
-    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
-        narrationElementOutput.add(NarratedElementType.TITLE, createNarrationMessage());
+    protected void refreshDisplayCache() {
+        displayCache.scheduleUpdate();
     }
 
-    @Override
-    public @NotNull Component getMessage() {
-        return Component.literal(getText());
-    }
-
-    boolean suppressNextCharTyped = false;
+    // -- Input
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         try {
-            if (isFocused() && handleKeyPressed(keyCode, scanCode, modifiers)) {
+            if (isFocused() && (handleKeyPressed(keyCode, scanCode, modifiers) || getEditor().keyPressed(keyCode))) {
+                lastActionTime = System.currentTimeMillis();
+                onTextChanged().accept(getEditor().getString());
                 refreshDisplayCache();
-                suppressNextCharTyped = true;
                 return true;
             }
         } catch (Exception e) {
             Scholar.LOGGER.error("KeyPressed error: ", e);
             return true;
         }
-        suppressNextCharTyped = false;
         return false;
     }
 
     protected boolean handleKeyPressed(int keyCode, int scanCode, int modifiers) {
-        if (Screen.hasAltDown()) {
-            @Nullable Formatting formatting = switch (keyCode) {
-                case InputConstants.KEY_L -> Formatting.BOLD;
-                case InputConstants.KEY_O -> Formatting.ITALIC;
-                case InputConstants.KEY_N -> Formatting.UNDERLINE;
-                case InputConstants.KEY_M -> Formatting.STRIKETHROUGH;
-                case InputConstants.KEY_K -> Formatting.OBFUSCATED;
-                case InputConstants.KEY_0 -> Formatting.BLACK;
-                case InputConstants.KEY_1 -> Formatting.DARK_BLUE;
-                case InputConstants.KEY_2 -> Formatting.DARK_GREEN;
-                case InputConstants.KEY_3 -> Formatting.DARK_AQUA;
-                case InputConstants.KEY_4 -> Formatting.DARK_RED;
-                case InputConstants.KEY_5 -> Formatting.DARK_PURPLE;
-                case InputConstants.KEY_6 -> Formatting.GOLD;
-                case InputConstants.KEY_7 -> Formatting.GRAY;
-                case InputConstants.KEY_8 -> Formatting.DARK_GRAY;
-                case InputConstants.KEY_9 -> Formatting.BLUE;
-                case InputConstants.KEY_A -> Formatting.GREEN;
-                case InputConstants.KEY_B -> Formatting.AQUA;
-                case InputConstants.KEY_C -> Formatting.RED;
-                case InputConstants.KEY_D -> Formatting.LIGHT_PURPLE;
-                case InputConstants.KEY_E -> Formatting.YELLOW;
-                case InputConstants.KEY_F -> Formatting.WHITE;
-                case InputConstants.KEY_R -> Formatting.RESET;
-                default -> null;
-            };
-
-            if (formatting != null) {
-                if (formatting == Formatting.RESET) {
-                    //noinspection DataFlowIssue
-                    setText(ChatFormatting.stripFormatting(getText()));
-                }
-                else {
-                    getTextHandler().applyFormattingToSelection(formatting);
-                }
-                return true;
-            }
-        }
-
-        TextFieldHelper.CursorStep cursorStep = Screen.hasControlDown() ? TextFieldHelper.CursorStep.WORD : TextFieldHelper.CursorStep.CHARACTER;
         if (keyCode == InputConstants.KEY_UP) {
             changeLine(-1);
             return true;
@@ -260,23 +246,15 @@ public class TextBox extends AbstractWidget {
         } else if (keyCode == InputConstants.KEY_END) {
             keyEnd();
             return true;
-        } else if (keyCode == InputConstants.KEY_BACKSPACE) {
-            textFieldHelper.removeFromCursor(-1, cursorStep);
-            return true;
-        } else if (keyCode == InputConstants.KEY_DELETE) {
-            textFieldHelper.removeFromCursor(1, cursorStep);
-            return true;
-        } else if (keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) {
-            textFieldHelper.insertText(CommonComponents.NEW_LINE.getString());
-            return true;
         }
 
-        return textFieldHelper.keyPressed(keyCode);
+        return false;
     }
 
     public boolean charTyped(char codePoint, int modifiers) {
-        if (suppressNextCharTyped) return true;
-        if (isFocused() && getTextHandler().charTyped(codePoint)) {
+        if (isFocused() && getEditor().charTyped(codePoint)) {
+            lastActionTime = System.currentTimeMillis();
+            onTextChanged().accept(getEditor().getString());
             refreshDisplayCache();
             return true;
         }
@@ -285,26 +263,26 @@ public class TextBox extends AbstractWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isHovered && visible && isActive() && button == 0) {
-            long currentTime = Util.getMillis();
-            DisplayCache displayCache = getDisplayCache();
-            int index = displayCache.getIndexAtPosition(font, convertScreenToLocal(new Pos2i((int) mouseX, (int) mouseY)));
+        if (isHovered && visible && isActive() && button == InputConstants.MOUSE_BUTTON_LEFT) {
+            long currentTime = System.currentTimeMillis();
+            FormattedStringDisplayCache display = getDisplayCache();
 
-            if (index >= 0) {
-                if (index == lastIndex && currentTime - lastClickTime < 250L) {
-                    if (!textFieldHelper.isSelecting()) {
-                        selectWord(index);
-                    } else {
-                        textFieldHelper.selectAll();
-                    }
+            int indexAtMousePos = display.getCharIndexAtPosition(font, (int) (mouseX - getX()), (int) (mouseY - getY()));
+
+            if (Math.abs(lastClickPos.x - (int) mouseX) < 4 && Math.abs(lastClickPos.y - (int) mouseY) < 4 && currentTime - lastActionTime < 250L) {
+                if (!getEditor().isSelecting()) {
+                    getEditor().selectWord(indexAtMousePos);
                 } else {
-                    textFieldHelper.setCursorPos(index, Screen.hasShiftDown());
+                    getEditor().selectAll();
                 }
-                refreshDisplayCache();
+            } else {
+                getEditor().setCursorPos(indexAtMousePos, Screen.hasShiftDown());
             }
 
-            lastIndex = index;
-            lastClickTime = currentTime;
+            refreshDisplayCache();
+
+            lastClickPos = new Pos2i((int) mouseX, (int) mouseY);
+            lastActionTime = currentTime;
             return true;
         }
 
@@ -314,44 +292,56 @@ public class TextBox extends AbstractWidget {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (button == 0) {
-            DisplayCache displayCache = this.getDisplayCache();
-            int index = displayCache.getIndexAtPosition(this.font, this.convertScreenToLocal(new Pos2i((int) mouseX, (int) mouseY)));
-            this.textFieldHelper.setCursorPos(index, true);
-            this.refreshDisplayCache();
+            FormattedStringDisplayCache display = getDisplayCache();
+            int indexAtMousePos = display.getCharIndexAtPosition(font, (int) (mouseX - getX()), (int) (mouseY - getY()));
+            getEditor().setCursorPos(indexAtMousePos, true);
+            refreshDisplayCache();
         }
         return true;
     }
 
-    protected void selectWord(int index) {
-        String string = this.getText();
-        this.textFieldHelper.setSelectionRange(StringSplitter.getWordPosition(string, -1, index, false),
-                StringSplitter.getWordPosition(string, 1, index, false));
+    // --
+
+    public void changeLine(int yChange) {
+        Pos2i cursor = getDisplayCache().getCursor();
+        int x = cursor.x;
+        int y = cursor.y + (font.lineHeight * yChange);
+        int index = getDisplayCache().getCharIndexAtPosition(font, x, y);
+
+        getEditor().setCursorPos(index, Screen.hasShiftDown());
     }
 
-    protected void changeLine(int yChange) {
-        int cursorPos = this.textFieldHelper.getCursorPos();
-        int line = this.getDisplayCache().changeLine(cursorPos, yChange);
-        this.textFieldHelper.setCursorPos(line, Screen.hasShiftDown());
-    }
-
-    protected void keyHome() {
+    public void keyHome() {
         if (Screen.hasControlDown()) {
-            this.textFieldHelper.setCursorToStart(Screen.hasShiftDown());
+            getEditor().setCursorToStart(Screen.hasShiftDown());
         } else {
-            int cursorIndex = this.textFieldHelper.getCursorPos();
-            int lineStartIndex = this.getDisplayCache().findLineStart(cursorIndex);
-            this.textFieldHelper.setCursorPos(lineStartIndex, Screen.hasShiftDown());
+            int cursorPos = getEditor().getCursorPos();
+            int lineIndex = getDisplayCache().findLineIndexByCharIndex(cursorPos);
+            Line line = getDisplayCache().getLine(lineIndex);
+            getEditor().setCursorPos(line.firstCharIndex(), Screen.hasShiftDown());
         }
     }
 
-    protected void keyEnd() {
+    public void keyEnd() {
         if (Screen.hasControlDown()) {
-            this.textFieldHelper.setCursorToEnd(Screen.hasShiftDown());
+            getEditor().setCursorToEnd(Screen.hasShiftDown());
         } else {
-            DisplayCache displayCache = this.getDisplayCache();
-            int cursorIndex = this.textFieldHelper.getCursorPos();
-            int lineEndIndex = displayCache.findLineEnd(cursorIndex);
-            this.textFieldHelper.setCursorPos(lineEndIndex, Screen.hasShiftDown());
+            int cursorPos = getEditor().getCursorPos();
+            int lineIndex = getDisplayCache().findLineIndexByCharIndex(cursorPos);
+            Line line = getDisplayCache().getLine(lineIndex);
+            getEditor().setCursorPos(line.lastCharIndex() + 1, Screen.hasShiftDown());
         }
+    }
+
+    // --
+
+    @Override
+    public @NotNull Component getMessage() {
+        return Component.literal(getEditor().getString().toStringWithoutFormatting());
+    }
+
+    @Override
+    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+        narrationElementOutput.add(NarratedElementType.TITLE, createNarrationMessage());
     }
 }

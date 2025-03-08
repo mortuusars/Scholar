@@ -1,6 +1,6 @@
-package io.github.mortuusars.scholar.client.textbox.internals;
+package io.github.mortuusars.scholar.client.screen.textbox.internals;
 
-import io.github.mortuusars.scholar.client.textbox.formatting.Formatting;
+import io.github.mortuusars.scholar.client.screen.textbox.formatting.Formatting;
 import net.minecraft.client.gui.Font;
 
 public record Char(char character, Formatting formatting) {
@@ -35,7 +35,7 @@ public record Char(char character, Formatting formatting) {
     }
 
     public int getWidth(Font font, boolean ignoreNewLine) {
-        return ignoreNewLine && character == '\n' ? 0 : font.width(toStringWithFormatting());
+        return ignoreNewLine && (character == '\n') ? 0 : font.width(toStringWithFormatting());
     }
 
     public String toStringWithFormatting() {

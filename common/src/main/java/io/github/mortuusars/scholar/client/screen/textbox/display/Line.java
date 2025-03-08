@@ -1,7 +1,7 @@
-package io.github.mortuusars.scholar.client.textbox.display;
+package io.github.mortuusars.scholar.client.screen.textbox.display;
 
-import io.github.mortuusars.scholar.client.textbox.internals.Char;
-import io.github.mortuusars.scholar.client.textbox.internals.FormattedString;
+import io.github.mortuusars.scholar.client.screen.textbox.internals.Char;
+import io.github.mortuusars.scholar.client.screen.textbox.internals.FormattedString;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 
@@ -102,7 +102,7 @@ public class Line {
             }
         }
 
-        return lastCharIndex() + 1;
+        return string.get(string.length() - 1).character() == '\n' ? lastCharIndex() : lastCharIndex() + 1;
     }
 
     @Override

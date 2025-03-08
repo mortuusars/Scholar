@@ -1,8 +1,8 @@
 package io.github.mortuusars.scholar.client.screen;
 
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.client.textbox.AmazingTextBox;
-import io.github.mortuusars.scholar.client.textbox.internals.FormattedString;
+import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
+import io.github.mortuusars.scholar.client.screen.textbox.internals.FormattedString;
 import io.github.mortuusars.scholar.client.util.HorizontalAlignment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -10,9 +10,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 public class TestScreen extends Screen {
-    private AmazingTextBox textBoxLeft;
-    private AmazingTextBox textBoxCenter;
-    private AmazingTextBox textBoxRight;
+    private TextBox textBoxLeft;
+    private TextBox textBoxCenter;
+    private TextBox textBoxRight;
 
     public TestScreen() {
         super(Component.empty());
@@ -20,16 +20,16 @@ public class TestScreen extends Screen {
 
     @Override
     protected void init() {
-        textBoxLeft = new AmazingTextBox((width / 2) - 250, (height / 2) - 70, 140, 160);
+        textBoxLeft = new TextBox((width / 2) - 250, (height / 2) - 70, 140, 160);
         textBoxLeft.getEditor().setString(FormattedString.parse("§lbold§r\n§4colored§r"));
         addRenderableWidget(textBoxLeft);
 
-        textBoxCenter = new AmazingTextBox((width / 2) - 70, (height / 2) - 70, 140, 160);
+        textBoxCenter = new TextBox((width / 2) - 70, (height / 2) - 70, 140, 160);
         textBoxCenter.getEditor().setString(FormattedString.parse("§lbold§r\n§4colored§r"));
         textBoxCenter.setHorizontalAlignment(HorizontalAlignment.CENTER);
         addRenderableWidget(textBoxCenter);
 
-        textBoxRight = new AmazingTextBox((width / 2) + 110, (height / 2) - 70, 140, 160);
+        textBoxRight = new TextBox((width / 2) + 110, (height / 2) - 70, 140, 160);
         textBoxRight.getEditor().setString(FormattedString.parse("§lbold§r\n§4colored§r"));
         textBoxRight.setHorizontalAlignment(HorizontalAlignment.RIGHT);
         addRenderableWidget(textBoxRight);

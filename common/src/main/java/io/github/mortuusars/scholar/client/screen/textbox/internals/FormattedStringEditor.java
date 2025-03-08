@@ -1,8 +1,8 @@
-package io.github.mortuusars.scholar.client.textbox.internals;
+package io.github.mortuusars.scholar.client.screen.textbox.internals;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.client.textbox.formatting.Formatting;
+import io.github.mortuusars.scholar.client.screen.textbox.formatting.Formatting;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.Util;
@@ -50,6 +50,10 @@ public class FormattedStringEditor {
 
     public Predicate<String> getValidator() {
         return validator;
+    }
+
+    public void setValidator(Predicate<String> validator) {
+        this.validator = validator;
     }
 
     // -- String
@@ -375,7 +379,7 @@ public class FormattedStringEditor {
 
     public interface Validator {
         static Predicate<String> fitInDimensions(Font font, int width, int height) {
-            return string -> font.wordWrapHeight(string, width) + (string.endsWith("\n") ? font.lineHeight : 0) <= height;
+            return string -> string.length() < 1024 && font.wordWrapHeight(string, width) + (string.endsWith("\n") ? font.lineHeight : 0) <= height;
         }
     }
 }
