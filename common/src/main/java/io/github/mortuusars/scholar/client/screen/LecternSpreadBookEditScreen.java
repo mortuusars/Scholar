@@ -6,6 +6,7 @@ import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import io.github.mortuusars.scholar.network.Packets;
 import io.github.mortuusars.scholar.network.packet.server.LecternEditBookC2SP;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.CommonComponents;
@@ -104,6 +105,51 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
     protected void sendChanges(@Nullable String title) {
         removeEmptyTrailingPages();
         Packets.sendToServer(new LecternEditBookC2SP(getMenu().getLecternPos(), pages, Optional.ofNullable(title)));
+    }
+
+    // --
+
+    @Override
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        renderPageTooltip(guiGraphics, mouseX, mouseY);
+    }
+
+    @Override
+    protected void renderLeftPageNumber(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
+        if (isRightPage(getMenu().getPage()) && isHoveringOverLeftPageNumber(mouseX, mouseY)) {
+            color = textColor;
+        }
+        super.renderLeftPageNumber(guiGraphics, mouseX, mouseY, partialTick, currentSpread, color);
+    }
+
+    @Override
+    protected void renderRightPageNumber(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
+        if (isLeftPage(getMenu().getPage()) && isHoveringOverRightPageNumber(mouseX, mouseY)) {
+            color = textColor;
+        }
+        super.renderRightPageNumber(guiGraphics, mouseX, mouseY, partialTick, currentSpread, color);
+    }
+
+    protected void renderPageTooltip(GuiGraphics guiGraphics, int x, int y) {
+        int page = getMenu().getPage();
+
+        if ((isRightPage(page) && isHoveringOverLeftPageNumber(x, y))
+                || (isLeftPage(page) && isHoveringOverRightPageNumber(x, y))) {
+            guiGraphics.renderTooltip(font, Component.translatable("gui.scholar.lectern.set_current_page"), x, y);
+        }
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        int page = getMenu().getPage();
+        if (isRightPage(page) && isHoveringOverLeftPageNumber(mouseX, mouseY)) {
+            sendButtonClick(LecternMenu.BUTTON_PAGE_JUMP_RANGE_START + page - 1);
+        } else if (isLeftPage(page) && isHoveringOverRightPageNumber(mouseX, mouseY)) {
+            sendButtonClick(LecternMenu.BUTTON_PAGE_JUMP_RANGE_START + page + 1);
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     // --

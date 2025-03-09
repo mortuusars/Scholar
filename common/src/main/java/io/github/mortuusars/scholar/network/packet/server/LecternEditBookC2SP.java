@@ -29,6 +29,10 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
+/**
+ * Similar to {@link net.minecraft.network.protocol.game.ServerboundEditBookPacket} but for lecterns.
+ * Contains logic copied from {@link net.minecraft.server.network.ServerGamePacketListenerImpl}, which is not ideal, but hopefully it'll not cause any issues.
+ */
 public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optional<String> title) implements IPacket {
     public static final ResourceLocation ID = Scholar.resource("lectern_edit_book");
 
@@ -139,10 +143,6 @@ public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optio
             }
             return object;
         });
-    }
-
-    private CompletableFuture<FilteredText> filterTextPacket(ServerPlayer player, String text) {
-        return this.filterTextPacket(player, text, TextFilter::processStreamMessage);
     }
 
     private CompletableFuture<List<FilteredText>> filterTextPacket(ServerPlayer player, List<String> texts) {

@@ -60,8 +60,8 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(guiGraphics);
-        renderBook(guiGraphics);
-        renderPageNumbers(guiGraphics, currentSpread);
+        renderBook(guiGraphics, mouseX, mouseY, partialTick);
+        renderPageNumbers(guiGraphics, mouseX, mouseY, partialTick, currentSpread);
 
         updateAndCacheContentsIfNeeded();
 

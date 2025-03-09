@@ -91,13 +91,13 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(guiGraphics);
-        renderBook(guiGraphics);
-        renderPageNumbers(guiGraphics, currentSpread);
+        renderBook(guiGraphics, mouseX, mouseY, partialTick);
+        renderPageNumbers(guiGraphics, mouseX, mouseY, partialTick, currentSpread);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override
-    protected void renderBook(@NotNull GuiGraphics guiGraphics) {
+    protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         RenderUtil.withColorMultiplied(bookColor, () -> {
             // Cover
             guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,

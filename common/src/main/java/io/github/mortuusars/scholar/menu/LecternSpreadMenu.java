@@ -37,8 +37,12 @@ public class LecternSpreadMenu extends LecternMenu {
         return lecternPos;
     }
 
+    protected int getPageCount() {
+        return WrittenBookItem.getPageCount(getBook());
+    }
+
     protected int getSpreadCount() {
-        return Mth.ceil(WrittenBookItem.getPageCount(getBook()) / 2.0);
+        return Mth.ceil(getPageCount() / 2.0);
     }
 
     protected int getCurrentSpread() {

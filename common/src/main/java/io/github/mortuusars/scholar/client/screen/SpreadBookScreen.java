@@ -18,7 +18,6 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -142,7 +141,7 @@ public abstract class SpreadBookScreen extends Screen {
 
     // -- Render
 
-    protected void renderBook(@NotNull GuiGraphics guiGraphics) {
+    protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         RenderUtil.withColorMultiplied(bookColor, () -> {
             // Cover
             guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
@@ -154,14 +153,21 @@ public abstract class SpreadBookScreen extends Screen {
                 0, 180, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
     }
 
-    protected void renderPageNumbers(GuiGraphics guiGraphics, int currentSpread) {
+    protected void renderPageNumbers(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread) {
+        renderLeftPageNumber(guiGraphics, mouseX, mouseY, partialTick, currentSpread, pageNumbersColor);
+        renderRightPageNumber(guiGraphics, mouseX, mouseY, partialTick, currentSpread, pageNumbersColor);
+    }
+
+    protected void renderLeftPageNumber(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
         String leftPageNumber = Integer.toString(currentSpread * 2 + 1);
         guiGraphics.drawString(font, leftPageNumber, leftPos + 69 + (8 - font.width(leftPageNumber) / 2),
-                topPos + 157, pageNumbersColor, false);
+                topPos + 157, color, false);
+    }
 
+    protected void renderRightPageNumber(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
         String rightPageNumber = Integer.toString(currentSpread * 2 + 2);
         guiGraphics.drawString(font, rightPageNumber, leftPos + 208 + (8 - font.width(rightPageNumber) / 2),
-                topPos + 157, pageNumbersColor, false);
+                topPos + 157, color, false);
     }
 
     // -- Input
@@ -186,5 +192,29 @@ public abstract class SpreadBookScreen extends Screen {
         }
 
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+    
+    // --
+
+    protected boolean isHovering(int x, int y, int width, int height, double mouseX, double mouseY) {
+        mouseX -= this.leftPos;
+        mouseY -= this.topPos;
+        return mouseX >= (double)(x - 1) && mouseX < (double)(x + width + 1) && mouseY >= (double)(y - 1) && mouseY < (double)(y + height + 1);
+    }
+
+    protected boolean isHoveringOverRightPageNumber(double mouseX, double mouseY) {
+        return isHovering(206, 157, 17, 7, mouseX, mouseY);
+    }
+
+    protected boolean isHoveringOverLeftPageNumber(double mouseX, double mouseY) {
+        return isHovering(66, 157, 17, 7, mouseX, mouseY);
+    }
+
+    protected boolean isLeftPage(int pageIndex) {
+        return pageIndex % 2 == 0;
+    }
+
+    protected boolean isRightPage(int pageIndex) {
+        return pageIndex % 2 == 1;
     }
 }

@@ -30,6 +30,11 @@ public class LecternSpreadBookEditMenu extends LecternSpreadMenu {
     }
 
     @Override
+    protected int getPageCount() {
+        return 100;
+    }
+
+    @Override
     protected int getSpreadCount() {
         return 50;
     }

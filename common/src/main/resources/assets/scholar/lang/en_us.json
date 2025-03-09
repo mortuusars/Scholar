@@ -39,6 +39,7 @@
   "gui.scholar.insert_section_sign": "Insert Formatting Symbol",
   "gui.scholar.insert_section_sign.help1": "Section sign symbol with combination of a specific letter is used to apply formatting to a part of the text.",
   "gui.scholar.insert_section_sign.help2": "Press [%s] to learn more",
+  "gui.scholar.lectern.set_current_page": "Set as Current Page",
 
   "subtitle.scholar.book.signed": "Book signing scribbles"
 }
