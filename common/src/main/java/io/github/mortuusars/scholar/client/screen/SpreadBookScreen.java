@@ -60,7 +60,6 @@ public abstract class SpreadBookScreen extends Screen {
         this.pageNumbersColor = Config.Client.getColor(Config.Client.PAGE_NUMBERS_COLOR);
         this.selectionColor = Config.Client.getColor(Config.Client.SELECTION_COLOR);
         this.selectionUnfocusedColor = Config.Client.getColor(Config.Client.SELECTION_UNFOCUSED_COLOR);
-        this.selectionUnfocusedColor = 0xFF7E7388;
     }
 
     @Override
