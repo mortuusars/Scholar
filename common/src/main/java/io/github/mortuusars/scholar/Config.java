@@ -145,7 +145,7 @@ public class Config {
                             .comment("Color of the selection. Default: " + selectionColor)
                             .define("selection_color", selectionColor);
 
-                    String selectionUnfocusedColor = "FF664488";
+                    String selectionUnfocusedColor = "FF916CB6";
                     SELECTION_UNFOCUSED_COLOR = builder
                             .comment("Color of the selection when text box is not focused. Default: " + selectionUnfocusedColor)
                             .define("selection_unfocused_color", selectionUnfocusedColor);

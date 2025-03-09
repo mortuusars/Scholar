@@ -58,12 +58,6 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
     }
 
     @Override
-    protected void updateButtonVisibility() {
-        prevPageButton.visible = currentSpread > 0;
-        nextPageButton.visible = currentSpread < getSpreadCount() - 1;
-    }
-
-    @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(guiGraphics);
         renderBook(guiGraphics);

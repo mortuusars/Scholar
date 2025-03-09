@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar.menu;
 
 import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.book.Spread;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
@@ -15,20 +16,15 @@ import net.minecraft.world.item.WrittenBookItem;
 import org.jetbrains.annotations.NotNull;
 
 public class LecternSpreadMenu extends LecternMenu {
-    public static final int PREV_PAGE_ID = 1;
-    public static final int NEXT_PAGE_ID = 2;
-
-    private final int spreads;
-
     public LecternSpreadMenu(int containerId, Container lectern, ContainerData lecternData) {
         super(containerId, lectern, lecternData);
-        this.spreads = (int)(WrittenBookItem.getPageCount(getBook()) / 2f);
+//        this.spreads = (int)(WrittenBookItem.getPageCount(getBook()) / 2f);
 
         // Corrects page to the closest even number (down)
-        if (getPage() % 2 != 0) {
-            int correctedPage = Mth.clamp(getPage() - 1, 0, 98);
-            setData(0, correctedPage);
-        }
+//        if (getPage() % 2 != 0) {
+//            int correctedPage = Mth.clamp(getPage() - 1, 0, 98);
+//            setData(0, correctedPage);
+//        }
     }
 
     public static LecternSpreadMenu fromBuffer(int containerId, Inventory inventory, FriendlyByteBuf buffer) {
@@ -42,22 +38,24 @@ public class LecternSpreadMenu extends LecternMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int buttonId) {
-        if (buttonId == PREV_PAGE_ID || buttonId == NEXT_PAGE_ID) {
-            int currentSpread = getCurrentSpread();
+        if (buttonId == BUTTON_PREV_PAGE || buttonId == BUTTON_NEXT_PAGE) {
+            int currentSpreadIndex = getCurrentSpread();
+            int newSpreadIndex = currentSpreadIndex + (buttonId == BUTTON_PREV_PAGE ? -1 : 1);
 
-            int change = buttonId == PREV_PAGE_ID ? -1 : 1;
-
-            int newSpreadIndex = currentSpread + change;
-
-            if (newSpreadIndex < 0 || newSpreadIndex + 1 > spreads)
+            if (newSpreadIndex < 0 || newSpreadIndex > getSpreadCount() - 1) {
                 return true;
+            }
 
-            int newPageIndex = newSpreadIndex * 2;
+            int newPageIndex = Spread.Side.LEFT.getPageIndexFromSpread(newSpreadIndex);
             this.setData(0, newPageIndex);
             return true;
         }
 
         return super.clickMenuButton(player, buttonId);
+    }
+
+    protected int getSpreadCount() {
+        return Mth.ceil(WrittenBookItem.getPageCount(getBook()) / 2.0);
     }
 
     protected int getCurrentSpread() {

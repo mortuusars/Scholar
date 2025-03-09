@@ -11,21 +11,22 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerListener;
+import net.minecraft.world.inventory.LecternMenu;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class LecternSpreadBookViewScreen extends SpreadBookViewScreen implements MenuAccess<LecternSpreadMenu> {
     protected final LecternSpreadMenu menu;
-    protected final ContainerListener listener = new ContainerListener(){
+    protected final ContainerListener listener = new ContainerListener() {
         @Override
         public void slotChanged(AbstractContainerMenu menu, int dataSlotIndex, ItemStack stack) {
-            LecternSpreadBookViewScreen.this.bookChanged();
+            LecternSpreadBookViewScreen.this.bookChanged(stack);
         }
 
         @Override
-        public void dataChanged(AbstractContainerMenu menu, int dataSlotIndex, int value) {
+        public void dataChanged(AbstractContainerMenu menu, int dataSlotIndex, int pageIndex) {
             if (dataSlotIndex == 0) {
-                LecternSpreadBookViewScreen.this.pageChanged();
+                LecternSpreadBookViewScreen.this.updatePage(pageIndex);
             }
         }
     };
@@ -43,7 +44,7 @@ public class LecternSpreadBookViewScreen extends SpreadBookViewScreen implements
     @Override
     protected void init() {
         super.init();
-        this.menu.addSlotListener(this.listener);
+        getMenu().addSlotListener(listener);
     }
 
     @Override
@@ -54,8 +55,7 @@ public class LecternSpreadBookViewScreen extends SpreadBookViewScreen implements
                         button -> this.onClose()).bounds(this.width / 2 - 100, topPos + BOOK_HEIGHT + 12, 98, 20).build());
                 this.addRenderableWidget(Button.builder(Component.translatable("lectern.take_book"),
                         button -> this.sendButtonClick(3)).bounds(this.width / 2 + 2, topPos + BOOK_HEIGHT + 12, 98, 20).build());
-            }
-            else {
+            } else {
                 this.addRenderableWidget(Button.builder(Component.translatable("lectern.take_book"),
                         (button) -> this.sendButtonClick(3)).bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20).build());
             }
@@ -66,32 +66,31 @@ public class LecternSpreadBookViewScreen extends SpreadBookViewScreen implements
 
     @Override
     protected boolean pageBack() {
-        this.sendButtonClick(1);
+        this.sendButtonClick(LecternMenu.BUTTON_PREV_PAGE);
         return true;
     }
 
     @Override
     protected boolean pageForward() {
-        this.sendButtonClick(2);
+        this.sendButtonClick(LecternMenu.BUTTON_NEXT_PAGE);
         return true;
     }
 
     @Override
     public boolean setPage(int pageIndex) {
-        if (pageIndex != this.menu.getPage()) {
-            this.sendButtonClick(100 + pageIndex);
+        if (pageIndex != getMenu().getPage()) {
+            sendPageIndex(pageIndex);
             return true;
         }
         return false;
     }
 
-    protected void bookChanged() {
-        ItemStack itemStack = this.menu.getBook();
-        this.setBookAccess(BookViewAccess.fromItem(itemStack));
+    protected void bookChanged(ItemStack stack) {
+        this.setBookAccess(BookViewAccess.fromItem(stack));
     }
 
-    protected void pageChanged() {
-        this.setPage(this.menu.getPage());
+    protected void updatePage(int pageIndex) {
+        super.setPage(pageIndex);
     }
 
     // --
@@ -99,7 +98,7 @@ public class LecternSpreadBookViewScreen extends SpreadBookViewScreen implements
     @Override
     public void removed() {
         super.removed();
-        this.menu.removeSlotListener(this.listener);
+        getMenu().removeSlotListener(listener);
     }
 
     @Override
@@ -108,8 +107,15 @@ public class LecternSpreadBookViewScreen extends SpreadBookViewScreen implements
         super.onClose();
     }
 
-    protected void sendButtonClick(int pageData) {
-        if (Minecraft.getInstance().gameMode != null)
-            Minecraft.getInstance().gameMode.handleInventoryButtonClick(this.menu.containerId, pageData);
+    // --
+
+    protected void sendPageIndex(int pageIndex) {
+        sendButtonClick(100 + pageIndex);
+    }
+
+    protected void sendButtonClick(int buttonId) {
+        if (Minecraft.getInstance().gameMode != null) {
+            Minecraft.getInstance().gameMode.handleInventoryButtonClick(this.menu.containerId, buttonId);
+        }
     }
 }
