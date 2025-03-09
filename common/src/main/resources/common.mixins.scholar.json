@@ -7,6 +7,7 @@
   "mixins": [
     "ArmorDyeRecipeMixin",
     "BookCloningRecipeMixin",
+    "LecternBlockEntityMixin",
     "LecternBlockMixin",
     "WritableBookItemMixin",
     "WrittenBookItemMixin",

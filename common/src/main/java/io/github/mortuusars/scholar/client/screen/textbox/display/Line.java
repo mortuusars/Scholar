@@ -88,7 +88,7 @@ public class Line {
     }
 
     public int indexAtWidth(Font font, int width) {
-        if (width <= 0) return firstCharIndex();
+        if (width <= 0 || string.isEmpty()) return firstCharIndex();
 
         int currentWidth = 0;
 

@@ -3,6 +3,7 @@ package io.github.mortuusars.scholar.forge.event;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.client.render.ChiseledBookShelfOverlay;
+import io.github.mortuusars.scholar.client.screen.LecternSpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.screen.LecternSpreadBookViewScreen;
 import io.github.mortuusars.scholar.book.BookColor;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -23,7 +24,7 @@ public class ClientEvents {
             event.enqueueWork(() -> {
                 ScholarClient.init();
                 MenuScreens.register(Scholar.MenuTypes.LECTERN_SPREAD_BOOK_VIEW.get(), LecternSpreadBookViewScreen::new);
-                MenuScreens.register(Scholar.MenuTypes.LECTERN_SPREAD_BOOK_EDIT.get(), LecternSpreadBookViewScreen::new);
+                MenuScreens.register(Scholar.MenuTypes.LECTERN_SPREAD_BOOK_EDIT.get(), LecternSpreadBookEditScreen::new);
             });
         }
 

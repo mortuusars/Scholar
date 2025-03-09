@@ -1,0 +1,131 @@
+package io.github.mortuusars.scholar.client.screen;
+
+import io.github.mortuusars.scholar.Config;
+import io.github.mortuusars.scholar.book.BookColor;
+import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
+import io.github.mortuusars.scholar.network.Packets;
+import io.github.mortuusars.scholar.network.packet.server.LecternEditBookC2SP;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.network.chat.CommonComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.*;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
+
+public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements MenuAccess<LecternSpreadBookEditMenu> {
+    protected final LecternSpreadBookEditMenu menu;
+    protected final ContainerListener listener = new ContainerListener() {
+        @Override
+        public void slotChanged(AbstractContainerMenu menu, int dataSlotIndex, ItemStack stack) {
+            LecternSpreadBookEditScreen.this.bookChanged(stack);
+        }
+
+        @Override
+        public void dataChanged(AbstractContainerMenu menu, int dataSlotIndex, int pageIndex) {
+            if (dataSlotIndex == 0) {
+                LecternSpreadBookEditScreen.this.updatePage(pageIndex);
+            }
+        }
+    };
+
+    public LecternSpreadBookEditScreen(LecternSpreadBookEditMenu lecternSpreadMenu, Inventory inventory, Component component) {
+        super(lecternSpreadMenu.getBook(), InteractionHand.MAIN_HAND);
+        this.menu = lecternSpreadMenu;
+    }
+
+    @Override
+    public @NotNull LecternSpreadBookEditMenu getMenu() {
+        return menu;
+    }
+
+    @Override
+    protected void init() {
+        super.init();
+        getMenu().addSlotListener(listener);
+    }
+
+    @Override
+    protected void createBottomButtons() {
+        if (player.mayBuild()) {
+            if (Config.Client.SHOW_DONE_BUTTON.get()) {
+                this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE,
+                        button -> this.onClose()).bounds(this.width / 2 - 100, topPos + BOOK_HEIGHT + 12, 98, 20).build());
+                this.addRenderableWidget(Button.builder(Component.translatable("lectern.take_book"),
+                        button -> this.sendButtonClick(3)).bounds(this.width / 2 + 2, topPos + BOOK_HEIGHT + 12, 98, 20).build());
+            } else {
+                this.addRenderableWidget(Button.builder(Component.translatable("lectern.take_book"),
+                        (button) -> this.sendButtonClick(3)).bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20).build());
+            }
+        } else {
+            super.createBottomButtons();
+        }
+    }
+
+    @Override
+    protected boolean pageBack() {
+        this.sendButtonClick(LecternMenu.BUTTON_PREV_PAGE);
+        return true;
+    }
+
+    @Override
+    protected boolean pageForward() {
+        this.sendButtonClick(LecternMenu.BUTTON_NEXT_PAGE);
+        return true;
+    }
+
+    protected void bookChanged(ItemStack stack) {
+        bookColor = BookColor.of(stack);
+        setupPages(stack);
+    }
+
+    protected void updatePage(int pageIndex) {
+        int newSpreadIndex = pageIndex / 2;
+        if (currentSpread != newSpreadIndex) {
+            currentSpread = newSpreadIndex;
+
+            // Ensure we have pages to display:
+            while (this.pages.size() < (currentSpread + 1) * 2) {
+                appendEmptyPage();
+            }
+
+            setTextBoxes();
+            updateButtonVisibility();
+        }
+    }
+
+    @Override
+    protected void sendChanges(@Nullable String title) {
+        removeEmptyTrailingPages();
+        Packets.sendToServer(new LecternEditBookC2SP(getMenu().getLecternPos(), pages, Optional.ofNullable(title)));
+    }
+
+    // --
+
+    @Override
+    public void removed() {
+        super.removed();
+        getMenu().removeSlotListener(listener);
+    }
+
+    @Override
+    public void onClose() {
+        sendChanges(null);
+        player.closeContainer();
+        super.onClose();
+    }
+
+    // --
+
+    protected void sendButtonClick(int buttonId) {
+        if (Minecraft.getInstance().gameMode != null) {
+            Minecraft.getInstance().gameMode.handleInventoryButtonClick(this.menu.containerId, buttonId);
+        }
+    }
+}

@@ -14,3 +14,5 @@ accessible field net/minecraft/client/gui/font/TextFieldHelper stringValidator L
 accessible field net/minecraft/client/gui/font/TextFieldHelper cursorPos I
 accessible field net/minecraft/client/gui/font/TextFieldHelper selectionPos I
 extendable method net/minecraft/client/gui/font/TextFieldHelper resetSelectionIfNeeded (Z)V
+
+accessible field net/minecraft/world/level/block/entity/LecternBlockEntity pageCount I

@@ -7,7 +7,6 @@ import net.minecraftforge.common.ForgeConfigSpec;
 public class Config {
     public static class Common {
         public static final ForgeConfigSpec SPEC;
-        //TODO: Move some to client config?
         // Coloring
         public static final ForgeConfigSpec.BooleanValue WRITABLE_BOOK_COLORING;
         public static final ForgeConfigSpec.BooleanValue WRITTEN_BOOK_COLORING;

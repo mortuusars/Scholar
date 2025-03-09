@@ -38,11 +38,10 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         super(BookColor.of(bookStack));
         this.bookStack = bookStack;
         this.hand = hand;
-
-        setupPages(bookStack);
     }
 
     protected void setupPages(ItemStack bookStack) {
+        pages.clear();
         CompoundTag compoundtag = bookStack.getTag();
         if (compoundtag != null) {
             BookViewScreen.loadPages(compoundtag, this.pages::add);
@@ -51,6 +50,8 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         while (this.pages.size() < 2) {
             this.pages.add("");
         }
+
+        setTextBoxes();
     }
 
     @Override
@@ -73,7 +74,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
                 .setOnTextChanged(text -> setPageText(Spread.Side.RIGHT, text.toString()));
         addRenderableWidget(rightPageTextBox);
 
-        setTextBoxes();
+        setupPages(bookStack);
 
         createPrevPageButton();
         createNextPageButton();
@@ -177,6 +178,24 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         }
     }
 
+    protected void saveChanges(boolean sign, @Nullable String title) {
+        if (bookModified || sign) {
+            if (!sign) {
+                title = null;
+            }
+            removeEmptyTrailingPages();
+            updateLocalCopy(sign, title);
+
+            sendChanges(title);
+        }
+    }
+
+    protected void sendChanges(@Nullable String title) {
+        int slotId = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : 40;
+        Objects.requireNonNull(minecraft.getConnection()).send(
+                new ServerboundEditBookPacket(slotId, this.pages, Optional.ofNullable(title)));
+    }
+
     protected void updateLocalCopy(boolean sign, @Nullable String title) {
         ListTag listTag = new ListTag();
         this.pages.stream().map(StringTag::valueOf).forEach(listTag::add);
@@ -188,21 +207,6 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             Preconditions.checkState(!StringUtil.isNullOrEmpty(title), "Title cannot be null or empty when signing a book.");
             this.bookStack.addTagElement("author", StringTag.valueOf(player.getGameProfile().getName()));
             this.bookStack.addTagElement("title", StringTag.valueOf(title));
-        }
-    }
-
-    protected void saveChanges(boolean sign, @Nullable String title) {
-        if (bookModified || sign) {
-            if (!sign) {
-                title = null;
-            }
-            removeEmptyTrailingPages();
-            updateLocalCopy(sign, title);
-
-            int slotId = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : 40;
-
-            Objects.requireNonNull(minecraft.getConnection()).send(
-                    new ServerboundEditBookPacket(slotId, this.pages, Optional.ofNullable(title)));
         }
     }
 

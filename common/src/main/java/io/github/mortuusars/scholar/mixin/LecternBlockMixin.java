@@ -2,6 +2,7 @@ package io.github.mortuusars.scholar.mixin;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.PlatformHelper;
+import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -38,6 +39,7 @@ public abstract class LecternBlockMixin {
         ItemStack bookStack = lecternBlockEntity.getBook();
 
         if (bookStack.is(Items.WRITABLE_BOOK)) {
+            scholar$openEditMenu(serverPlayer, lecternBlockEntity, bookStack);
             player.awardStat(Stats.INTERACT_WITH_LECTERN);
             ci.cancel();
         }
@@ -47,6 +49,28 @@ public abstract class LecternBlockMixin {
             player.awardStat(Stats.INTERACT_WITH_LECTERN);
             ci.cancel();
         }
+    }
+
+    @Unique
+    private void scholar$openEditMenu(ServerPlayer player, LecternBlockEntity lecternBlockEntity, ItemStack bookStack) {
+        MenuProvider menuProvider = new MenuProvider() {
+            @Override
+            public @NotNull Component getDisplayName() {
+                return bookStack.getHoverName();
+            }
+
+            @Override
+            public @NotNull AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
+                Container bookAccess = lecternBlockEntity.bookAccess;
+                ContainerData dataAccess = lecternBlockEntity.dataAccess;
+                return new LecternSpreadBookEditMenu(containerId, bookAccess, dataAccess, lecternBlockEntity.getBlockPos());
+            }
+        };
+
+        PlatformHelper.openMenu(player, menuProvider, buffer -> {
+            buffer.writeItem(bookStack);
+            buffer.writeBlockPos(lecternBlockEntity.getBlockPos());
+        });
     }
 
     @Unique
@@ -61,12 +85,13 @@ public abstract class LecternBlockMixin {
             public @NotNull AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
                 Container bookAccess = lecternBlockEntity.bookAccess;
                 ContainerData dataAccess = lecternBlockEntity.dataAccess;
-                return new LecternSpreadMenu(containerId, bookAccess, dataAccess);
+                return new LecternSpreadMenu(containerId, bookAccess, dataAccess, lecternBlockEntity.getBlockPos());
             }
         };
 
         PlatformHelper.openMenu(player, menuProvider, buffer -> {
             buffer.writeItem(bookStack);
+            buffer.writeBlockPos(lecternBlockEntity.getBlockPos());
         });
     }
 }

@@ -2,6 +2,7 @@ package io.github.mortuusars.scholar.menu;
 
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.book.Spread;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
@@ -16,24 +17,32 @@ import net.minecraft.world.item.WrittenBookItem;
 import org.jetbrains.annotations.NotNull;
 
 public class LecternSpreadMenu extends LecternMenu {
-    public LecternSpreadMenu(int containerId, Container lectern, ContainerData lecternData) {
-        super(containerId, lectern, lecternData);
-//        this.spreads = (int)(WrittenBookItem.getPageCount(getBook()) / 2f);
+    protected final BlockPos lecternPos;
 
-        // Corrects page to the closest even number (down)
-//        if (getPage() % 2 != 0) {
-//            int correctedPage = Mth.clamp(getPage() - 1, 0, 98);
-//            setData(0, correctedPage);
-//        }
+    public LecternSpreadMenu(int containerId, Container lectern, ContainerData lecternData, BlockPos lecternPos) {
+        super(containerId, lectern, lecternData);
+        this.lecternPos = lecternPos;
     }
 
     public static LecternSpreadMenu fromBuffer(int containerId, Inventory inventory, FriendlyByteBuf buffer) {
-        return new LecternSpreadMenu(containerId, new SimpleContainer(buffer.readItem()), new SimpleContainerData(1));
+        return new LecternSpreadMenu(containerId, new SimpleContainer(buffer.readItem()), new SimpleContainerData(1), buffer.readBlockPos());
     }
 
     @Override
     public @NotNull MenuType<?> getType() {
         return Scholar.MenuTypes.LECTERN_SPREAD_BOOK_VIEW.get();
+    }
+
+    public BlockPos getLecternPos() {
+        return lecternPos;
+    }
+
+    protected int getSpreadCount() {
+        return Mth.ceil(WrittenBookItem.getPageCount(getBook()) / 2.0);
+    }
+
+    protected int getCurrentSpread() {
+        return getPage() / 2;
     }
 
     @Override
@@ -52,13 +61,5 @@ public class LecternSpreadMenu extends LecternMenu {
         }
 
         return super.clickMenuButton(player, buttonId);
-    }
-
-    protected int getSpreadCount() {
-        return Mth.ceil(WrittenBookItem.getPageCount(getBook()) / 2.0);
-    }
-
-    protected int getCurrentSpread() {
-        return getPage() / 2;
     }
 }
