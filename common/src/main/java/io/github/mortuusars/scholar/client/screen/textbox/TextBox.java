@@ -44,6 +44,7 @@ public class TextBox extends AbstractWidget {
 
     protected Pos2i lastClickPos = new Pos2i(0, 0);
     protected long lastActionTime;
+    protected boolean canDrag;
 
     public TextBox(int x, int y, int width, int height) {
         this(Minecraft.getInstance().font, x, y, width, height);
@@ -287,6 +288,7 @@ public class TextBox extends AbstractWidget {
         if (getFormattingToolbar().mouseClicked(mouseX, mouseY, button)) {
             refreshDisplayCache();
             onTextChanged().accept(getEditor().getString());
+            canDrag = false;
             return true;
         }
 
@@ -310,6 +312,7 @@ public class TextBox extends AbstractWidget {
 
             lastClickPos = new Pos2i((int) mouseX, (int) mouseY);
             lastActionTime = currentTime;
+            canDrag = true;
             return true;
         }
 
@@ -318,7 +321,7 @@ public class TextBox extends AbstractWidget {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (button == 0) {
+        if (button == 0 && canDrag) {
             FormattedStringDisplayCache display = getDisplayCache();
             int indexAtMousePos = display.getCharIndexAtPosition(font, (int) (mouseX - getX()), (int) (mouseY - getY()));
             getEditor().setCursorPos(indexAtMousePos, true);

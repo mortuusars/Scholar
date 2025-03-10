@@ -86,23 +86,11 @@ public class Config {
         public static final ForgeConfigSpec.ConfigValue<String> SELECTION_COLOR;
         public static final ForgeConfigSpec.ConfigValue<String> SELECTION_UNFOCUSED_COLOR;
 
-
-
-
-
-        public static final ForgeConfigSpec.BooleanValue WRITABLE_SHOW_DONE_BUTTON;
-        public static final ForgeConfigSpec.BooleanValue WRITABLE_PAUSE;
-
-        public static final ForgeConfigSpec.BooleanValue WRITTEN_SHOW_DONE_BUTTON;
-        public static final ForgeConfigSpec.BooleanValue WRITTEN_PAUSE;
-
-        public static final ForgeConfigSpec.BooleanValue LECTERN_SHOW_DONE_BUTTON;
-        public static final ForgeConfigSpec.BooleanValue LECTERN_PAUSE;
+        // Misc
+        public static final ForgeConfigSpec.BooleanValue SHOW_BOOK_EDIT_SCREEN_TUTORIAL;
 
         static {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
-
-
 
             {
                 builder.push("ui");
@@ -155,45 +143,16 @@ public class Config {
                 builder.pop();
             }
 
+            {
+                builder.push("misc");
 
-            builder.push("WritableBookScreen");
-            WRITABLE_SHOW_DONE_BUTTON = builder
-                    .comment("Show 'Done' button in the Scholar book edit screen. Default: false")
-                    .define("ShowDoneButton", false);
+                SHOW_BOOK_EDIT_SCREEN_TUTORIAL = builder
+                        .comment("'Press F1 for additional editing tools' toast will be shown when book editing UI is first opened.",
+                                "This setting will be set to 'false' automatically after first show. Default: true")
+                        .define("show_book_edit_screen_tutorial", true);
 
-            WRITABLE_PAUSE = builder
-                    .comment("Singleplayer game will be paused when book edit screen is open.",
-                            "This will affect vanilla book edit screen as well",
-                            "Set to 'true' to restore vanilla behavior.",
-                            "Default: false")
-                    .define("Pause", false);
-            builder.pop();
-
-            builder.push("WrittenBookScreen");
-            WRITTEN_SHOW_DONE_BUTTON = builder
-                    .comment("Show 'Done' button in the Scholar book view screen. Default: false")
-                    .define("ShowDoneButton", false);
-
-            WRITTEN_PAUSE = builder
-                    .comment("Singleplayer game will be paused when book view screen is open.",
-                            "This will affect vanilla book view screen as well",
-                            "Set to 'true' to restore vanilla behavior.",
-                            "Default: false")
-                    .define("Pause", false);
-            builder.pop();
-
-            builder.push("LecternScreen");
-            LECTERN_SHOW_DONE_BUTTON = builder
-                    .comment("Show 'Done' button in the Scholar lectern screen. Default: false")
-                    .define("ShowDoneButton", false);
-
-            LECTERN_PAUSE = builder
-                    .comment("Singleplayer game will be paused when lectern screen is open.",
-                            "This will affect vanilla lectern screen as well",
-                            "Set to 'true' to restore vanilla behavior.",
-                            "Default: false")
-                    .define("Pause", false);
-            builder.pop();
+                builder.pop();
+            }
 
             SPEC = builder.build();
         }

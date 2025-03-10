@@ -20,7 +20,6 @@
   "client": [
     "ClientPacketListenerMixin",
     "LecternScreenMixin",
-    "LocalPlayerMixin",
-    "ScreenMixin"
+    "LocalPlayerMixin"
   ]
 }

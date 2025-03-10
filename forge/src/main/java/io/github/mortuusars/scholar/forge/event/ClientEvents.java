@@ -10,6 +10,7 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -32,6 +33,11 @@ public class ClientEvents {
         public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
             event.register(BookColor::getTintColor, Items.WRITABLE_BOOK);
             event.register(BookColor::getTintColor, Items.WRITTEN_BOOK);
+        }
+
+        @SubscribeEvent
+        public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
+            ScholarClient.KeyMappings.register(event::register);
         }
     }
 

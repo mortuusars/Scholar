@@ -1,15 +1,23 @@
 package io.github.mortuusars.scholar.client.screen;
 
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.platform.InputConstants;
+import io.github.mortuusars.scholar.Config;
+import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.book.Spread;
 import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
 import io.github.mortuusars.scholar.client.screen.textbox.text.FormattedString;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
 import io.netty.util.internal.StringUtil;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.toasts.AdvancementToast;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.client.gui.components.toasts.Toast;
+import net.minecraft.client.gui.components.toasts.TutorialToast;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -34,10 +42,27 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     protected boolean bookModified;
 
+    @Nullable
+    protected TutorialToast toast;
+
     public SpreadBookEditScreen(ItemStack bookStack, InteractionHand hand) {
         super(BookColor.of(bookStack));
         this.bookStack = bookStack;
         this.hand = hand;
+
+        showTutorial();
+    }
+
+    protected void showTutorial() {
+//        if (!Config.Client.SHOW_BOOK_EDIT_SCREEN_TUTORIAL.get()) return;
+
+        Component title = Component.translatable("tutorial.scholar.additional_editing_tools.title");
+        Component message = Component.translatable("tutorial.scholar.additional_editing_tools.message");
+
+        toast = new TutorialToast(TutorialToast.Icons.RECIPE_BOOK, title, message, false);
+        Minecraft.getInstance().getTutorial().addTimedToast(toast, 160);
+        Config.Client.SHOW_BOOK_EDIT_SCREEN_TUTORIAL.set(false);
+        Config.Client.SHOW_BOOK_EDIT_SCREEN_TUTORIAL.save();
     }
 
     protected void setupPages(ItemStack bookStack) {
@@ -208,6 +233,22 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             this.bookStack.addTagElement("author", StringTag.valueOf(player.getGameProfile().getName()));
             this.bookStack.addTagElement("title", StringTag.valueOf(title));
         }
+    }
+
+    // --
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (ScholarClient.KeyMappings.toggleBookTools.matches(keyCode, scanCode)) {
+            if (toast != null) {
+                toast.hide();
+                toast = null;
+            }
+
+            return true;
+        }
+
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     // --

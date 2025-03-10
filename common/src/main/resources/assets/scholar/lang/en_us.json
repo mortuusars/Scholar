@@ -64,5 +64,9 @@
   "gui.scholar.formatting.strikethrough": "Strikethrough",
   "gui.scholar.formatting.underline": "Underline",
   "gui.scholar.formatting.italic": "Italic",
-  "gui.scholar.formatting.reset": "Reset"
+  "gui.scholar.formatting.reset": "Reset",
+  "tutorial.scholar.additional_editing_tools.title": "§8Press§r §8§lF1§r",
+  "tutorial.scholar.additional_editing_tools.message": "For additional book tools",
+  "key.scholar.toggle_book_tools": "Toggle Editing Tools",
+  "key.scholar.categories.scholar": "Scholar"
 }

@@ -198,6 +198,8 @@ public record Formatting(@Nullable Color color, EnumSet<Format> format) {
     }
 
     public static class Reset implements Type {
+        private Reset() {}
+
         public String getName() {
             return "reset";
         }
@@ -220,5 +222,17 @@ public record Formatting(@Nullable Color color, EnumSet<Format> format) {
         String getName();
         char getChar();
         ChatFormatting asChatFormatting();
+
+        default boolean isColor() {
+            return this instanceof Color;
+        }
+
+        default boolean isFormat() {
+            return this instanceof Format;
+        }
+
+        default boolean isReset() {
+            return this == RESET;
+        }
     }
 }

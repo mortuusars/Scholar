@@ -17,6 +17,12 @@ public record Char(char character, Formatting formatting) {
         return !formatting.isEmpty();
     }
 
+    public boolean hasFormatting(Formatting.Type type) {
+        if (type.isColor()) return type.equals(formatting.color());
+        else if (type.isFormat()) return formatting.format().contains(((Formatting.Format) type));
+        return false;
+    }
+
     public Char withFormatting(Formatting.Color color) {
         return new Char(character, formatting.with(color));
     }

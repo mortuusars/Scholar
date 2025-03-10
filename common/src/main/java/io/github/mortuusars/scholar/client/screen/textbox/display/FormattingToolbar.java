@@ -3,13 +3,17 @@ package io.github.mortuusars.scholar.client.screen.textbox.display;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
+import io.github.mortuusars.scholar.client.screen.textbox.text.Char;
 import io.github.mortuusars.scholar.client.screen.textbox.text.Formatting;
 import io.github.mortuusars.scholar.client.util.Pos2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -115,13 +119,19 @@ public class FormattingToolbar {
         x = pos.x;
         y = pos.y;
 
+        for (FormattingButton button : buttons) {
+            if (button.formatting() == Formatting.RESET) continue;
+            button.highlighted = getTextBox().getEditor().getSelectedSpan().stream()
+                    .allMatch(c -> c.hasFormatting(button.formatting()));
+        }
+
         this.shouldUpdate = false;
     }
 
     // -- Render
 
     public boolean shouldShow() {
-        return textBox.isFocused() && textBox.getEditor().isSelecting();
+        return getTextBox().isFocused() && getTextBox().getEditor().isSelecting();
     }
 
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -153,9 +163,11 @@ public class FormattingToolbar {
         }
 
         if (hoveredButton != null) {
-            guiGraphics.renderTooltip(Minecraft.getInstance().font,
-                    Component.translatable("gui.scholar.formatting." + hoveredButton.formatting.getName()),
-                    mouseX, mouseY + 20);
+            String hotkey = Character.toString(hoveredButton.formatting().getChar()).toUpperCase();
+            MutableComponent component = Component.translatable(
+                            "gui.scholar.formatting." + hoveredButton.formatting.getName())
+                    .append(" §8Alt+" + hotkey);
+            guiGraphics.renderTooltip(Minecraft.getInstance().font, component, mouseX, mouseY + 20);
         }
 
         guiGraphics.pose().popPose();
@@ -172,6 +184,8 @@ public class FormattingToolbar {
             for (FormattingButton formattingButton : buttons) {
                 if (formattingButton.isHovering((int) (mouseX - x), (int) (mouseY - y))) {
                     getTextBox().getEditor().applyFormatting(Formatting.of(formattingButton.formatting()));
+                    Minecraft.getInstance().getSoundManager().play(
+                            SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1, 0.3f));
                     return true;
                 }
             }
