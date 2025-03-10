@@ -68,5 +68,9 @@
   "tutorial.scholar.additional_editing_tools.title": "§8Press§r §8§lF1§r",
   "tutorial.scholar.additional_editing_tools.message": "For additional book tools",
   "key.scholar.toggle_book_tools": "Toggle Editing Tools",
-  "key.scholar.categories.scholar": "Scholar"
+  "key.scholar.categories.scholar": "Scholar",
+
+  "gui.scholar.insert_empty_page": "Insert Empty Page",
+  "gui.scholar.remove_page": "Remove Page",
+  "gui.scholar.cannot_insert_page": "Cannot insert more pages"
 }

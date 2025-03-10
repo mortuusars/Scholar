@@ -3,6 +3,7 @@ package io.github.mortuusars.scholar.client.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
 import net.minecraft.client.GameNarrator;
@@ -49,6 +50,8 @@ public abstract class SpreadBookScreen extends Screen {
     protected Button nextPageButton;
 
     protected int currentSpread;
+
+    protected boolean toolsVisible;
 
     public SpreadBookScreen(int bookColor) {
         super(GameNarrator.NO_TITLE);
@@ -107,6 +110,15 @@ public abstract class SpreadBookScreen extends Screen {
     protected void updateButtonVisibility() {
         prevPageButton.visible = currentSpread > 0;
         nextPageButton.visible = currentSpread < getSpreadCount() - 1;
+    }
+
+    protected void toggleBookTools() {
+        toolsVisible = !toolsVisible;
+        updateButtonVisibility();
+    }
+
+    public boolean isToolsVisible() {
+        return toolsVisible;
     }
 
     // -- Book
@@ -174,6 +186,11 @@ public abstract class SpreadBookScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (ScholarClient.KeyMappings.toggleBookTools.matches(keyCode, scanCode)) {
+            toggleBookTools();
+            return true;
+        }
+
         if (!(getFocused() instanceof TextBox)) {
             if (Minecraft.getInstance().options.keyInventory.matches(keyCode, scanCode)) {
                 this.onClose();
@@ -193,7 +210,7 @@ public abstract class SpreadBookScreen extends Screen {
 
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
-    
+
     // --
 
     protected boolean isHovering(int x, int y, int width, int height, double mouseX, double mouseY) {

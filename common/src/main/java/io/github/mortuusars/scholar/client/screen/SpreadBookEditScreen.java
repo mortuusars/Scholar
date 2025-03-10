@@ -1,9 +1,7 @@
 package io.github.mortuusars.scholar.client.screen;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
-import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.book.Spread;
 import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
@@ -14,16 +12,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.components.toasts.AdvancementToast;
-import net.minecraft.client.gui.components.toasts.SystemToast;
-import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.TutorialToast;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -40,6 +37,11 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     protected TextBox rightPageTextBox;
     protected TextBox leftPageTextBox;
 
+    protected ImageButton insertPageLeftButton;
+    protected ImageButton removePageLeftButton;
+    protected ImageButton insertPageRightButton;
+    protected ImageButton removePageRightButton;
+
     protected boolean bookModified;
 
     @Nullable
@@ -54,7 +56,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     protected void showTutorial() {
-//        if (!Config.Client.SHOW_BOOK_EDIT_SCREEN_TUTORIAL.get()) return;
+        if (!Config.Client.SHOW_BOOK_EDIT_SCREEN_TUTORIAL.get()) return;
 
         Component title = Component.translatable("tutorial.scholar.additional_editing_tools.title");
         Component message = Component.translatable("tutorial.scholar.additional_editing_tools.message");
@@ -101,6 +103,8 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
         setupPages(bookStack);
 
+        createPageToolButtons();
+
         createPrevPageButton();
         createNextPageButton();
 
@@ -112,6 +116,59 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
         createBottomButtons();
     }
+
+    protected void createPageToolButtons() {
+        insertPageLeftButton = new ImageButton(leftPos + 112, topPos + 154, 13, 13, 343, 0,
+                13, TEXTURE, 512, 512,
+                b -> insertEmptyPage(Spread.Side.LEFT), Component.translatable("gui.scholar.insert_empty_page"));
+        insertPageLeftButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.insert_empty_page")));
+        addRenderableWidget(insertPageLeftButton);
+
+        removePageLeftButton = new ImageButton(leftPos + 126, topPos + 154, 13, 13, 356, 0,
+                13, TEXTURE, 512, 512,
+                b -> removePage(Spread.Side.LEFT), Component.translatable("gui.scholar.remove_page"));
+        removePageLeftButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.remove_page")));
+        addRenderableWidget(removePageLeftButton);
+
+        insertPageRightButton = new ImageButton(leftPos + 156, topPos + 154, 13, 13, 343, 0,
+                13, TEXTURE, 512, 512,
+                b -> insertEmptyPage(Spread.Side.RIGHT), Component.translatable("gui.scholar.insert_empty_page"));
+        insertPageRightButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.insert_empty_page")));
+        addRenderableWidget(insertPageRightButton);
+
+        removePageRightButton = new ImageButton(leftPos + 170, topPos + 154, 13, 13, 356, 0,
+                13, TEXTURE, 512, 512,
+                b -> removePage(Spread.Side.RIGHT), Component.translatable("gui.scholar.remove_page"));
+        removePageRightButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.remove_page")));
+        addRenderableWidget(removePageRightButton);
+    }
+
+    @Override
+    protected void toggleBookTools() {
+        super.toggleBookTools();
+
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.LEVER_CLICK, 1.1f, 0.6f));
+
+        if (toast != null) {
+            toast.hide();
+            toast = null;
+        }
+    }
+
+    @Override
+    protected void updateButtonVisibility() {
+        super.updateButtonVisibility();
+
+        insertPageLeftButton.visible = isToolsVisible();
+        insertPageLeftButton.active = pages.size() < 100;
+        insertPageRightButton.visible = isToolsVisible();
+        insertPageRightButton.active = pages.size() < 100;
+
+        removePageLeftButton.visible = isToolsVisible();
+        removePageRightButton.visible = isToolsVisible();
+    }
+
+    // -- Render
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -138,6 +195,8 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
                 0, 180, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
     }
 
+    // --
+
     @Override
     protected boolean pageBack() {
         if (super.pageBack()) {
@@ -161,11 +220,6 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         return false;
     }
 
-    protected void enterSignMode() {
-        saveChanges(false, null);
-        minecraft.setScreen(new BookSigningScreen(this, bookColor, title -> saveChanges(true, title)));
-    }
-
     protected void setTextBoxes() {
         leftPageTextBox.getEditor().setCursorPos(0, false);
         leftPageTextBox.getEditor().setString(FormattedString.parse(getPageText(Spread.Side.LEFT)));
@@ -175,13 +229,12 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         rightPageTextBox.getDisplayCache().scheduleUpdate();
     }
 
-    // --
-
-    protected void appendEmptyPage() {
-        if (this.pages.size() < 100) {
-            this.pages.add("");
-        }
+    protected void enterSignMode() {
+        saveChanges(false, null);
+        minecraft.setScreen(new BookSigningScreen(this, bookColor, title -> saveChanges(true, title)));
     }
+
+    // --
 
     protected String getPageText(Spread.Side side) {
         int pageIndex = side.getPageIndexFromSpread(currentSpread);
@@ -194,6 +247,42 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             this.pages.set(pageIndex, text);
             this.bookModified = true;
         }
+    }
+
+    protected void appendEmptyPage() {
+        if (this.pages.size() < 100) {
+            this.pages.add("");
+        }
+    }
+
+    protected void insertEmptyPage(Spread.Side side) {
+        if (pages.size() == 100) {
+            Objects.requireNonNull(Minecraft.getInstance().player).displayClientMessage(
+                    Component.translatable("gui.scholar.cannot_insert_page"), false);
+            return;
+        }
+
+        int pageIndex = side.getPageIndexFromSpread(currentSpread);
+        pages.add(pageIndex, "");
+
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.15f, 0.6f));
+
+        setTextBoxes();
+        bookModified = true;
+    }
+
+    protected void removePage(Spread.Side side) {
+        int pageIndex = side.getPageIndexFromSpread(currentSpread);
+        pages.remove(pageIndex);
+
+        while (this.pages.size() < Spread.Side.RIGHT.getPageIndexFromSpread(currentSpread) + 1) {
+            this.pages.add("");
+        }
+
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 0.85f, 0.6f));
+
+        setTextBoxes();
+        bookModified = true;
     }
 
     protected void removeEmptyTrailingPages() {
@@ -233,22 +322,6 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             this.bookStack.addTagElement("author", StringTag.valueOf(player.getGameProfile().getName()));
             this.bookStack.addTagElement("title", StringTag.valueOf(title));
         }
-    }
-
-    // --
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (ScholarClient.KeyMappings.toggleBookTools.matches(keyCode, scanCode)) {
-            if (toast != null) {
-                toast.hide();
-                toast = null;
-            }
-
-            return true;
-        }
-
-        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     // --

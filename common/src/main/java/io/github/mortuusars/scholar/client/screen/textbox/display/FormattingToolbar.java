@@ -145,16 +145,16 @@ public class FormattingToolbar {
         for (FormattingButton button : buttons) {
             int vOffset = 0;
             if (button.disabled()) {
-                vOffset = button.area.getHeight();
-            } else if (button.highlighted()) {
                 vOffset = button.area.getHeight() * 2;
+            } else if (button.highlighted()) {
+                vOffset = button.area.getHeight();
             }
 
             if (hoveredButton == null && button.isHovering(mouseX - x, mouseY - y)) {
                 hoveredButton = button;
 
-                if (!button.disabled() && !button.highlighted()) {
-                    vOffset = button.area.getHeight() * 2;
+                if (!button.disabled()) {
+                    vOffset = button.area.getHeight();
                 }
             }
 
