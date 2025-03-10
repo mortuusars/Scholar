@@ -160,9 +160,9 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         super.updateButtonVisibility();
 
         insertPageLeftButton.visible = isToolsVisible();
-        insertPageLeftButton.active = pages.size() < 100;
+        insertPageLeftButton.active = pages.size() < 100 || pages.get(99).isEmpty();
         insertPageRightButton.visible = isToolsVisible();
-        insertPageRightButton.active = pages.size() < 100;
+        insertPageRightButton.active = pages.size() < 100 || pages.get(99).isEmpty();
 
         removePageLeftButton.visible = isToolsVisible();
         removePageRightButton.visible = isToolsVisible();
@@ -246,6 +246,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         if (pageIndex >= 0 && pageIndex < this.pages.size()) {
             this.pages.set(pageIndex, text);
             this.bookModified = true;
+            updateButtonVisibility();
         }
     }
 
@@ -256,7 +257,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     protected void insertEmptyPage(Spread.Side side) {
-        if (pages.size() == 100) {
+        if (pages.size() == 100 && !pages.get(99).isEmpty()) {
             Objects.requireNonNull(Minecraft.getInstance().player).displayClientMessage(
                     Component.translatable("gui.scholar.cannot_insert_page"), false);
             return;
@@ -264,6 +265,10 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
         int pageIndex = side.getPageIndexFromSpread(currentSpread);
         pages.add(pageIndex, "");
+
+        for (int i = pages.size() - 1; i > 99; i--) {
+            pages.remove(pages.size() - 1);
+        }
 
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.15f, 0.6f));
 
