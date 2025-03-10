@@ -41,5 +41,28 @@
   "gui.scholar.insert_section_sign.help2": "Press [%s] to learn more",
   "gui.scholar.lectern.set_current_page": "Set as Current Page",
 
-  "subtitle.scholar.book.signed": "Book signing scribbles"
+  "subtitle.scholar.book.signed": "Book signing scribbles",
+
+  "gui.scholar.formatting.black": "Black",
+  "gui.scholar.formatting.dark_blue": "Dark Blue",
+  "gui.scholar.formatting.dark_green": "Dark Green",
+  "gui.scholar.formatting.dark_aqua": "Dark Aqua",
+  "gui.scholar.formatting.dark_red": "Dark Red",
+  "gui.scholar.formatting.dark_purple": "Dark Purple",
+  "gui.scholar.formatting.gold": "Gold",
+  "gui.scholar.formatting.gray": "Gray",
+  "gui.scholar.formatting.dark_gray": "Dark Gray",
+  "gui.scholar.formatting.blue": "Blue",
+  "gui.scholar.formatting.green": "Green",
+  "gui.scholar.formatting.aqua": "Aqua",
+  "gui.scholar.formatting.red": "Red",
+  "gui.scholar.formatting.light_purple": "Light Purple",
+  "gui.scholar.formatting.yellow": "Yellow",
+  "gui.scholar.formatting.white": "White",
+  "gui.scholar.formatting.obfuscated": "Obfuscated",
+  "gui.scholar.formatting.bold": "Bold",
+  "gui.scholar.formatting.strikethrough": "Strikethrough",
+  "gui.scholar.formatting.underline": "Underline",
+  "gui.scholar.formatting.italic": "Italic",
+  "gui.scholar.formatting.reset": "Reset"
 }

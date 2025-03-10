@@ -2,8 +2,8 @@ package io.github.mortuusars.scholar.client.screen.textbox;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.screen.textbox.display.FormattedStringDisplayCache;
+import io.github.mortuusars.scholar.client.screen.textbox.display.FormattingToolbar;
 import io.github.mortuusars.scholar.client.screen.textbox.display.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.screen.textbox.display.Line;
 import io.github.mortuusars.scholar.client.screen.textbox.text.FormattedString;
@@ -40,6 +40,8 @@ public class TextBox extends AbstractWidget {
     protected int selectionUnfocusedColor = 0x880000FF;
     protected Consumer<FormattedString> onTextChanged = text -> { };
 
+    protected FormattingToolbar formattingToolbar = new FormattingToolbar(this);
+
     protected Pos2i lastClickPos = new Pos2i(0, 0);
     protected long lastActionTime;
 
@@ -66,6 +68,19 @@ public class TextBox extends AbstractWidget {
         }
 
         return displayCache;
+    }
+
+    public FormattingToolbar getFormattingToolbar() {
+        if (formattingToolbar.shouldUpdate()) {
+            formattingToolbar.update();
+        }
+        return formattingToolbar;
+    }
+
+    public TextBox setFormattingToolbar(FormattingToolbar formattingToolbar) {
+        this.formattingToolbar = formattingToolbar;
+        this.formattingToolbar.scheduleUpdate();
+        return this;
     }
 
     public HorizontalAlignment getHorizontalAlignment() {
@@ -162,6 +177,8 @@ public class TextBox extends AbstractWidget {
 
         renderCursor(guiGraphics, mouseX, mouseY, partialTick, getEditor(), displayCache.getCursor(), cursorColor);
         renderSelection(guiGraphics, mouseX, mouseY, partialTick, displayCache.getSelection(), getCurrentSelectionColor());
+
+        getFormattingToolbar().render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     public void renderLines(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, List<Line> lines, int color) {
@@ -213,28 +230,29 @@ public class TextBox extends AbstractWidget {
 
     protected void refreshDisplayCache() {
         displayCache.scheduleUpdate();
+        formattingToolbar.scheduleUpdate();
     }
 
     // -- Input
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        try {
-            if (isFocused() && (handleKeyPressed(keyCode, scanCode, modifiers) || getEditor().keyPressed(keyCode))) {
-                lastActionTime = System.currentTimeMillis();
-                onTextChanged().accept(getEditor().getString());
-                refreshDisplayCache();
-                return true;
-            }
-        } catch (Exception e) {
-            Scholar.LOGGER.error("KeyPressed error: ", e);
+        if (!isFocused() || !isActive() || !visible) return false;
+
+        if (handleKeyPressed(keyCode, scanCode, modifiers)) {
+            lastActionTime = System.currentTimeMillis();
+            onTextChanged().accept(getEditor().getString());
+            refreshDisplayCache();
             return true;
         }
+
         return false;
     }
 
     protected boolean handleKeyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == InputConstants.KEY_UP) {
+        if (getFormattingToolbar().keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        } else if (keyCode == InputConstants.KEY_UP) {
             changeLine(-1);
             return true;
         } else if (keyCode == InputConstants.KEY_DOWN) {
@@ -248,7 +266,7 @@ public class TextBox extends AbstractWidget {
             return true;
         }
 
-        return false;
+        return getEditor().keyPressed(keyCode);
     }
 
     public boolean charTyped(char codePoint, int modifiers) {
@@ -258,12 +276,21 @@ public class TextBox extends AbstractWidget {
             refreshDisplayCache();
             return true;
         }
+
         return false;
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isHovered && visible && isActive() && button == InputConstants.MOUSE_BUTTON_LEFT) {
+        if (!isActive() || !visible) return false;
+
+        if (getFormattingToolbar().mouseClicked(mouseX, mouseY, button)) {
+            refreshDisplayCache();
+            onTextChanged().accept(getEditor().getString());
+            return true;
+        }
+
+        if (isHovered && button == InputConstants.MOUSE_BUTTON_LEFT) {
             long currentTime = System.currentTimeMillis();
             FormattedStringDisplayCache display = getDisplayCache();
 
@@ -296,8 +323,9 @@ public class TextBox extends AbstractWidget {
             int indexAtMousePos = display.getCharIndexAtPosition(font, (int) (mouseX - getX()), (int) (mouseY - getY()));
             getEditor().setCursorPos(indexAtMousePos, true);
             refreshDisplayCache();
+            return true;
         }
-        return true;
+        return false;
     }
 
     // --

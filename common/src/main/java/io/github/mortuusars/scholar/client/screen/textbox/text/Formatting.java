@@ -27,6 +27,14 @@ public record Formatting(@Nullable Color color, EnumSet<Format> format) {
         return EMPTY.with(code);
     }
 
+    public static Formatting of(ChatFormatting formatting) {
+        return of(formatting.getChar());
+    }
+
+    public static Formatting of(Formatting.Type type) {
+        return of(type.getChar());
+    }
+
     // --
 
     public boolean isEmpty() {
@@ -96,7 +104,11 @@ public record Formatting(@Nullable Color color, EnumSet<Format> format) {
         return new Formatting(color, format);
     }
 
-    public enum Color {
+    public Formatting copy() {
+        return new Formatting(color, EnumSet.copyOf(format));
+    }
+
+    public enum Color implements Type {
         BLACK("black", '0'),
         DARK_BLUE("dark_blue", '1'),
         DARK_GREEN("dark_green", '2'),
@@ -122,6 +134,11 @@ public record Formatting(@Nullable Color color, EnumSet<Format> format) {
             this.c = c;
         }
 
+        @Override
+        public String getName() {
+            return name;
+        }
+
         public char getChar() {
             return c;
         }
@@ -138,12 +155,12 @@ public record Formatting(@Nullable Color color, EnumSet<Format> format) {
         }
     }
 
-    public enum Format {
+    public enum Format implements Type {
         OBFUSCATED("obfuscated", 'k'),
         BOLD("bold", 'l'),
         STRIKETHROUGH("strikethrough", 'm'),
         UNDERLINE("underline", 'n'),
-        ITALIC("reset", 'o');
+        ITALIC("italic", 'o');
 
         private final String name;
         private final char c;
@@ -180,7 +197,11 @@ public record Formatting(@Nullable Color color, EnumSet<Format> format) {
         }
     }
 
-    public static class Reset {
+    public static class Reset implements Type {
+        public String getName() {
+            return "reset";
+        }
+
         public char getChar() {
             return 'r';
         }
@@ -193,5 +214,11 @@ public record Formatting(@Nullable Color color, EnumSet<Format> format) {
         public ChatFormatting asChatFormatting() {
             return ChatFormatting.RESET;
         }
+    }
+
+    public interface Type {
+        String getName();
+        char getChar();
+        ChatFormatting asChatFormatting();
     }
 }

@@ -156,9 +156,10 @@ public class FormattedStringEditor {
                 StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), 1, index, false));
     }
 
-    public String getSelectedString() {
+    public String getSelectedString(boolean withFormatting) {
         if (!isSelecting()) return "";
-        return getString().subString(getSelectionStart(), getSelectionEnd()).toStringWithoutFormatting();
+        FormattedString selectedString = getString().subString(getSelectionStart(), getSelectionEnd());
+        return withFormatting ? selectedString.toString() : selectedString.toStringWithoutFormatting();
     }
 
     // --
@@ -179,16 +180,16 @@ public class FormattedStringEditor {
             selectAll();
             return true;
         }
-        if (Screen.isCopy(key)) {
-            copy();
+        if (key == InputConstants.KEY_C && Screen.hasControlDown() && !Screen.hasAltDown()) {
+            copy(Screen.hasShiftDown());
             return true;
         }
-        if (Screen.isPaste(key)) {
-            paste();
+        if (key == InputConstants.KEY_V && Screen.hasControlDown() && !Screen.hasAltDown()) {
+            paste(Screen.hasShiftDown());
             return true;
         }
-        if (Screen.isCut(key)) {
-            cut();
+        if (key == InputConstants.KEY_X && Screen.hasControlDown() && !Screen.hasAltDown()) {
+            cut(Screen.hasShiftDown());
             return true;
         }
         CursorStep cursorStep = Screen.hasControlDown() ? CursorStep.WORD : CursorStep.CHARACTER;
@@ -199,27 +200,26 @@ public class FormattedStringEditor {
         if (key == InputConstants.KEY_DELETE) {
             removeFromCursor(1, cursorStep);
             return true;
-        } else {
-            if (key == InputConstants.KEY_LEFT) {
-                moveCursorBy(-1, Screen.hasShiftDown(), cursorStep);
-                return true;
-            }
-            if (key == InputConstants.KEY_RIGHT) {
-                moveCursorBy(1, Screen.hasShiftDown(), cursorStep);
-                return true;
-            }
-            if (key == InputConstants.KEY_HOME) {
-                setCursorToStart(Screen.hasShiftDown());
-                return true;
-            }
-            if (key == InputConstants.KEY_END) {
-                setCursorToEnd(Screen.hasShiftDown());
-                return true;
-            }
-            if (key == InputConstants.KEY_RETURN || key == InputConstants.KEY_NUMPADENTER) {
-                insertTextAtCursor("\n");
-                return true;
-            }
+        }
+        if (key == InputConstants.KEY_LEFT) {
+            moveCursorBy(-1, Screen.hasShiftDown(), cursorStep);
+            return true;
+        }
+        if (key == InputConstants.KEY_RIGHT) {
+            moveCursorBy(1, Screen.hasShiftDown(), cursorStep);
+            return true;
+        }
+        if (key == InputConstants.KEY_HOME) {
+            setCursorToStart(Screen.hasShiftDown());
+            return true;
+        }
+        if (key == InputConstants.KEY_END) {
+            setCursorToEnd(Screen.hasShiftDown());
+            return true;
+        }
+        if (key == InputConstants.KEY_RETURN || key == InputConstants.KEY_NUMPADENTER) {
+            insertTextAtCursor("\n");
+            return true;
         }
 
         if (Screen.hasAltDown()) {
@@ -250,11 +250,7 @@ public class FormattedStringEditor {
             };
 
             if (formatting != null) {
-                if (isSelecting()) {
-                    getSelectedSpan().replaceAll(c -> c.flipFormatting(formatting));
-                } else if (formatting == Formatting.EMPTY) {
-                    getString().replaceAll(c -> c.withFormatting(Formatting.EMPTY));
-                }
+                applyFormatting(formatting);
                 return true;
             }
         }
@@ -262,29 +258,50 @@ public class FormattedStringEditor {
         return false;
     }
 
-    public boolean charTyped(char character) {
-        if (!suppressNextCharTyped && SharedConstants.isAllowedChatCharacter(character)) {
-            insertTextAtCursor(Character.toString(character));
+    public void applyFormatting(Formatting formatting) {
+        // Prevents applying bold formatting if the text would overflow available space due to extra width:
+        if (formatting.format().contains(Formatting.Format.BOLD)) {
+            FormattedString string = new FormattedString(getString().stream().map(c -> new Char(c.character(), c.formatting().copy())).toList());
+            List<Char> chars = string.subList(getSelectionStart(), getSelectionEnd());
+            chars.replaceAll(c -> c.flipFormatting(formatting));
+
+            if (!validator.test(string.toString())) {
+                return;
+            }
         }
-        return true;
+
+        if (isSelecting()) {
+            getSelectedSpan().replaceAll(c -> c.flipFormatting(formatting));
+        } else if (formatting == Formatting.EMPTY) {
+            getString().replaceAll(c -> c.withFormatting(Formatting.EMPTY));
+        }
     }
 
-    public void cut() {
-        copy();
+    public boolean charTyped(char character) {
+        return !suppressNextCharTyped
+                && SharedConstants.isAllowedChatCharacter(character)
+                && insertTextAtCursor(Character.toString(character));
+    }
+
+    public void cut(boolean withFormatting) {
+        copy(withFormatting);
         removeSelectedText();
     }
 
-    public void paste() {
+    public void paste(boolean keepFormatting) {
         try {
             String text = Minecraft.getInstance().keyboardHandler.getClipboard();
+            if (!keepFormatting) {
+                text = ChatFormatting.stripFormatting(text);
+            }
             insertTextAtCursor(Objects.requireNonNull(text).replaceAll("\\r", ""));
         } catch (Exception e) {
             Scholar.LOGGER.error("Text Paste error: ", e);
         }
     }
 
-    public void copy() {
-        Minecraft.getInstance().keyboardHandler.setClipboard(getSelectedString());
+    public void copy(boolean withFormatting) {
+        Minecraft.getInstance().keyboardHandler.setClipboard(getSelectedString(withFormatting));
     }
 
     public void selectAll() {

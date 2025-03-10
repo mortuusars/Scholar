@@ -137,6 +137,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     protected void enterSignMode() {
+        saveChanges(false, null);
         minecraft.setScreen(new BookSigningScreen(this, bookColor, title -> saveChanges(true, title)));
     }
 
@@ -154,7 +155,6 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     protected void appendEmptyPage() {
         if (this.pages.size() < 100) {
             this.pages.add("");
-            /*this.isModified = true;*/ //TODO: This might not be needed. Empty trailing pages are removed anyway.
         }
     }
 
