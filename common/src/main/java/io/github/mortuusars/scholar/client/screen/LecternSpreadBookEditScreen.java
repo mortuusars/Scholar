@@ -72,12 +72,20 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
     @Override
     protected boolean pageBack() {
         this.sendButtonClick(LecternMenu.BUTTON_PREV_PAGE);
+
+        getHistory().addChange(() -> this.sendButtonClick(LecternMenu.BUTTON_NEXT_PAGE),
+                () -> this.sendButtonClick(LecternMenu.BUTTON_PREV_PAGE));
+
         return true;
     }
 
     @Override
     protected boolean pageForward() {
         this.sendButtonClick(LecternMenu.BUTTON_NEXT_PAGE);
+
+        getHistory().addChange(() -> this.sendButtonClick(LecternMenu.BUTTON_PREV_PAGE),
+                () -> this.sendButtonClick(LecternMenu.BUTTON_NEXT_PAGE));
+
         return true;
     }
 

@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar.client.screen;
 
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.book.Spread;
@@ -13,6 +14,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.toasts.TutorialToast;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.BookViewScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.nbt.CompoundTag;
@@ -34,6 +36,8 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     protected final List<String> pages = new ArrayList<>();
 
+    protected final History history = new History();
+
     protected TextBox rightPageTextBox;
     protected TextBox leftPageTextBox;
 
@@ -53,6 +57,10 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         this.hand = hand;
 
         showTutorial();
+    }
+
+    public History getHistory() {
+        return history;
     }
 
     protected void showTutorial() {
@@ -198,15 +206,6 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     // --
 
     @Override
-    protected boolean pageBack() {
-        if (super.pageBack()) {
-            setTextBoxes();
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     protected boolean pageForward() {
         if (super.pageForward()) {
             // Ensure we have pages to display:
@@ -215,17 +214,49 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             }
 
             setTextBoxes();
+
+            getHistory().addChange(() -> {
+                super.pageBack();
+                setTextBoxes();
+            }, () -> {
+                super.pageForward();
+                setTextBoxes();
+            });
+
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected boolean pageBack() {
+        if (super.pageBack()) {
+            setTextBoxes();
+            getHistory().addChange(() -> {
+                super.pageForward();
+                setTextBoxes();
+            }, () -> {
+                super.pageBack();
+                setTextBoxes();
+            });
             return true;
         }
         return false;
     }
 
     protected void setTextBoxes() {
-        leftPageTextBox.getEditor().setCursorPos(0, false);
+        setTextBoxes(true);
+    }
+
+    protected void setTextBoxes(boolean resetCursor) {
         leftPageTextBox.getEditor().setString(FormattedString.parse(getPageText(Spread.Side.LEFT)));
+        int leftCursorPos = resetCursor ? 0 : leftPageTextBox.getEditor().getCursorPos();
+        leftPageTextBox.getEditor().setCursorPos(leftCursorPos, false);
         leftPageTextBox.getDisplayCache().scheduleUpdate();
-        rightPageTextBox.getEditor().setCursorPos(0, false);
+
         rightPageTextBox.getEditor().setString(FormattedString.parse(getPageText(Spread.Side.RIGHT)));
+        int rightCursorPos = resetCursor ? 0 : rightPageTextBox.getEditor().getCursorPos();
+        rightPageTextBox.getEditor().setCursorPos(rightCursorPos, false);
         rightPageTextBox.getDisplayCache().scheduleUpdate();
     }
 
@@ -244,6 +275,21 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     protected void setPageText(Spread.Side side, String text) {
         int pageIndex = side.getPageIndexFromSpread(currentSpread);
         if (pageIndex >= 0 && pageIndex < this.pages.size()) {
+
+            String currentText = getPageText(side);
+            getHistory().addChange(() -> {
+                pages.set(pageIndex, currentText);
+                this.bookModified = true;
+                updateButtonVisibility();
+                setTextBoxes(false);
+            }, () -> {
+                pages.set(pageIndex, text);
+                this.bookModified = true;
+                updateButtonVisibility();
+                setTextBoxes(false);
+
+            });
+
             this.pages.set(pageIndex, text);
             this.bookModified = true;
             updateButtonVisibility();
@@ -270,6 +316,20 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             pages.remove(pages.size() - 1);
         }
 
+        getHistory().addChange(() -> {
+            pages.remove(pageIndex);
+            setTextBoxes();
+            bookModified = true;
+            player.displayClientMessage(Component.literal("Undo add empty page."), false);
+            return true;
+        }, () -> {
+            pages.add(pageIndex, "");
+            setTextBoxes();
+            bookModified = true;
+            player.displayClientMessage(Component.literal("Redo add empty page."), false);
+            return true;
+        });
+
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1.15f, 0.6f));
 
         setTextBoxes();
@@ -278,11 +338,25 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     protected void removePage(Spread.Side side) {
         int pageIndex = side.getPageIndexFromSpread(currentSpread);
-        pages.remove(pageIndex);
+        String removedPage = pages.remove(pageIndex);
 
         while (this.pages.size() < Spread.Side.RIGHT.getPageIndexFromSpread(currentSpread) + 1) {
             this.pages.add("");
         }
+
+        getHistory().addChange(() -> {
+            pages.add(pageIndex, removedPage);
+            setTextBoxes();
+            bookModified = true;
+            player.displayClientMessage(Component.literal("Undo remove page."), false);
+            return true;
+        }, () -> {
+            pages.remove(pageIndex);
+            setTextBoxes();
+            bookModified = true;
+            player.displayClientMessage(Component.literal("Redo remove page."), false);
+            return true;
+        });
 
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 0.85f, 0.6f));
 
@@ -328,6 +402,31 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             this.bookStack.addTagElement("title", StringTag.valueOf(title));
         }
     }
+
+    // --
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (Screen.hasControlDown() && keyCode == InputConstants.KEY_Z) {
+            @Nullable History.Change change;
+            float pitch;
+
+            if (Screen.hasShiftDown()) {
+                change = getHistory().redo();
+                pitch = change == null ? 0.6f : 0.9f;
+            } else {
+                change = getHistory().undo();
+                pitch = change == null ? 0.6f : 1.1f;
+            }
+
+            Minecraft.getInstance().getSoundManager().play(
+                    SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), pitch, 0.3f));
+            return true;
+        }
+
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
 
     // --
 
