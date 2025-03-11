@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.client.screen;
+package io.github.mortuusars.scholar.client.gui.screen.view;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.book.BookColor;

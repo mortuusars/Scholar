@@ -15,7 +15,6 @@
   "item.scholar.green_writable_book": "Green Book and Quill",
   "item.scholar.red_writable_book": "Red Book and Quill",
   "item.scholar.black_writable_book": "Black Book and Quill",
-
   "item.scholar.white_written_book": "White Written Book",
   "item.scholar.orange_written_book": "Orange Written Book",
   "item.scholar.magenta_written_book": "Magenta Written Book",
@@ -32,17 +31,10 @@
   "item.scholar.green_written_book": "Green Written Book",
   "item.scholar.red_written_book": "Red Written Book",
   "item.scholar.black_written_book": "Black Written Book",
-
   "item.scholar.deprecated_book_message": "This item has been deprecated and will be removed in the future.",
   "item.scholar.convert_book_message": "[Use] to convert to a proper item.",
-
-  "gui.scholar.insert_section_sign": "Insert Formatting Symbol",
-  "gui.scholar.insert_section_sign.help1": "Section sign symbol with combination of a specific letter is used to apply formatting to a part of the text.",
-  "gui.scholar.insert_section_sign.help2": "Press [%s] to learn more",
   "gui.scholar.lectern.set_current_page": "Set as Current Page",
-
   "subtitle.scholar.book.signed": "Book signing scribbles",
-
   "gui.scholar.formatting.black": "Black",
   "gui.scholar.formatting.dark_blue": "Dark Blue",
   "gui.scholar.formatting.dark_green": "Dark Green",
@@ -65,12 +57,29 @@
   "gui.scholar.formatting.underline": "Underline",
   "gui.scholar.formatting.italic": "Italic",
   "gui.scholar.formatting.reset": "Reset",
-  "tutorial.scholar.additional_editing_tools.title": "§8Press§r §8§lF1§r",
-  "tutorial.scholar.additional_editing_tools.message": "For additional book tools",
-  "key.scholar.toggle_book_tools": "Toggle Editing Tools",
+  "key.scholar.toggle_book_tools": "Toggle Extra Editing Tools",
   "key.scholar.categories.scholar": "Scholar",
 
+  "gui.scholar.tools.toggle": "Toggle extra tools",
+
   "gui.scholar.insert_empty_page": "Insert Empty Page",
+  "gui.scholar.insert_empty_page_left.hotkey": "§8Ctrl+Shift+Insert",
+  "gui.scholar.insert_empty_page_right.hotkey": "§8Ctrl+Shift+Alt+Insert",
   "gui.scholar.remove_page": "Remove Page",
-  "gui.scholar.cannot_insert_page": "Cannot insert more pages"
+  "gui.scholar.remove_page_left.hotkey": "§8Ctrl+Shift+Delete",
+  "gui.scholar.remove_page_right.hotkey": "§8Ctrl+Shift+Alt+Delete",
+  "gui.scholar.cannot_insert_page": "Cannot insert more pages",
+  "gui.scholar.tools.tooltip.copy_with_formatting": "§8[§7Ctrl+Shift+C§8] Copy with formatting",
+  "gui.scholar.tools.tooltip.paste_with_formatting": "§8[§7Ctrl+Shift+V§8] Paste with formatting",
+  "gui.scholar.tools.tooltip.undo": "§8[§7Ctrl+Z§8] Undo",
+  "gui.scholar.tools.tooltip.redo": "§8[§7Ctrl+Shift+Z§8] Redo",
+  "gui.scholar.import_book": "Import Book..",
+  "key.scholar.import_book": "Import Book",
+  "gui.scholar.import_book.tooltip": "§8Will replace all text in the book with text from a file\n§8Hold [§7Shift§8] to include formatting",
+  "gui.scholar.import_book.failure": "Cannot import a book. See logs for more information.",
+  "gui.scholar.export_book": "Export Book..",
+  "key.scholar.export_book": "Export Book",
+  "gui.scholar.export_book.tooltip": "§8Saves all pages to a text file\n§8Hold §8[§7Shift§8] to include formatting codes",
+  "gui.scholar.export_book.success": "Exported book to ",
+  "gui.scholar.export_book.failure": "Cannot export a book. See logs for more information."
 }

@@ -1,7 +1,8 @@
-package io.github.mortuusars.scholar.client.screen;
+package io.github.mortuusars.scholar.client.gui.screen.edit;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.book.BookColor;
+import io.github.mortuusars.scholar.client.gui.screen.SpreadBookScreen;
 import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import io.github.mortuusars.scholar.network.Packets;
 import io.github.mortuusars.scholar.network.packet.server.LecternEditBookC2SP;
@@ -57,12 +58,12 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
         if (player.mayBuild()) {
             if (Config.Client.SHOW_DONE_BUTTON.get()) {
                 this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE,
-                        button -> this.onClose()).bounds(this.width / 2 - 100, topPos + BOOK_HEIGHT + 12, 98, 20).build());
+                        button -> this.onClose()).bounds(this.width / 2 - 100, topPos + SpreadBookScreen.BOOK_HEIGHT + 12, 98, 20).build());
                 this.addRenderableWidget(Button.builder(Component.translatable("lectern.take_book"),
-                        button -> this.sendButtonClick(3)).bounds(this.width / 2 + 2, topPos + BOOK_HEIGHT + 12, 98, 20).build());
+                        button -> this.sendButtonClick(3)).bounds(this.width / 2 + 2, topPos + SpreadBookScreen.BOOK_HEIGHT + 12, 98, 20).build());
             } else {
                 this.addRenderableWidget(Button.builder(Component.translatable("lectern.take_book"),
-                        (button) -> this.sendButtonClick(3)).bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20).build());
+                        (button) -> this.sendButtonClick(3)).bounds(this.width / 2 - 60, topPos + SpreadBookScreen.BOOK_HEIGHT + 12, 120, 20).build());
             }
         } else {
             super.createBottomButtons();

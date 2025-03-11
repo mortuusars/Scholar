@@ -77,6 +77,7 @@ public class Config {
         // UI
         public static final ForgeConfigSpec.BooleanValue SCREEN_PAUSE;
         public static final ForgeConfigSpec.BooleanValue SHOW_DONE_BUTTON;
+        public static final ForgeConfigSpec.BooleanValue EDIT_SCREEN_SHOW_EXTRA_TOOLS;
 
         // Colors
         public static final ForgeConfigSpec.ConfigValue<String> TEXT_COLOR;
@@ -86,9 +87,6 @@ public class Config {
         public static final ForgeConfigSpec.ConfigValue<String> SELECTION_COLOR;
         public static final ForgeConfigSpec.ConfigValue<String> SELECTION_UNFOCUSED_COLOR;
 
-        // Misc
-        public static final ForgeConfigSpec.BooleanValue SHOW_BOOK_EDIT_SCREEN_TUTORIAL;
-
         static {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
@@ -96,13 +94,18 @@ public class Config {
                 builder.push("ui");
 
                 SCREEN_PAUSE = builder
-                        .comment("Singleplayer game will be paused when book screen is open.",
+                        .comment("Singleplayer game will be paused when book edit/view screen is open.",
                                 "Default: false, Vanilla: true")
-                        .define("pause", false);
+                        .define("book_screen_pause", false);
 
                 SHOW_DONE_BUTTON = builder
-                        .comment("Show 'Done' button in the Scholar book screen. Default: false")
-                        .define("show_done_button", false);
+                        .comment("Show 'Done' button in the Scholar book screens. Default: false")
+                        .define("book_screen_show_done_button", false);
+
+                EDIT_SCREEN_SHOW_EXTRA_TOOLS = builder
+                        .comment("Additional tool buttons will be shown in book edit screen.",
+                                "This setting can be toggled in-game by pressing F1 button (by default). Initial value: false")
+                        .define("book_edit_screen_show_extra_tools", false);
 
                 {
                     builder.push("colors");
@@ -139,17 +142,6 @@ public class Config {
 
                     builder.pop();
                 }
-
-                builder.pop();
-            }
-
-            {
-                builder.push("misc");
-
-                SHOW_BOOK_EDIT_SCREEN_TUTORIAL = builder
-                        .comment("'Press F1 for additional editing tools' toast will be shown when book editing UI is first opened.",
-                                "This setting will be set to 'false' automatically after first show. Default: true")
-                        .define("show_book_edit_screen_tutorial", true);
 
                 builder.pop();
             }

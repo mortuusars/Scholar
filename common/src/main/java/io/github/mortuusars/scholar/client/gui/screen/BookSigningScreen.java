@@ -1,11 +1,11 @@
-package io.github.mortuusars.scholar.client.screen;
+package io.github.mortuusars.scholar.client.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.client.screen.textbox.display.HorizontalAlignment;
-import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
-import io.github.mortuusars.scholar.client.screen.textbox.text.FormattedString;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.display.HorizontalAlignment;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedString;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;

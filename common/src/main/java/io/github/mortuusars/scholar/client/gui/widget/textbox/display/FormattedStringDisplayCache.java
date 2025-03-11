@@ -1,8 +1,8 @@
-package io.github.mortuusars.scholar.client.screen.textbox.display;
+package io.github.mortuusars.scholar.client.gui.widget.textbox.display;
 
-import io.github.mortuusars.scholar.client.screen.textbox.text.FormattedStringEditor;
-import io.github.mortuusars.scholar.client.screen.textbox.text.Char;
-import io.github.mortuusars.scholar.client.screen.textbox.text.FormattedString;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedStringEditor;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.text.Char;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedString;
 import io.github.mortuusars.scholar.client.util.Pos2i;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.Rect2i;

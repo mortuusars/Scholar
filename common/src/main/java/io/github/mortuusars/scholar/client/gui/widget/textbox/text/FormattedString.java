@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.client.screen.textbox.text;
+package io.github.mortuusars.scholar.client.gui.widget.textbox.text;
 
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
@@ -19,6 +19,10 @@ public class FormattedString extends ArrayList<Char> implements CharSequence, Fo
 
     public static FormattedString parse(String string) {
         return new FormattedString(parseChars(string));
+    }
+
+    public static FormattedString parseWithoutFormatting(String string) {
+        return new FormattedString(string.chars().mapToObj(Char::new).toList());
     }
 
     public static ArrayList<Char> parseChars(String string) {

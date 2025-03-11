@@ -1,13 +1,11 @@
-package io.github.mortuusars.scholar.client.screen;
+package io.github.mortuusars.scholar.client.gui.screen.view;
 
 import com.mojang.datafixers.util.Pair;
-import net.minecraft.client.Minecraft;
+import io.github.mortuusars.scholar.client.gui.screen.SpreadBookScreen;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +33,6 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
     public void setBookAccess(BookViewAccess bookViewAccess) {
         this.bookAccess = bookViewAccess;
         this.currentSpread = Mth.clamp(this.currentSpread, 0, getSpreadCount());
-        this.updateButtonVisibility();
         this.cachedSpread = -1; // Forces cache update
     }
 
@@ -49,7 +46,6 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
         int spreadIndex = (int)(pageIndex / 2f);
         if (spreadIndex != this.currentSpread) {
             this.currentSpread = spreadIndex;
-            this.updateButtonVisibility();
             this.cachedSpread = -1;
             return true;
         } else {
@@ -59,9 +55,12 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        updateButtonVisibility();
+
         renderBackground(guiGraphics);
         renderBook(guiGraphics, mouseX, mouseY, partialTick);
         renderPageNumbers(guiGraphics, mouseX, mouseY, partialTick, currentSpread);
+        renderTools(guiGraphics, mouseX, mouseY, partialTick);
 
         updateAndCacheContentsIfNeeded();
 
@@ -125,8 +124,9 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
             try {
                 int pageIndex = Integer.parseInt(pageNumber) - 1;
                 boolean pageChanged = this.setPage(pageIndex);
-                if (pageChanged)
-                    Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1f));
+                if (pageChanged) {
+                    playPageTurnSound();
+                }
                 return pageChanged;
             } catch (Exception var5) {
                 return false;
@@ -147,17 +147,19 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
             return null;
 
         boolean isOverRightPage;
-        if (mouseX >= leftPos + TEXT_RIGHT_X && mouseX < leftPos + TEXT_RIGHT_X + TEXT_WIDTH)
+        if (mouseX >= leftPos + TEXT_RIGHT_X && mouseX < leftPos + TEXT_RIGHT_X + TEXT_WIDTH) {
             isOverRightPage = true;
-        else if (mouseX >= leftPos + TEXT_LEFT_X && mouseX < leftPos + TEXT_LEFT_X + TEXT_WIDTH)
+        } else if (mouseX >= leftPos + TEXT_LEFT_X && mouseX < leftPos + TEXT_LEFT_X + TEXT_WIDTH) {
             isOverRightPage = false;
-        else
+        } else {
             return null;
+        }
 
         List<FormattedCharSequence> pageContents = isOverRightPage ? this.cachedPageComponents.getSecond() : this.cachedPageComponents.getFirst();
 
-        if (pageContents.isEmpty())
+        if (pageContents.isEmpty()) {
             return null;
+        }
 
         int x = (int)mouseX - (leftPos + (isOverRightPage ? TEXT_RIGHT_X : TEXT_LEFT_X));
         int y = (int)mouseY - (topPos + TEXT_Y);

@@ -1,10 +1,10 @@
-package io.github.mortuusars.scholar.client.screen;
+package io.github.mortuusars.scholar.client.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
-import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
@@ -51,8 +51,6 @@ public abstract class SpreadBookScreen extends Screen {
 
     protected int currentSpread;
 
-    protected boolean toolsVisible;
-
     public SpreadBookScreen(int bookColor) {
         super(GameNarrator.NO_TITLE);
         this.minecraft = Minecraft.getInstance();
@@ -74,7 +72,6 @@ public abstract class SpreadBookScreen extends Screen {
         this.topPos = (this.height - BOOK_HEIGHT) / 2;
 
         createWidgets();
-        updateButtonVisibility();
     }
 
     protected void createWidgets() {
@@ -113,12 +110,15 @@ public abstract class SpreadBookScreen extends Screen {
     }
 
     protected void toggleBookTools() {
-        toolsVisible = !toolsVisible;
-        updateButtonVisibility();
+        boolean currentValue = Config.Client.EDIT_SCREEN_SHOW_EXTRA_TOOLS.get();
+        Config.Client.EDIT_SCREEN_SHOW_EXTRA_TOOLS.set(!currentValue);
+        Config.Client.EDIT_SCREEN_SHOW_EXTRA_TOOLS.save();
+        // Implemented in base screen in case some extra functionality would be added in the future.
+        // Does nothing in this class currently. Should be implemented in child classes.
     }
 
     public boolean isToolsVisible() {
-        return toolsVisible;
+        return Config.Client.EDIT_SCREEN_SHOW_EXTRA_TOOLS.get();
     }
 
     // -- Book
@@ -134,8 +134,7 @@ public abstract class SpreadBookScreen extends Screen {
     protected boolean pageBack() {
         if (currentSpread > 0) {
             currentSpread--;
-            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 0.8f));
-            updateButtonVisibility();
+            playPageTurnSound(0.8f);
             return true;
         }
         return false;
@@ -144,8 +143,7 @@ public abstract class SpreadBookScreen extends Screen {
     protected boolean pageForward() {
         if (currentSpread < getSpreadCount() - 1) {
             currentSpread++;
-            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1f));
-            updateButtonVisibility();
+            playPageTurnSound(1f);
             return true;
         }
         return false;
@@ -156,13 +154,13 @@ public abstract class SpreadBookScreen extends Screen {
     protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         RenderUtil.withColorMultiplied(bookColor, () -> {
             // Cover
-            guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
+            guiGraphics.blit(TEXTURE, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,
                     0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
         });
 
         // Paper
-        guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
-                0, 180, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
+        guiGraphics.blit(TEXTURE, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,
+                0, BOOK_HEIGHT, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
     }
 
     protected void renderPageNumbers(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread) {
@@ -180,6 +178,9 @@ public abstract class SpreadBookScreen extends Screen {
         String rightPageNumber = Integer.toString(currentSpread * 2 + 2);
         guiGraphics.drawString(font, rightPageNumber, leftPos + 208 + (8 - font.width(rightPageNumber) / 2),
                 topPos + 157, color, false);
+    }
+
+    protected void renderTools(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
     }
 
     // -- Input
@@ -233,5 +234,32 @@ public abstract class SpreadBookScreen extends Screen {
 
     protected boolean isRightPage(int pageIndex) {
         return pageIndex % 2 == 1;
+    }
+
+    protected void playButtonClickSound(float volume, float pitch) {
+        Minecraft.getInstance().getSoundManager().play(
+                SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), pitch, volume));
+    }
+
+    protected void playButtonClickSound(float pitch) {
+        Minecraft.getInstance().getSoundManager().play(
+                SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), pitch, 0.3f));
+    }
+
+    protected void playButtonClickSound() {
+        Minecraft.getInstance().getSoundManager().play(
+                SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1, 0.3f));
+    }
+
+    protected void playPageTurnSound(float volume, float pitch) {
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, pitch, volume));
+    }
+
+    protected void playPageTurnSound(float pitch) {
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, pitch, 1f));
+    }
+
+    protected void playPageTurnSound() {
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1f, 1f));
     }
 }

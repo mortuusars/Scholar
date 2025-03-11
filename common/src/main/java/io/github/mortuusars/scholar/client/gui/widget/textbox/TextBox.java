@@ -1,14 +1,14 @@
-package io.github.mortuusars.scholar.client.screen.textbox;
+package io.github.mortuusars.scholar.client.gui.widget.textbox;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.mortuusars.scholar.client.screen.textbox.display.FormattedStringDisplayCache;
-import io.github.mortuusars.scholar.client.screen.textbox.display.FormattingToolbar;
-import io.github.mortuusars.scholar.client.screen.textbox.display.HorizontalAlignment;
-import io.github.mortuusars.scholar.client.screen.textbox.display.Line;
-import io.github.mortuusars.scholar.client.screen.textbox.text.FormattedString;
-import io.github.mortuusars.scholar.client.screen.textbox.text.FormattedStringEditor;
-import io.github.mortuusars.scholar.client.screen.textbox.text.Formatting;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.display.FormattedStringDisplayCache;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.display.FormattingToolbar;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.display.HorizontalAlignment;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.display.Line;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedString;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedStringEditor;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.text.Formatting;
 import io.github.mortuusars.scholar.client.util.Pos2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

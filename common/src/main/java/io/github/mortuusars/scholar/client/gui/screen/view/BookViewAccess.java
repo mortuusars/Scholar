@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.client.screen;
+package io.github.mortuusars.scholar.client.gui.screen.view;
 
 import com.google.common.collect.ImmutableList;
 import net.minecraft.ChatFormatting;

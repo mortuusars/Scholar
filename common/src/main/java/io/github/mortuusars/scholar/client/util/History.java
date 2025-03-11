@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.client.screen;
+package io.github.mortuusars.scholar.client.util;
 
 import org.jetbrains.annotations.Nullable;
 

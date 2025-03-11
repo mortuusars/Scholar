@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.client.screen.textbox.text;
+package io.github.mortuusars.scholar.client.gui.widget.textbox.text;
 
 import net.minecraft.client.gui.Font;
 

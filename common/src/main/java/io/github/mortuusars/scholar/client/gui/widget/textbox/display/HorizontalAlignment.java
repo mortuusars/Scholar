@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.client.screen.textbox.display;
+package io.github.mortuusars.scholar.client.gui.widget.textbox.display;
 
 public enum HorizontalAlignment {
     LEFT,

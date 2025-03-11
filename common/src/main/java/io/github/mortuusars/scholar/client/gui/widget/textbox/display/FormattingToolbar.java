@@ -1,10 +1,9 @@
-package io.github.mortuusars.scholar.client.screen.textbox.display;
+package io.github.mortuusars.scholar.client.gui.widget.textbox.display;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.client.screen.textbox.TextBox;
-import io.github.mortuusars.scholar.client.screen.textbox.text.Char;
-import io.github.mortuusars.scholar.client.screen.textbox.text.Formatting;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.text.Formatting;
 import io.github.mortuusars.scholar.client.util.Pos2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
