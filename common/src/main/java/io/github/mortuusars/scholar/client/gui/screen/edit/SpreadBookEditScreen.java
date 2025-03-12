@@ -11,8 +11,9 @@ import io.github.mortuusars.scholar.client.gui.screen.SpreadBookScreen;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedString;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedStringEditor;
+import io.github.mortuusars.scholar.util.Change;
 import io.github.mortuusars.scholar.client.util.FileDialogs;
-import io.github.mortuusars.scholar.client.util.History;
+import io.github.mortuusars.scholar.util.History;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
 import io.netty.util.internal.StringUtil;
 import net.minecraft.ChatFormatting;
@@ -32,19 +33,13 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class SpreadBookEditScreen extends SpreadBookScreen {
     protected final ItemStack bookStack;
@@ -274,7 +269,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         }
 
         if (Screen.hasControlDown() && key == InputConstants.KEY_Z && !Screen.hasAltDown()) {
-            @Nullable History.Change change;
+            @Nullable Change change;
             float pitch;
 
             if (Screen.hasShiftDown()) {
@@ -333,11 +328,11 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
             setTextBoxes();
 
-            getHistory().addChange(() -> {
-                super.pageBack();
+            getHistory().add(() -> {
+                super.pageForward();
                 setTextBoxes();
             }, () -> {
-                super.pageForward();
+                super.pageBack();
                 setTextBoxes();
             });
 
@@ -350,11 +345,11 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     protected boolean pageBack() {
         if (super.pageBack()) {
             setTextBoxes();
-            getHistory().addChange(() -> {
-                super.pageForward();
+            getHistory().add(() -> {
+                super.pageBack();
                 setTextBoxes();
             }, () -> {
-                super.pageBack();
+                super.pageForward();
                 setTextBoxes();
             });
             return true;
@@ -401,15 +396,15 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         if (pageIndex >= 0 && pageIndex < this.pages.size()) {
 
             String currentText = getPageText(side);
-            getHistory().addChange(() -> {
-                pages.set(pageIndex, currentText);
-                this.bookModified = true;
-                setTextBoxes(false);
-            }, () -> {
+            getHistory().add(() -> {
                 pages.set(pageIndex, text);
                 this.bookModified = true;
                 setTextBoxes(false);
 
+            }, () -> {
+                pages.set(pageIndex, currentText);
+                this.bookModified = true;
+                setTextBoxes(false);
             });
 
             this.pages.set(pageIndex, text);
@@ -424,61 +419,54 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     protected void insertEmptyPage(Spread.Side side) {
-        if (pages.size() == 100 && !pages.get(99).isEmpty()) {
+        if (!canInsertEmptyPage(side)) {
             Objects.requireNonNull(Minecraft.getInstance().player).displayClientMessage(
                     Component.translatable("gui.scholar.cannot_insert_page"), false);
             return;
         }
 
         int pageIndex = side.getPageIndexFromSpread(currentSpread);
-        pages.add(pageIndex, "");
 
-        for (int i = pages.size() - 1; i > 99; i--) {
-            pages.remove(pages.size() - 1);
-        }
-
-        getHistory().addChange(() -> {
+        Change change = Change.create(() -> {
+            pages.add(pageIndex, "");
+            while (pages.size() >= 100) {
+                pages.remove(pages.size() - 1);
+            }
+            setTextBoxes();
+            bookModified = true;
+            playPageTurnSound(1f, 0.6f);
+        }, () -> {
             pages.remove(pageIndex);
             setTextBoxes();
             bookModified = true;
-            return true;
-        }, () -> {
-            pages.add(pageIndex, "");
-            setTextBoxes();
-            bookModified = true;
-            return true;
+            playPageTurnSound(1f, 0.8f);
         });
 
-        playPageTurnSound(1.15f, 0.6f);
-
-        setTextBoxes();
-        bookModified = true;
+        change.apply();
+        getHistory().add(change);
     }
 
     protected void removePage(Spread.Side side) {
         int pageIndex = side.getPageIndexFromSpread(currentSpread);
-        String removedPage = pages.remove(pageIndex);
+        String pageContent = pages.get(pageIndex);
 
-        while (this.pages.size() < Spread.Side.RIGHT.getPageIndexFromSpread(currentSpread) + 1) {
-            this.pages.add("");
-        }
-
-        getHistory().addChange(() -> {
-            pages.add(pageIndex, removedPage);
-            setTextBoxes();
-            bookModified = true;
-            return true;
-        }, () -> {
+        Change change = Change.create(() -> {
             pages.remove(pageIndex);
+            while (this.pages.size() < Spread.Side.RIGHT.getPageIndexFromSpread(currentSpread) + 1) {
+                this.pages.add("");
+            }
             setTextBoxes();
             bookModified = true;
-            return true;
+            playPageTurnSound(0.85f, 0.6f);
+        }, () -> {
+            pages.add(pageIndex, pageContent);
+            setTextBoxes();
+            bookModified = true;
+            playPageTurnSound(0.85f, 0.8f);
         });
 
-        playPageTurnSound(0.85f, 0.6f);
-
-        setTextBoxes();
-        bookModified = true;
+        change.apply();
+        getHistory().add(change);
     }
 
     protected void saveChanges(boolean sign, @Nullable String title) {
@@ -523,11 +511,20 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     // --
 
     protected boolean canInsertEmptyPage(Spread.Side side) {
-        return (pages.size() < 100 || pages.get(99).isEmpty()) && containsContentAfter(side.getPageIndexFromSpread(currentSpread));
+        int pageIndex = side.getPageIndexFromSpread(currentSpread);
+        int lastPageWithContent = getLastPageWithContent().orElse(-1);
+        return lastPageWithContent < 99 && pageIndex <= lastPageWithContent;
     }
 
     protected boolean canRemovePage(Spread.Side side) {
         return containsContentAfter(side.getPageIndexFromSpread(currentSpread));
+    }
+
+    protected OptionalInt getLastPageWithContent() {
+        for (int i = pages.size() - 1; i >= 0; i--) {
+            if (!pages.get(i).isEmpty()) return OptionalInt.of(i);
+        }
+        return OptionalInt.empty();
     }
 
     protected boolean containsContentAfter(int pageIndex) {
@@ -589,14 +586,14 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
         List<String> newPages = new ArrayList<>(pages);
 
-        getHistory().addChange(() -> {
+        getHistory().add(() -> {
             pages.clear();
-            pages.addAll(oldPages);
+            pages.addAll(newPages);
             bookModified = true;
             setTextBoxes();
         }, () -> {
             pages.clear();
-            pages.addAll(newPages);
+            pages.addAll(oldPages);
             bookModified = true;
             setTextBoxes();
         });
@@ -608,9 +605,6 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             String title = Component.translatable("gui.scholar.import_book").getString();
 
             FileDialogs.loadFile(defaultDirectory, title, "Text Files (.txt)", false, "*.txt").ifPresent(filePath -> {
-                /*try(BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), StandardCharsets.UTF_8))) {
-                    String content = reader.lines().collect(Collectors.joining());*/
-
                 try {
                     String content = Files.readString(Path.of(filePath));
                     Minecraft.getInstance().execute(() -> {
