@@ -9,6 +9,7 @@ import io.github.mortuusars.scholar.network.packet.server.LecternEditBookC2SP;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -108,6 +109,7 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
             setTextBoxes();
             updateButtonVisibility();
         }
+        saveChanges(false, null);
     }
 
     @Override
@@ -163,6 +165,13 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
 
     // --
 
+
+    @Override
+    public void setFocused(@Nullable GuiEventListener focused) {
+        super.setFocused(focused);
+        saveChanges(false, null);
+    }
+
     @Override
     public void removed() {
         super.removed();
@@ -171,15 +180,15 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
 
     @Override
     public void onClose() {
-        sendChanges(null);
-        player.closeContainer();
         super.onClose();
+        player.closeContainer();
     }
 
     // --
 
     protected void sendButtonClick(int buttonId) {
         if (Minecraft.getInstance().gameMode != null) {
+//            saveChanges(false, null);
             Minecraft.getInstance().gameMode.handleInventoryButtonClick(this.menu.containerId, buttonId);
         }
     }

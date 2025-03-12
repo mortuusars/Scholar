@@ -87,7 +87,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             this.pages.add("");
         }
 
-        setTextBoxes();
+        setTextBoxes(false);
     }
 
     @Override
@@ -189,7 +189,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         super.updateButtonVisibility();
 
         insertEmptyPageLeftButton.visible = isToolsVisible();
-        insertEmptyPageLeftButton.active =  canInsertEmptyPage(Spread.Side.LEFT);
+        insertEmptyPageLeftButton.active = canInsertEmptyPage(Spread.Side.LEFT);
         insertEmptyPageRightButton.visible = isToolsVisible();
         insertEmptyPageRightButton.active = canInsertEmptyPage(Spread.Side.RIGHT);
 
@@ -367,14 +367,20 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     protected void setTextBoxes(boolean resetCursor) {
-        leftPageTextBox.getEditor().setString(FormattedString.parse(getPageText(Spread.Side.LEFT)));
-        int leftCursorPos = resetCursor ? 0 : leftPageTextBox.getEditor().getCursorPos();
-        leftPageTextBox.getEditor().setCursorPos(leftCursorPos, false);
+        FormattedString leftString = FormattedString.parse(getPageText(Spread.Side.LEFT));
+        if (!leftString.equals(leftPageTextBox.getEditor().getString())) {
+            leftPageTextBox.getEditor().setString(leftString);
+            int leftCursorPos = resetCursor ? 0 : leftPageTextBox.getEditor().getCursorPos();
+            leftPageTextBox.getEditor().setCursorPos(leftCursorPos, false);
+        }
         leftPageTextBox.getDisplayCache().scheduleUpdate();
 
-        rightPageTextBox.getEditor().setString(FormattedString.parse(getPageText(Spread.Side.RIGHT)));
-        int rightCursorPos = resetCursor ? 0 : rightPageTextBox.getEditor().getCursorPos();
-        rightPageTextBox.getEditor().setCursorPos(rightCursorPos, false);
+        FormattedString rightString = FormattedString.parse(getPageText(Spread.Side.RIGHT));
+        if (!rightString.equals(rightPageTextBox.getEditor().getString())) {
+            rightPageTextBox.getEditor().setString(rightString);
+            int rightCursorPos = resetCursor ? 0 : rightPageTextBox.getEditor().getCursorPos();
+            rightPageTextBox.getEditor().setCursorPos(rightCursorPos, false);
+        }
         rightPageTextBox.getDisplayCache().scheduleUpdate();
     }
 
@@ -443,7 +449,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             return true;
         });
 
-        playPageTurnSound( 1.15f, 0.6f);
+        playPageTurnSound(1.15f, 0.6f);
 
         setTextBoxes();
         bookModified = true;

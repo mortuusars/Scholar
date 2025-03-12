@@ -84,11 +84,11 @@ public interface BookViewAccess {
         }
 
         public int getPageCount() {
-            return this.pages.size();
+            return 100;
         }
 
         public FormattedText getPageRaw(int i) {
-            return FormattedText.of(this.pages.get(i));
+            return i >= pages.size() ? FormattedText.EMPTY : FormattedText.of(this.pages.get(i));
         }
     }
 

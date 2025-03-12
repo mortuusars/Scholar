@@ -64,23 +64,25 @@ public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optio
     @Override
     public boolean handle(PacketDirection direction, @Nullable Player player) {
         if (!(player instanceof ServerPlayer serverPlayer)) {
-            Scholar.LOGGER.debug("Cannot handle {} packet: player is not ServerPlayer.", getId());
+            Scholar.LOGGER.error("Cannot handle {} packet: player is not ServerPlayer.", getId());
             return true;
         }
 
-        if (!(player.level().getBlockEntity(lecternPos) instanceof LecternBlockEntity lecternBlockEntity)) {
-            Scholar.LOGGER.debug("Cannot update lectern book: no lectern block entity at lecternPos.");
-            return true;
-        }
+        serverPlayer.server.execute(() -> {
+            if (!(player.level().getBlockEntity(lecternPos) instanceof LecternBlockEntity lecternBlockEntity)) {
+                Scholar.LOGGER.error("Cannot update lectern book: no lectern block entity at lecternPos '{}'", lecternPos);
+                return;
+            }
 
-        ArrayList<String> bookPages = new ArrayList<>();
-        Optional<String> title = title();
-        title.ifPresent(bookPages::add);
-        pages().stream().limit(100L).forEach(bookPages::add);
-        Consumer<List<FilteredText>> consumer = title.isPresent()
-                ? list -> signBook(serverPlayer, list.get(0), list.subList(1, list.size()), lecternBlockEntity)
-                : list -> updateBookContents(serverPlayer, list, lecternBlockEntity);
-        this.filterTextPacket(serverPlayer,bookPages).thenAcceptAsync(consumer, serverPlayer.server);
+            ArrayList<String> bookPages = new ArrayList<>();
+            Optional<String> title = title();
+            title.ifPresent(bookPages::add);
+            pages().stream().limit(100L).forEach(bookPages::add);
+            Consumer<List<FilteredText>> consumer = title.isPresent()
+                    ? list -> signBook(serverPlayer, list.get(0), list.subList(1, list.size()), lecternBlockEntity)
+                    : list -> updateBookContents(serverPlayer, list, lecternBlockEntity);
+            this.filterTextPacket(serverPlayer,bookPages).thenAcceptAsync(consumer, serverPlayer.server);
+        });
 
         return true;
     }

@@ -9,6 +9,15 @@ architectury {
 
 loom {
     accessWidenerPath = project(":common").loom.accessWidenerPath
+
+    var hotswapVmArgs = [
+            "-Dfabric.systemLibraries=${System.getProperty("java.home")}/lib/hotswap/hotswap-agent.jar".toString(),
+            "-XX:HotswapAgent=fatjar"
+    ]
+
+    runs.configureEach {
+        vmArgs hotswapVmArgs
+    }
 }
 
 configurations {
