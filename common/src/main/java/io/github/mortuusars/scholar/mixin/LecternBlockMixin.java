@@ -17,7 +17,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(LecternBlock.class)
+/**
+ * Bumped priority to override Amendments lectern screen. If player has installed Scholar, they probably want it everywhere anyway.
+ * If not - it can be disabled in config.
+ */
+@Mixin(value = LecternBlock.class, priority = 990)
 public abstract class LecternBlockMixin {
     @Inject(method = "openScreen", at = @At(value = "HEAD"), cancellable = true)
     private void openScreen(Level level, BlockPos pos, Player player, CallbackInfo ci) {
