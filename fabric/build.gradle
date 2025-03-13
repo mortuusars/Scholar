@@ -28,14 +28,6 @@ configurations {
     developmentFabric.extendsFrom common
 }
 
-repositories {
-    maven { url = "https://jitpack.io/" } // Mixin Extras, Fabric ASM
-    maven {
-        name = "Fuzs Mod Resources"
-        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
-    } // Forge Config API Port
-}
-
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
@@ -50,26 +42,6 @@ dependencies {
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
-}
-
-processResources {
-    // input variables of this task:
-    var replaceProperties = [
-            minecraft_version    : minecraft_version,
-            mod_id               : mod_id,
-            mod_name             : mod_name,
-            mod_version          : mod_version,
-            mod_license          : mod_license,
-            mod_authors          : mod_authors,
-            mod_description      : mod_description,
-            mod_homepage         : mod_homepage,
-            mod_github           : mod_github,
-    ]
-    inputs.properties replaceProperties
-
-    filesMatching("fabric.mod.json") {
-        expand replaceProperties + [project: project]
-    }
 }
 
 shadowJar {
@@ -95,19 +67,5 @@ sourcesJar {
 components.java {
     withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
         skip()
-    }
-}
-
-publishing {
-    publications {
-        mavenFabric(MavenPublication) {
-            artifactId = rootProject.mod_id + "-" + project.name
-            from components.java
-        }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
     }
 }

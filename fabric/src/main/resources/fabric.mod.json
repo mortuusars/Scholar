@@ -8,7 +8,7 @@
     "${mod_authors}"
   ],
   "contact": {
-    "homepage": "${mod_homepage}",
+    "homepage": "${mod_page}",
     "sources": "${mod_github}"
   },
   "license": "${mod_license}",

@@ -1,14 +1,26 @@
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "dev.architectury.loom" version "1.5-SNAPSHOT" apply false
+    id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
+    id "me.modmuss50.mod-publish-plugin" version "0.8.4"
 }
 
 architectury {
     minecraft = rootProject.minecraft_version
 }
 
+allprojects {
+    group = rootProject.mod_maven_group
+    version = rootProject.mod_version
+}
+
 subprojects {
-    apply plugin: "dev.architectury.loom"
+    apply plugin: 'dev.architectury.loom'
+    apply plugin: 'architectury-plugin'
+    apply plugin: 'maven-publish'
+
+    base {
+        archivesName = "${mod_id}-${minecraft_version}"
+    }
 
     loom {
         silentMojangMappingsLicense()
@@ -18,33 +30,6 @@ subprojects {
             }
         }
     }
-
-    dependencies {
-        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
-
-        mappings loom.layered() {
-            officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-${parchment_version}@zip")
-        }
-
-        modCompileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
-
-        // compile against the JEI API but do not include it at runtime
-        modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-    }
-}
-
-allprojects {
-    apply plugin: "java"
-    apply plugin: "architectury-plugin"
-    apply plugin: "maven-publish"
-
-    base {
-        archivesName = "${mod_id}-${minecraft_version}"
-    }
-
-    version = rootProject.mod_version
-    group = rootProject.mod_group_id
 
     repositories {
         // Add repositories to retrieve artifacts from in here.
@@ -81,10 +66,24 @@ allprojects {
         maven {
             url "https://maven.shedaniel.me"
         } // REI
+        maven { url = "https://jitpack.io/" } // Mixin Extras, Fabric ASM
+        maven {
+            name = "Fuzs Mod Resources"
+            url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+        } // Forge Config API Port
     }
-
     dependencies {
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
 
+        mappings loom.layered() {
+            officialMojangMappings()
+            parchment("org.parchmentmc.data:parchment-${parchment_version}@zip")
+        }
+
+        modCompileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
+
+        // compile against the JEI API but do not include it at runtime
+        modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     }
 
     tasks.withType(JavaCompile) {
@@ -94,5 +93,143 @@ allprojects {
 
     java {
         withSourcesJar()
+    }
+
+    processResources {
+        var expandProps = [
+                minecraft_version            : minecraft_version,
+                minecraft_version_range      : minecraft_version_range,
+                loader_version_range         : loader_version_range,
+                forge_version_range          : forge_version_range,
+                mod_id                       : mod_id,
+                mod_name                     : mod_name,
+                mod_version                  : mod_version,
+                mod_authors                  : mod_authors,
+                mod_description              : mod_description,
+                mod_issues                   : mod_issues,
+                mod_page                     : mod_page,
+                mod_github                   : mod_github,
+                mod_license                  : mod_license,
+                mod_maven_group              : mod_maven_group
+        ]
+        filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', "*.mixins.json"]) {
+            expand expandProps
+        }
+        inputs.properties(expandProps)
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                artifactId = "${mod_id}-${minecraft_version}-${project.name}"
+                version = "${mod_version}"
+                from components.java
+            }
+        }
+
+        // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+        repositories {
+            var path = System.getenv("LOCAL_MAVEN")
+            if (path != null) {
+                maven {
+                    name = 'local'
+                    url = uri(path + "/maven")
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Gets the first part (topmost) of a changelog file.
+ * Expects it to be in the following format:
+ * [
+ *  ## latest version
+ *      changes
+ *
+ *  ## older version
+ *      changes
+ * ]
+ * Will return an empty string if failed.
+ */
+def getLatestVersionChangelog() {
+    def changelogFileName = 'CHANGELOG.md'
+    def changelogFile = file(changelogFileName)
+    if (changelogFile.exists()) {
+        def changelogContent = changelogFile.text
+        def changelogParts = changelogContent.split(/(?m)^##\s/)
+
+        if (changelogParts.size() > 1) {
+            return "## " + changelogParts[1].trim() // First part will always be second in the list
+        } else {
+            println("[WARN] Changelog does not contain any versions.")
+            return ""
+        }
+    } else {
+        println("[WARN] Changelog file <${changelogFileName}> does not exist.")
+        return ""
+    }
+}
+
+project.ext.changelog = getLatestVersionChangelog()
+
+task printLatestVersionChangelog {
+    doLast {
+        println project.changelog
+    }
+}
+
+publishMods {
+    changelog = project.ext.changelog
+    type = BETA
+    dryRun = providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null || providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null
+
+    def cfOptions = curseforgeOptions {
+        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+        projectId = mod_curseforge_project_id
+        minecraftVersions.add("${minecraft_version}")
+        javaVersions.add(JavaVersion.VERSION_17)
+        clientRequired = true
+        serverRequired = true
+    }
+
+    def mrOptions = modrinthOptions {
+        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+        projectId = mod_modrinth_project_id
+        minecraftVersions.add("${minecraft_version}")
+    }
+
+    curseforge("curseforgeForge") {
+        from cfOptions
+        file project(":forge")
+        modLoaders.add("forge")
+        displayName = "${mod_name} - Forge ${minecraft_version} - ${mod_version}"
+    }
+
+    curseforge("curseforgeFabric") {
+        from cfOptions
+        file project(":fabric")
+        modLoaders.add("fabric")
+        modLoaders.add("quilt")
+        displayName = "${mod_name} - Fabric ${minecraft_version} - ${mod_version}"
+        requires("fabric-api")
+        requires("forge-config-api-port-fabric")
+    }
+
+    modrinth("modrinthForge") {
+        from mrOptions
+        file project(":forge")
+        modLoaders.add("forge")
+        displayName = "${mod_name} - ${mod_version}"
+    }
+
+    modrinth("modrinthFabric") {
+        from mrOptions
+        file project(":fabric")
+        modLoaders.add("fabric")
+        modLoaders.add("quilt")
+        displayName = "${mod_name} - ${mod_version}"
+        requires("fabric-api")
+        requires("forge-config-api-port")
     }
 }
