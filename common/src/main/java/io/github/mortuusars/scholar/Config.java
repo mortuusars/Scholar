@@ -12,10 +12,9 @@ public class Config {
         public static final ForgeConfigSpec.BooleanValue WRITTEN_BOOK_COLORING;
 
         // UI
-        public static final ForgeConfigSpec.BooleanValue TWO_PAGE_SCREEN;
-        public static final ForgeConfigSpec.BooleanValue LECTERN_TWO_PAGE_SCREEN;
-        public static final ForgeConfigSpec.BooleanValue SNEAK_OPENS_VANILLA_SCREEN;
-        public static final ForgeConfigSpec.BooleanValue SURVIVAL_FORMATTING;
+        public static final ForgeConfigSpec.BooleanValue IN_HAND_TWO_PAGE_BOOK_SCREEN;
+        public static final ForgeConfigSpec.BooleanValue LECTERN_TWO_PAGE_BOOK_SCREEN;
+        public static final ForgeConfigSpec.BooleanValue SNEAK_OPENS_VANILLA_BOOK_SCREEN;
 
         // QOL
         public static final ForgeConfigSpec.BooleanValue CHISELED_BOOKSHELF_TOOLTIP;
@@ -24,47 +23,35 @@ public class Config {
         static {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
-            builder.push("BookColoring");
+            builder.push("ui");
+            IN_HAND_TWO_PAGE_BOOK_SCREEN = builder
+                    .comment("Vanilla book view/edit screens will be replaced with Scholar's two-paged view/edit screens. Default: true")
+                    .define("in_hand_two_page_book_screens", true);
+            LECTERN_TWO_PAGE_BOOK_SCREEN = builder
+                    .comment("Vanilla lectern book view screen will be replaced with Scholar's two-paged view/edit screens.",
+                            "Can be disabled if you want to use different screen for lectern (such as from Amendments (but Scholar now has lectern editing, so...)). Default: true")
+                    .define("lectern_two_page_book_screens", true);
+            SNEAK_OPENS_VANILLA_BOOK_SCREEN = builder
+                    .comment("Holding sneak while opening a book screen will show vanilla screen. Default: false")
+                    .define("sneaking_opens_vanilla_book_screen", false);
+            builder.pop();
+
+            builder.push("book_coloring");
             WRITABLE_BOOK_COLORING = builder
                     .comment("Writable Book (Book and Quill) can be colored like Leather armor. Default: true")
-                    .define("WritableBookColoring", true);
+                    .define("writable_book_coloring", true);
             WRITTEN_BOOK_COLORING = builder
                     .comment("Written Book can be colored like Leather armor. Default: false")
-                    .define("WrittenBookColoring", false);
+                    .define("written_book_coloring", false);
             builder.pop();
 
-            builder.push("UI");
-            TWO_PAGE_SCREEN = builder
-                    .comment("Vanilla book screens will be replaced with a two-paged ones. Default: true")
-                    .define("TwoPageScreen", true);
-            LECTERN_TWO_PAGE_SCREEN = builder
-                    .comment("Lectern book screen will replace the vanilla one. Can be disabled if you want to use different screen for lectern (such as from Amendments). Default: true")
-                    .define("LecternTwoPageScreen", true);
-            SNEAK_OPENS_VANILLA_SCREEN = builder
-                    .comment("Holding sneak while using a book screen will show vanilla screen. Default: false")
-                    .define("SneakingOpensVanillaScreen", false);
-            SURVIVAL_FORMATTING = builder
-                    .comment("Allow inserting formatting symbol (section sign) for players in survival mode." +
-                                    "When set to true - hotkey or a button can be used to paste a formatting symbol.",
-                            "Default: true")
-                    .define("SurvivalFormatting", true);
-            builder.pop();
-
-            builder.push("QOL");
+            builder.push("misc");
             CHISELED_BOOKSHELF_TOOLTIP = builder
                     .comment("Hovering over a slot in a Chiseled Bookshelf will show tooltip of a book that's stored in that slot. Default: true")
-                    .define("ChiseledBookshelfTooltip", true);
+                    .define("chiseled_bookshelf_tooltip", true);
             BOOK_ENCHANTMENT_GLINT = builder
                     .comment("Written books will have an enchantment glint on them. Default: false")
-                    .define("EnchantmentGlint", false);
-            builder.pop();
-
-            builder.push("LecternScreen");
-
-            builder.pop();
-
-            builder.push("Misc");
-
+                    .define("written_book_enchantment_glint", false);
             builder.pop();
 
             SPEC = builder.build();
@@ -104,7 +91,7 @@ public class Config {
 
                 EDIT_SCREEN_SHOW_EXTRA_TOOLS = builder
                         .comment("Additional tool buttons will be shown in book edit screen.",
-                                "This setting can be toggled in-game by pressing F1 button (by default). Initial value: false")
+                                "This setting can be toggled in-game by pressing F1 button (by default) or clicking on question mark in top right corner. Initial value: false")
                         .define("book_edit_screen_show_extra_tools", false);
 
                 {

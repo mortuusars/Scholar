@@ -1,7 +1,6 @@
-package io.github.mortuusars.scholar;
+package io.github.mortuusars.scholar.menu;
 
-import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
-import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
+import io.github.mortuusars.scholar.PlatformHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;

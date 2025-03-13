@@ -13,6 +13,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+/**
+ * Sends stored items to client, so it can display bookshelf contents in a tooltip.
+ */
 @Mixin(ChiseledBookShelfBlockEntity.class)
 public abstract class ChiseledBookShelfBlockEntityMixin extends BlockEntityParentMixin {
     @Shadow @Final private NonNullList<ItemStack> items;
@@ -20,7 +23,9 @@ public abstract class ChiseledBookShelfBlockEntityMixin extends BlockEntityParen
     @Override
     protected Packet<ClientGamePacketListener> onGetUpdatePacket(Packet<ClientGamePacketListener> original) {
         ChiseledBookShelfBlockEntity blockEntity = (ChiseledBookShelfBlockEntity) (Object) this;
-        return Config.Common.CHISELED_BOOKSHELF_TOOLTIP.get() ? ClientboundBlockEntityDataPacket.create(blockEntity) : super.onGetUpdatePacket(original);
+        return Config.Common.CHISELED_BOOKSHELF_TOOLTIP.get()
+                ? ClientboundBlockEntityDataPacket.create(blockEntity)
+                : super.onGetUpdatePacket(original);
     }
 
     @Override

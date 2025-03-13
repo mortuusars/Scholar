@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 /**
  * Adds DyeableLeatherItem interface to writable books. This makes it handle most of the coloring stuff automatically.
+ * But can potentially introduce unwanted behaviour for mods that extend WritableBookItem for their items.
  */
 @Mixin(WritableBookItem.class)
 public abstract class WritableBookItemMixin implements DyeableLeatherItem {

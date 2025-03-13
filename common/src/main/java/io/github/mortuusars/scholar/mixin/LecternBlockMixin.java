@@ -1,7 +1,7 @@
 package io.github.mortuusars.scholar.mixin;
 
 import io.github.mortuusars.scholar.Config;
-import io.github.mortuusars.scholar.Lectern;
+import io.github.mortuusars.scholar.menu.Lectern;
 import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,9 +23,8 @@ public abstract class LecternBlockMixin {
     private void openScreen(Level level, BlockPos pos, Player player, CallbackInfo ci) {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
         if (!(level.getBlockEntity(pos) instanceof LecternBlockEntity lecternBlockEntity)) return;
-        if (!Config.Common.TWO_PAGE_SCREEN.get()) return;
-        if (!Config.Common.LECTERN_TWO_PAGE_SCREEN.get()) return;
-        if (Config.Common.SNEAK_OPENS_VANILLA_SCREEN.get() && player.isSecondaryUseActive()) return;
+        if (!Config.Common.LECTERN_TWO_PAGE_BOOK_SCREEN.get()) return;
+        if (Config.Common.SNEAK_OPENS_VANILLA_BOOK_SCREEN.get() && player.isSecondaryUseActive()) return;
 
         ItemStack bookStack = lecternBlockEntity.getBook();
 

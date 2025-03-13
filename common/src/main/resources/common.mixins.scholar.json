@@ -7,7 +7,6 @@
   "mixins": [
     "ArmorDyeRecipeMixin",
     "BookCloningRecipeMixin",
-    "LecternBlockEntityMixin",
     "LecternBlockMixin",
     "WritableBookItemMixin",
     "WrittenBookItemMixin",
@@ -19,7 +18,6 @@
   },
   "client": [
     "ClientPacketListenerMixin",
-    "LecternScreenMixin",
     "LocalPlayerMixin"
   ]
 }

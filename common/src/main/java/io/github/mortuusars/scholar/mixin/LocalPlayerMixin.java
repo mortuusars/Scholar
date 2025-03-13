@@ -24,13 +24,9 @@ public abstract class LocalPlayerMixin extends Player {
 
     @Inject(method = "openItemGui", at = @At("HEAD"), cancellable = true)
     private void onOpenItemGui(ItemStack stack, InteractionHand hand, CallbackInfo ci) {
-        if (!Config.Common.TWO_PAGE_SCREEN.get() || !stack.is(Items.WRITABLE_BOOK)) {
-            return;
-        }
-
-        if (Config.Common.SNEAK_OPENS_VANILLA_SCREEN.get() && isSecondaryUseActive()) {
-            return;
-        }
+        if (!Config.Common.IN_HAND_TWO_PAGE_BOOK_SCREEN.get()) return;
+        if (!stack.is(Items.WRITABLE_BOOK)) return;
+        if (Config.Common.SNEAK_OPENS_VANILLA_BOOK_SCREEN.get() && isSecondaryUseActive()) return;
 
         Minecraft.getInstance().setScreen(new SpreadBookEditScreen(stack, hand));
         ci.cancel();

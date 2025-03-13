@@ -31,6 +31,7 @@ public class BookCloningRecipeMixin {
         ItemStack inputBook = ItemStack.EMPTY;
         @Nullable Integer resultColor = null;
         int copies = 0;
+
         for (int slot = 0; slot < container.getContainerSize(); ++slot) {
             ItemStack stack = container.getItem(slot);
             if (stack.isEmpty()) {
@@ -40,8 +41,9 @@ public class BookCloningRecipeMixin {
             if (stack.is(Items.WRITTEN_BOOK)) {
                 if (!inputBook.isEmpty()) {
                     cir.setReturnValue(ItemStack.EMPTY);
-                    return;
+                    return; // multiple written books as inputs are not allowed
                 }
+
                 inputBook = stack;
                 continue;
             }
@@ -66,7 +68,7 @@ public class BookCloningRecipeMixin {
 
         if (inputBook.isEmpty() || inputBook.getTag() == null || copies < 1 || WrittenBookItem.getGeneration(inputBook) >= 2) {
             cir.setReturnValue(ItemStack.EMPTY);
-            return;
+            return; // Cannot be copied
         }
 
         ItemStack resultStack = new ItemStack(Items.WRITTEN_BOOK, copies);

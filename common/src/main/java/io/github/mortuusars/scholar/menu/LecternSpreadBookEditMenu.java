@@ -1,6 +1,5 @@
 package io.github.mortuusars.scholar.menu;
 
-import io.github.mortuusars.scholar.Lectern;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.book.Spread;
 import net.minecraft.core.BlockPos;
@@ -53,6 +52,8 @@ public class LecternSpreadBookEditMenu extends LecternSpreadMenu {
             }
 
             int newPageIndex = Spread.Side.LEFT.getPageIndexFromSpread(newSpreadIndex);
+
+            // Update pageCount for correct analog redstone output:
             if (player.level().getBlockEntity(getLecternPos()) instanceof LecternBlockEntity lecternBlockEntity) {
                 lecternBlockEntity.pageCount = Math.min(100, Spread.Side.RIGHT.getPageIndexFromSpread(newSpreadIndex) + 2);
             }
