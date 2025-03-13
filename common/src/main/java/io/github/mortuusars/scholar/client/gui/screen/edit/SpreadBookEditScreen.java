@@ -33,6 +33,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -548,52 +549,61 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             contents = ChatFormatting.stripFormatting(contents);
             assert contents != null;
         }
+        String[] pages = contents.split("\f");
 
-        FormattedString string = FormattedString.parse(contents);
         Predicate<String> validator = FormattedStringEditor.Validator.fitInDimensions(font, leftPageTextBox.getWidth(), leftPageTextBox.getHeight());
 
-        int currentChar = 0;
-        FormattedString currentString = new FormattedString();
-        String lastValidString = "";
-
-        while (currentChar < string.length()) {
-            currentString.add(string.get(currentChar));
-            currentChar++;
-            String str = currentString.toString();
-
-            if (!validator.test(str)) {
-                pages.add(lastValidString);
-
-                if (pages.size() >= 100) {
-                    lastValidString = "";
-                    break;
-                }
-
-                currentChar--;
-                currentString.clear();
+        for (String pageContent : pages) {
+            if (pageContent.isEmpty()) {
+                this.pages.add("");
                 continue;
             }
 
-            lastValidString = str;
-        }
+            FormattedString string = FormattedString.parse(pageContent);
 
-        if (!lastValidString.isEmpty() && pages.size() <= 100) {
-            pages.add(lastValidString);
+            int currentChar = 0;
+            FormattedString currentString = new FormattedString();
+            String lastValidString = "";
+
+            while (currentChar < string.length()) {
+                currentString.add(string.get(currentChar));
+                currentChar++;
+                String str = currentString.toString();
+
+                if (!validator.test(str)) {
+                    this.pages.add(lastValidString);
+
+                    if (this.pages.size() >= 100) {
+                        lastValidString = "";
+                        break;
+                    }
+
+                    currentChar--;
+                    currentString.clear();
+                    continue;
+                }
+
+                lastValidString = str;
+            }
+
+            if (!lastValidString.isEmpty() && this.pages.size() <= 100) {
+                this.pages.add(lastValidString);
+            }
         }
 
         bookModified = true;
         setTextBoxes();
 
-        List<String> newPages = new ArrayList<>(pages);
+        List<String> newPages = new ArrayList<>(this.pages);
 
         getHistory().add(() -> {
-            pages.clear();
-            pages.addAll(newPages);
+            this.pages.clear();
+            this.pages.addAll(newPages);
             bookModified = true;
             setTextBoxes();
         }, () -> {
-            pages.clear();
-            pages.addAll(oldPages);
+            this.pages.clear();
+            this.pages.addAll(oldPages);
             bookModified = true;
             setTextBoxes();
         });
@@ -601,7 +611,10 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     public void importBook(boolean withFormatting) {
         CompletableFuture.runAsync(() -> {
-            String defaultDirectory = Minecraft.getInstance().gameDirectory.getAbsolutePath();
+            String defaultDirectory = Minecraft.getInstance().gameDirectory.toPath().toAbsolutePath().normalize().toString();
+            if (!defaultDirectory.endsWith(File.separator)) {
+                defaultDirectory = defaultDirectory + File.separator;
+            }
             String title = Component.translatable("gui.scholar.import_book").getString();
 
             FileDialogs.loadFile(defaultDirectory, title, "Text Files (.txt)", false, "*.txt").ifPresent(filePath -> {
@@ -626,12 +639,15 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     public void exportBook(boolean withFormatting) {
         String content = withFormatting
-                ? String.join("", pages)
-                : ChatFormatting.stripFormatting(String.join("\n", pages));
+                ? String.join("\f", pages)
+                : ChatFormatting.stripFormatting(String.join("\f", pages));
         assert content != null;
 
         CompletableFuture.runAsync(() -> {
-            String defaultDirectory = Minecraft.getInstance().gameDirectory.getAbsolutePath();
+            String defaultDirectory = Minecraft.getInstance().gameDirectory.toPath().toAbsolutePath().normalize().toString();
+            if (!defaultDirectory.endsWith(File.separator)) {
+                defaultDirectory = defaultDirectory + File.separator;
+            }
             String title = Component.translatable("gui.scholar.export_book").getString();
 
             FileDialogs.saveFile(defaultDirectory, title, "Text Files (.txt)", "*.txt").ifPresent(filePath -> {
