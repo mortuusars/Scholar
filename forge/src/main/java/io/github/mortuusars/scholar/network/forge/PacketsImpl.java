@@ -19,7 +19,7 @@ public class PacketsImpl {
     private static int id = 0;
 
     private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation("exposure:packets"),
+            new ResourceLocation("scholar:packets"),
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals);
