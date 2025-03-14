@@ -1,11 +1,21 @@
 package io.github.mortuusars.scholar.book;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.DyeableLeatherItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class BookColor {
     public static final BookColor DEFAULT = new BookColor(0x99452E, null);
@@ -56,6 +66,19 @@ public class BookColor {
     public static int getTintColor(ItemStack stack, int tintIndex) {
         if (tintIndex == 0) {
             return of(stack);
+        }
+
+        return -1;
+    }
+
+    public static int getBlockTintColor(BlockState blockState, @Nullable BlockAndTintGetter blockAndTintGetter, @Nullable BlockPos blockPos, int tintIndex) {
+        if (tintIndex >= 0 && blockAndTintGetter != null && blockPos != null) {
+            if (blockAndTintGetter.getBlockEntity(blockPos) instanceof ChiseledBookShelfBlockEntity blockEntity) {
+                if (tintIndex < blockEntity.getContainerSize()) {
+                    ItemStack itemStack = blockEntity.getItem(tintIndex);
+                    return getTintColor(itemStack, 0);
+                }
+            }
         }
 
         return -1;

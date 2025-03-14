@@ -2,12 +2,15 @@ package io.github.mortuusars.scholar.forge.event;
 
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
-import io.github.mortuusars.scholar.client.render.ChiseledBookShelfOverlay;
+import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.client.gui.screen.edit.LecternSpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.screen.view.LecternSpreadBookViewScreen;
-import io.github.mortuusars.scholar.book.BookColor;
+import io.github.mortuusars.scholar.client.render.ChiseledBookShelfOverlay;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -26,7 +29,13 @@ public class ClientEvents {
                 ScholarClient.init();
                 MenuScreens.register(Scholar.MenuTypes.LECTERN_SPREAD_BOOK_VIEW.get(), LecternSpreadBookViewScreen::new);
                 MenuScreens.register(Scholar.MenuTypes.LECTERN_SPREAD_BOOK_EDIT.get(), LecternSpreadBookEditScreen::new);
+                ItemBlockRenderTypes.setRenderLayer(Blocks.CHISELED_BOOKSHELF, RenderType.cutout());
             });
+        }
+
+        @SubscribeEvent
+        public static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
+            event.register(BookColor::getBlockTintColor, Blocks.CHISELED_BOOKSHELF);
         }
 
         @SubscribeEvent
