@@ -10,6 +10,8 @@ import io.github.mortuusars.scholar.network.fabric.PacketsImpl;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelModifier;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -34,5 +36,10 @@ public class ScholarFabricClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register(ChiseledBookShelfOverlay::render);
 
         PacketsImpl.registerS2CPackets();
+
+        ModelLoadingPlugin.register((ModelLoadingPlugin.Context context) -> {
+            context.modifyModelAfterBake()
+                    .register(ModelModifier.WRAP_PHASE, ChiseledBookshelfBakedModelFabric::modifyModelAfterBake);
+        });
     }
 }

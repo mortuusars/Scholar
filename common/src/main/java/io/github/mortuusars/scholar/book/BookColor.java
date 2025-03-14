@@ -75,8 +75,8 @@ public class BookColor {
         if (tintIndex >= 0 && blockAndTintGetter != null && blockPos != null) {
             if (blockAndTintGetter.getBlockEntity(blockPos) instanceof ChiseledBookShelfBlockEntity blockEntity) {
                 if (tintIndex < blockEntity.getContainerSize()) {
-                    ItemStack itemStack = blockEntity.getItem(tintIndex);
-                    return getTintColor(itemStack, 0);
+                    // TODO different colors for undyed books such as normal books and enchanted books?
+                    return of(blockEntity.getItem(tintIndex));
                 }
             }
         }
