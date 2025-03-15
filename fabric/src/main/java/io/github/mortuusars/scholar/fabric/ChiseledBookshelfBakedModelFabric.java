@@ -1,6 +1,5 @@
 package io.github.mortuusars.scholar.fabric;
 
-import io.github.mortuusars.scholar.book.BookColor;
 import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelModifier;
@@ -14,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -78,10 +78,10 @@ public class ChiseledBookshelfBakedModelFabric extends ForwardingBakedModel {
     @Override
     public void emitBlockQuads(BlockAndTintGetter blockView, BlockState state, BlockPos pos, Supplier<RandomSource> randomSupplier, RenderContext context) {
         if (blockView.getBlockEntity(pos) instanceof ChiseledBookShelfBlockEntity blockEntity &&
-                BookColor.of(blockEntity.getItem(this.slot)) != BookColor.DEFAULT.getValue()) {
+                (blockEntity.getItem(this.slot).is(Items.WRITABLE_BOOK) ||  blockEntity.getItem(this.slot).is(Items.WRITTEN_BOOK))) {
             super.emitBlockQuads(blockView, state, pos, randomSupplier, context);
         } else {
-            VanillaModelEncoder.emitBlockQuads((BakedModel) this, state, randomSupplier, context, context.getEmitter());
+            VanillaModelEncoder.emitBlockQuads(this, state, randomSupplier, context, context.getEmitter());
         }
     }
 }

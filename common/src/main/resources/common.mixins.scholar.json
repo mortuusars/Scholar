@@ -11,7 +11,8 @@
     "WritableBookItemMixin",
     "WrittenBookItemMixin",
     "chiseled_bookshelf_tooltip.BlockEntityParentMixin",
-    "chiseled_bookshelf_tooltip.ChiseledBookShelfBlockEntityMixin"
+    "chiseled_bookshelf_tooltip.ChiseledBookShelfBlockEntityMixin",
+    "chiseled_bookshelf_tooltip.ChiseledBookShelfBlockMixin"
   ],
   "injectors": {
     "defaultRequire": -1

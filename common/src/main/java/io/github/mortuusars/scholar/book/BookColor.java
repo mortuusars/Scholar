@@ -3,10 +3,7 @@ package io.github.mortuusars.scholar.book;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.DyeableLeatherItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -92,6 +89,10 @@ public class BookColor {
     }
 
     public static int of(ItemStack stack) {
+        if (stack.isEmpty() || (!(stack.getItem() instanceof WrittenBookItem) && !(stack.getItem() instanceof WritableBookItem))) {
+            return 0xFFFFFFFF;
+        }
+
         // Cannot use DyeableLeatherItem#getColor because it has different default color.
         CompoundTag compoundTag = stack.getTagElement(TAG_DISPLAY);
         if (compoundTag != null && compoundTag.contains(TAG_COLOR, Tag.TAG_ANY_NUMERIC)) {
