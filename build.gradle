@@ -71,6 +71,13 @@ subprojects {
             name = "Fuzs Mod Resources"
             url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
         } // Forge Config API Port
+        maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+            content {
+                includeGroup "maven.modrinth"
+            }
+        }
     }
     dependencies {
         minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"

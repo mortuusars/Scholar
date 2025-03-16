@@ -15,6 +15,7 @@ loom {
         extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
 
         mixinConfig "common.mixins.scholar.json"
+        mixinConfig "forge.mixins.scholar.json"
     }
 
     runs {

@@ -5,10 +5,13 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.*;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class BookColor {
-    public static final BookColor DEFAULT = new BookColor(0x99452E, null);
+    public static final BookColor DEFAULT = new BookColor(0xFF99452E, null);
     private final int color;
     @Nullable
     private final DyeColor dyeColor;
@@ -53,20 +56,8 @@ public class BookColor {
         COLORS.add(new BookColor(0xF588A7, DyeColor.PINK));
     }
 
-    public static int getTintColor(ItemStack stack, int tintIndex) {
-        if (tintIndex == 0) {
-            return of(stack);
-        }
-
-        return -1;
-    }
-
     public static final String TAG_COLOR = "color";
     public static final String TAG_DISPLAY = "display";
-
-    public static boolean hasCustomColor(ItemStack stack) {
-        return stack.getItem() instanceof DyeableLeatherItem dyeableLeatherItem && dyeableLeatherItem.hasCustomColor(stack);
-    }
 
     public static int of(ItemStack stack) {
         // Cannot use DyeableLeatherItem#getColor because it has different default color.
@@ -75,6 +66,18 @@ public class BookColor {
             return compoundTag.getInt(TAG_COLOR);
         }
         return DEFAULT.getValue();
+    }
+
+    public static int getItemTintColor(ItemStack stack, int tintIndex) {
+        if (tintIndex == 0) {
+            return of(stack);
+        }
+
+        return -1;
+    }
+
+    public static boolean hasCustomColor(ItemStack stack) {
+        return stack.getItem() instanceof DyeableLeatherItem dyeableLeatherItem && dyeableLeatherItem.hasCustomColor(stack);
     }
 
     public static void clear(ItemStack stack) {
