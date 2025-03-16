@@ -57,7 +57,7 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         updateButtonVisibility();
 
-        renderBackground(guiGraphics);
+        renderTransparentBackground(guiGraphics);
         renderBook(guiGraphics, mouseX, mouseY, partialTick);
         renderPageNumbers(guiGraphics, mouseX, mouseY, partialTick, currentSpread);
         renderTools(guiGraphics, mouseX, mouseY, partialTick);
@@ -73,6 +73,11 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
         }
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        // Stops blur from rendering
     }
 
     protected void updateAndCacheContentsIfNeeded() {

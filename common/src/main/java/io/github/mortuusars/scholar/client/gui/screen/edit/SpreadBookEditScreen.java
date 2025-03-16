@@ -1,11 +1,11 @@
 package io.github.mortuusars.scholar.client.gui.screen.edit;
 
-import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.book.Spread;
+import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.screen.BookSigningScreen;
 import io.github.mortuusars.scholar.client.gui.screen.SpreadBookScreen;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
@@ -15,21 +15,20 @@ import io.github.mortuusars.scholar.util.Change;
 import io.github.mortuusars.scholar.client.util.FileDialogs;
 import io.github.mortuusars.scholar.util.History;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
-import io.netty.util.internal.StringUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.BookViewScreen;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
+import net.minecraft.server.network.Filterable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.WritableBookContent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +42,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public class SpreadBookEditScreen extends SpreadBookScreen {
+    public static final WidgetSprites ENTER_SIGN_MODE_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/sign_button"));
+    public static final WidgetSprites INSERT_EMPTY_PAGE_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/insert_empty_page_button"));
+    public static final WidgetSprites REMOVE_PAGE_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/remove_page_button"));
+    public static final WidgetSprites IMPORT_BOOK_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/import_book_button"));
+    public static final WidgetSprites EXPORT_BOOK_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/export_book_button"));
+
     protected final ItemStack bookStack;
     protected final InteractionHand hand;
 
@@ -74,9 +79,10 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     protected void setupPages(ItemStack bookStack) {
         pages.clear();
-        CompoundTag compoundtag = bookStack.getTag();
-        if (compoundtag != null) {
-            BookViewScreen.loadPages(compoundtag, this.pages::add);
+
+        @Nullable WritableBookContent content = bookStack.get(DataComponents.WRITABLE_BOOK_CONTENT);
+        if (content != null) {
+            content.getPages(Minecraft.getInstance().isTextFilteringEnabled()).forEach(this.pages::add);
         }
 
         while (this.pages.size() < 2) {
@@ -115,9 +121,8 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
         createImportExportButtons();
 
-        ImageButton enterSignModeButton = new ImageButton(leftPos - 24, topPos + 18, 22, 22, 321, 0,
-                22, TEXTURE, 512, 512,
-                b -> enterSignMode(), Component.translatable("book.signButton"));
+        ImageButton enterSignModeButton = new ImageButton(leftPos - 24, topPos + 18, 22, 22,
+                ENTER_SIGN_MODE_SPRITES, b -> enterSignMode(), Component.translatable("book.signButton"));
         enterSignModeButton.setTooltip(Tooltip.create(Component.translatable("book.signButton")));
         addRenderableWidget(enterSignModeButton);
 
@@ -125,38 +130,33 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     protected void createPageToolButtons() {
-        insertEmptyPageLeftButton = new ImageButton(leftPos + 112, topPos + 154, 13, 13, 343, 0,
-                13, TEXTURE, 512, 512,
-                b -> insertEmptyPage(Spread.Side.LEFT), Component.translatable("gui.scholar.insert_empty_page"));
+        insertEmptyPageLeftButton = new ImageButton(leftPos + 112, topPos + 154, 13, 13,
+                INSERT_EMPTY_PAGE_SPRITES, b -> insertEmptyPage(Spread.Side.LEFT), Component.translatable("gui.scholar.insert_empty_page"));
         insertEmptyPageLeftButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.insert_empty_page")
                 .append(" ").append(Component.translatable("gui.scholar.insert_empty_page_left.hotkey"))));
         addRenderableWidget(insertEmptyPageLeftButton);
 
-        removePageLeftButton = new ImageButton(leftPos + 126, topPos + 154, 13, 13, 356, 0,
-                13, TEXTURE, 512, 512,
-                b -> removePage(Spread.Side.LEFT), Component.translatable("gui.scholar.remove_page"));
+        removePageLeftButton = new ImageButton(leftPos + 126, topPos + 154, 13, 13,
+                REMOVE_PAGE_SPRITES, b -> removePage(Spread.Side.LEFT), Component.translatable("gui.scholar.remove_page"));
         removePageLeftButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.remove_page")
                 .append(" ").append(Component.translatable("gui.scholar.remove_page_left.hotkey"))));
         addRenderableWidget(removePageLeftButton);
 
-        insertEmptyPageRightButton = new ImageButton(leftPos + 156, topPos + 154, 13, 13, 343, 0,
-                13, TEXTURE, 512, 512,
-                b -> insertEmptyPage(Spread.Side.RIGHT), Component.translatable("gui.scholar.insert_empty_page"));
+        insertEmptyPageRightButton = new ImageButton(leftPos + 156, topPos + 154, 13, 13,
+                INSERT_EMPTY_PAGE_SPRITES, b -> insertEmptyPage(Spread.Side.RIGHT), Component.translatable("gui.scholar.insert_empty_page"));
         insertEmptyPageRightButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.insert_empty_page")
                 .append(" ").append(Component.translatable("gui.scholar.insert_empty_page_right.hotkey"))));
         addRenderableWidget(insertEmptyPageRightButton);
 
-        removePageRightButton = new ImageButton(leftPos + 170, topPos + 154, 13, 13, 356, 0,
-                13, TEXTURE, 512, 512,
-                b -> removePage(Spread.Side.RIGHT), Component.translatable("gui.scholar.remove_page"));
+        removePageRightButton = new ImageButton(leftPos + 170, topPos + 154, 13, 13,
+                REMOVE_PAGE_SPRITES, b -> removePage(Spread.Side.RIGHT), Component.translatable("gui.scholar.remove_page"));
         removePageRightButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.remove_page")
                 .append(" ").append(Component.translatable("gui.scholar.remove_page_right.hotkey"))));
         addRenderableWidget(removePageRightButton);
     }
 
     protected void createImportExportButtons() {
-        importBookButton = new ImageButton(leftPos + 297, topPos + 16, 18, 18, 387, 0,
-                18, TEXTURE, 512, 512,
+        importBookButton = new ImageButton(leftPos + 297, topPos + 16, 18, 18, IMPORT_BOOK_SPRITES,
                 b -> importBook(Screen.hasShiftDown()), Component.translatable("gui.scholar.import_book"));
         importBookButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.import_book")
                 .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.importBook))
@@ -164,8 +164,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
                 .append(Component.translatable("gui.scholar.import_book.tooltip"))));
         addRenderableWidget(importBookButton);
 
-        exportBookButton = new ImageButton(leftPos + 297, topPos + 41, 18, 18, 369, 0,
-                18, TEXTURE, 512, 512,
+        exportBookButton = new ImageButton(leftPos + 297, topPos + 41, 18, 18, EXPORT_BOOK_SPRITES,
                 b -> exportBook(Screen.hasShiftDown()), Component.translatable("gui.scholar.export_book"));
         exportBookButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.export_book")
                 .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.exportBook))
@@ -205,11 +204,16 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         updateButtonVisibility();
 
-        renderBackground(guiGraphics);
+        renderTransparentBackground(guiGraphics);
         renderBook(guiGraphics, mouseX, mouseY, partialTick);
         renderPageNumbers(guiGraphics, mouseX, mouseY, partialTick, currentSpread);
         renderTools(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        // Stops blur from rendering
     }
 
     @Override
@@ -476,7 +480,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
                 title = null;
             }
             removeEmptyTrailingPages();
-            updateLocalCopy(sign, title);
+            updateLocalCopy();
 
             sendChanges(title);
         }
@@ -495,18 +499,9 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         }
     }
 
-    protected void updateLocalCopy(boolean sign, @Nullable String title) {
-        ListTag listTag = new ListTag();
-        this.pages.stream().map(StringTag::valueOf).forEach(listTag::add);
-        if (!this.pages.isEmpty()) {
-            this.bookStack.addTagElement("pages", listTag);
-        }
-
-        if (sign) {
-            Preconditions.checkState(!StringUtil.isNullOrEmpty(title), "Title cannot be null or empty when signing a book.");
-            this.bookStack.addTagElement("author", StringTag.valueOf(player.getGameProfile().getName()));
-            this.bookStack.addTagElement("title", StringTag.valueOf(title));
-        }
+    protected void updateLocalCopy() {
+        bookStack.set(DataComponents.WRITABLE_BOOK_CONTENT,
+                new WritableBookContent(this.pages.stream().map(Filterable::passThrough).toList()));
     }
 
     // --
@@ -547,7 +542,6 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         contents = contents.replaceAll("\\r", "");
         if (!withFormatting) {
             contents = ChatFormatting.stripFormatting(contents);
-            assert contents != null;
         }
         String[] pages = contents.split("\f");
 
@@ -641,7 +635,6 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         String content = withFormatting
                 ? String.join("\f", pages)
                 : ChatFormatting.stripFormatting(String.join("\f", pages));
-        assert content != null;
 
         CompletableFuture.runAsync(() -> {
             String defaultDirectory = Minecraft.getInstance().gameDirectory.toPath().toAbsolutePath().normalize().toString();

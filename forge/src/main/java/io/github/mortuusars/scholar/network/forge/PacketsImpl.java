@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.network.forge;
+package io.github.mortuusars.scholar.network.neoforge;
 
 
 import io.github.mortuusars.scholar.network.PacketDirection;

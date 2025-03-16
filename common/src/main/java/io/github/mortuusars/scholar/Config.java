@@ -1,28 +1,25 @@
 package io.github.mortuusars.scholar;
 
 import com.mojang.logging.LogUtils;
-import net.minecraftforge.common.ForgeConfigSpec;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 
 public class Config {
     public static class Common {
-        public static final ForgeConfigSpec SPEC;
-        // Coloring
-        public static final ForgeConfigSpec.BooleanValue WRITABLE_BOOK_COLORING;
-        public static final ForgeConfigSpec.BooleanValue WRITTEN_BOOK_COLORING;
+        public static final ModConfigSpec SPEC;
 
         // UI
-        public static final ForgeConfigSpec.BooleanValue IN_HAND_TWO_PAGE_BOOK_SCREEN;
-        public static final ForgeConfigSpec.BooleanValue LECTERN_TWO_PAGE_BOOK_SCREEN;
-        public static final ForgeConfigSpec.BooleanValue SNEAK_OPENS_VANILLA_BOOK_SCREEN;
+        public static final ModConfigSpec.BooleanValue IN_HAND_TWO_PAGE_BOOK_SCREEN;
+        public static final ModConfigSpec.BooleanValue LECTERN_TWO_PAGE_BOOK_SCREEN;
+        public static final ModConfigSpec.BooleanValue SNEAK_OPENS_VANILLA_BOOK_SCREEN;
 
         // Misc
-        public static final ForgeConfigSpec.BooleanValue CHISELED_BOOKSHELF_COLORS;
-        public static final ForgeConfigSpec.BooleanValue CHISELED_BOOKSHELF_TOOLTIP;
-        public static final ForgeConfigSpec.BooleanValue BOOK_ENCHANTMENT_GLINT;
+        public static final ModConfigSpec.BooleanValue CHISELED_BOOKSHELF_COLORS;
+        public static final ModConfigSpec.BooleanValue CHISELED_BOOKSHELF_TOOLTIP;
+        public static final ModConfigSpec.BooleanValue BOOK_ENCHANTMENT_GLINT;
 
         static {
-            ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+            ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
             builder.push("ui");
             IN_HAND_TWO_PAGE_BOOK_SCREEN = builder
@@ -37,19 +34,10 @@ public class Config {
                     .define("sneaking_opens_vanilla_book_screen", false);
             builder.pop();
 
-            builder.push("book_coloring");
-            WRITABLE_BOOK_COLORING = builder
-                    .comment("Writable Book (Book and Quill) can be colored like Leather armor. Default: true")
-                    .define("writable_book_coloring", true);
-            WRITTEN_BOOK_COLORING = builder
-                    .comment("Written Book can be colored like Leather armor. Default: false")
-                    .define("written_book_coloring", false);
-            builder.pop();
-
             builder.push("misc");
             CHISELED_BOOKSHELF_COLORS = builder
                     .comment("Colored books in Chiseled Bookshelf will have correct colors displayed on the block. Default: true",
-                            "Note: resourepacks that modify Chiseled Bookshelf may break the coloring.",
+                            "Note: resourcepacks that modify Chiseled Bookshelf may break the coloring.",
                             "Note 2: even if this setting is disabled - bookshelf will not look quite the same if you look closely.",
                             "To restore fully - overwrite bookshelf slot models added by Scholar using a resourcepack.")
                     .define("chiseled_bookshelf_colors", true);
@@ -66,23 +54,23 @@ public class Config {
     }
 
     public static class Client {
-        public static final ForgeConfigSpec SPEC;
+        public static final ModConfigSpec SPEC;
 
         // UI
-        public static final ForgeConfigSpec.BooleanValue SCREEN_PAUSE;
-        public static final ForgeConfigSpec.BooleanValue SHOW_DONE_BUTTON;
-        public static final ForgeConfigSpec.BooleanValue EDIT_SCREEN_SHOW_EXTRA_TOOLS;
+        public static final ModConfigSpec.BooleanValue SCREEN_PAUSE;
+        public static final ModConfigSpec.BooleanValue SHOW_DONE_BUTTON;
+        public static final ModConfigSpec.BooleanValue EDIT_SCREEN_SHOW_EXTRA_TOOLS;
 
         // Colors
-        public static final ForgeConfigSpec.ConfigValue<String> TEXT_COLOR;
-        public static final ForgeConfigSpec.ConfigValue<String> PAGE_NUMBERS_COLOR;
-        public static final ForgeConfigSpec.ConfigValue<String> ENTER_TITLE_COLOR;
-        public static final ForgeConfigSpec.ConfigValue<String> BY_AUTHOR_COLOR;
-        public static final ForgeConfigSpec.ConfigValue<String> SELECTION_COLOR;
-        public static final ForgeConfigSpec.ConfigValue<String> SELECTION_UNFOCUSED_COLOR;
+        public static final ModConfigSpec.ConfigValue<String> TEXT_COLOR;
+        public static final ModConfigSpec.ConfigValue<String> PAGE_NUMBERS_COLOR;
+        public static final ModConfigSpec.ConfigValue<String> ENTER_TITLE_COLOR;
+        public static final ModConfigSpec.ConfigValue<String> BY_AUTHOR_COLOR;
+        public static final ModConfigSpec.ConfigValue<String> SELECTION_COLOR;
+        public static final ModConfigSpec.ConfigValue<String> SELECTION_UNFOCUSED_COLOR;
 
         static {
-            ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+            ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
             {
                 builder.push("ui");
@@ -143,7 +131,7 @@ public class Config {
             SPEC = builder.build();
         }
 
-        public static int getColor(ForgeConfigSpec.ConfigValue<String> configValue) {
+        public static int getColor(ModConfigSpec.ConfigValue<String> configValue) {
             String hexString = configValue.get();
             try {
                 // Can't parse straight to int because of how integers are interpreted

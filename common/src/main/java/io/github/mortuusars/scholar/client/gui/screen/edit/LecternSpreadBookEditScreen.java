@@ -115,7 +115,9 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
     @Override
     protected void sendChanges(@Nullable String title) {
         removeEmptyTrailingPages();
-        Packets.sendToServer(new LecternEditBookC2SP(getMenu().getLecternPos(), pages, Optional.ofNullable(title)));
+        Minecraft.getInstance().execute(() -> {
+            Packets.sendToServer(new LecternEditBookC2SP(getMenu().getLecternPos(), pages, Optional.ofNullable(title)));
+        });
     }
 
     // --

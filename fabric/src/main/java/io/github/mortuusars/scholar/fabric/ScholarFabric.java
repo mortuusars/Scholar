@@ -1,33 +1,40 @@
 package io.github.mortuusars.scholar.fabric;
 
-import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
+import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.network.fabric.PacketsImpl;
+import io.github.mortuusars.scholar.network.fabric.FabricC2SPackets;
+import io.github.mortuusars.scholar.network.fabric.FabricS2CPackets;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.core.cauldron.CauldronInteraction;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.*;
-import net.minecraftforge.fml.config.ModConfig;
+import net.neoforged.fml.config.ModConfig;
+import org.jetbrains.annotations.Nullable;
 
 public class ScholarFabric implements ModInitializer {
+    // Server field to access when no other objects are available to get it from.
+    public static @Nullable MinecraftServer server = null;
+
     @Override
     public void onInitialize() {
-        ForgeConfigRegistry.INSTANCE.register(Scholar.ID, ModConfig.Type.COMMON, Config.Common.SPEC);
-        ForgeConfigRegistry.INSTANCE.register(Scholar.ID, ModConfig.Type.CLIENT, Config.Client.SPEC);
+        NeoForgeConfigRegistry.INSTANCE.register(Scholar.ID, ModConfig.Type.COMMON, Config.Common.SPEC);
+        NeoForgeConfigRegistry.INSTANCE.register(Scholar.ID, ModConfig.Type.CLIENT, Config.Client.SPEC);
 
         Scholar.init();
 
-        if (Config.Common.WRITABLE_BOOK_COLORING.get()) {
-            CauldronInteraction.WATER.put(Items.WRITABLE_BOOK, CauldronInteraction.DYED_ITEM);
-        }
+        CauldronInteraction.WATER.map().put(Items.WRITABLE_BOOK, CauldronInteraction.DYED_ITEM);
+        CauldronInteraction.WATER.map().put(Items.WRITTEN_BOOK, CauldronInteraction.DYED_ITEM);
 
-        if (Config.Common.WRITTEN_BOOK_COLORING.get()) {
-            CauldronInteraction.WATER.put(Items.WRITTEN_BOOK, CauldronInteraction.DYED_ITEM);
-        }
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            ScholarFabric.server = server;
+        });
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            ScholarFabric.server = null;
+        });
 
-        ServerLifecycleEvents.SERVER_STARTING.register(PacketsImpl::onServerStarting);
-        ServerLifecycleEvents.SERVER_STOPPED.register(PacketsImpl::onServerStopped);
-        PacketsImpl.registerC2SPackets();
+        FabricC2SPackets.register();
+        FabricS2CPackets.register();
     }
 }

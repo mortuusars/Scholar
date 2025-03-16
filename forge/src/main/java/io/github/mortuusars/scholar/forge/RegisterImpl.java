@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.forge;
+package io.github.mortuusars.scholar.neoforge;
 
 import io.github.mortuusars.scholar.Register;
 import io.github.mortuusars.scholar.Scholar;

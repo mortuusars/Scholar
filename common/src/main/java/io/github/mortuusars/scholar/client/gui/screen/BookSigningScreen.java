@@ -3,6 +3,7 @@ package io.github.mortuusars.scholar.client.gui.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.display.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedString;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
@@ -12,6 +13,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
@@ -26,6 +28,9 @@ import java.util.function.Consumer;
 
 public class BookSigningScreen extends Screen {
     public static final ResourceLocation TEXTURE = Scholar.resource("textures/gui/book_signing.png");
+
+    public static final WidgetSprites SIGN_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.resource("signing/sign_button"));
+    public static final WidgetSprites CANCEL_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.resource("signing/cancel_button"));
 
     @NotNull
     protected final Minecraft minecraft;
@@ -92,18 +97,16 @@ public class BookSigningScreen extends Screen {
         addRenderableWidget(titleTextBox);
 
         // SIGN
-        signButton = new ImageButton(leftPos + 46, topPos + 108, 22, 22, 149, 0,
-                22, TEXTURE, textureWidth, textureHeight,
-                b -> signAlbum(), Component.translatable("book.finalizeButton"));
+        signButton = new ImageButton(leftPos + 46, topPos + 108, 22, 22,
+                SIGN_BUTTON_SPRITES, b -> signAlbum(), Component.translatable("book.finalizeButton"));
         MutableComponent component = Component.translatable("book.finalizeButton")
                 .append("\n").append(Component.translatable("book.finalizeWarning").withStyle(ChatFormatting.GRAY));
         signButton.setTooltip(Tooltip.create(component));
         addRenderableWidget(signButton);
 
         // CANCEL
-        cancelSigningButton = new ImageButton(leftPos + 83, topPos + 108, 22, 22, 171, 0,
-                22, TEXTURE, textureWidth, textureHeight,
-                b -> cancelSigning(), CommonComponents.GUI_CANCEL);
+        cancelSigningButton = new ImageButton(leftPos + 83, topPos + 108, 22, 22,
+                CANCEL_BUTTON_SPRITES, b -> cancelSigning(), CommonComponents.GUI_CANCEL);
         cancelSigningButton.setTooltip(Tooltip.create(CommonComponents.GUI_CANCEL));
         addRenderableWidget(cancelSigningButton);
 
@@ -127,7 +130,7 @@ public class BookSigningScreen extends Screen {
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         updateButtons();
 
-        renderBackground(guiGraphics);
+        renderTransparentBackground(guiGraphics);
 
         RenderUtil.withColorMultiplied(bookColor, () -> {
             guiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, 0,
@@ -140,6 +143,11 @@ public class BookSigningScreen extends Screen {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         renderLabels(guiGraphics);
+    }
+
+    @Override
+    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        // Stops blur from rendering
     }
 
     protected void renderLabels(GuiGraphics guiGraphics) {

@@ -2,29 +2,27 @@ package io.github.mortuusars.scholar.client.render;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.book.BookColor;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WritableBookItem;
 import net.minecraft.world.item.WrittenBookItem;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
-import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec2;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.OptionalInt;
 
 public class ChiseledBookShelf {
     public static final int DEFAULT_TINT_SLOT_0 = 0xFF1AB8BC;
@@ -37,9 +35,9 @@ public class ChiseledBookShelf {
     public static final Map<ResourceLocation, Integer> CUSTOM_COLORS = new HashMap<>();
 
     static {
-        CUSTOM_COLORS.put(new ResourceLocation("minecraft:book"), 0xFF9C763E);
-        CUSTOM_COLORS.put(new ResourceLocation("exposure:album"), 0xFFA43E2C);
-        CUSTOM_COLORS.put(new ResourceLocation("exposure:signed_album"), 0xFFA43E2C);
+        CUSTOM_COLORS.put(ResourceLocation.parse("minecraft:book"), 0xFF9C763E);
+        CUSTOM_COLORS.put(ResourceLocation.parse("exposure:album"), 0xFFA43E2C);
+        CUSTOM_COLORS.put(ResourceLocation.parse("exposure:signed_album"), 0xFFA43E2C);
     }
 
     public static int getSlotTintColor(BlockState state, @Nullable BlockAndTintGetter blockGetter,
@@ -74,7 +72,7 @@ public class ChiseledBookShelf {
         };
     }
 
-    public static void renderSlotTooltip(GuiGraphics guiGraphics, float partialTick) {
+    public static void renderSlotTooltip(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         if (!Config.Common.CHISELED_BOOKSHELF_TOOLTIP.get()) {
             return;
         }
@@ -89,7 +87,7 @@ public class ChiseledBookShelf {
         BlockPos hitPos = blockHitResult.getBlockPos();
         BlockState blockState = minecraft.level.getBlockState(hitPos);
 
-        if (!(blockState.getBlock() instanceof ChiseledBookShelfBlock)) {
+        if (!(blockState.getBlock() instanceof ChiseledBookShelfBlock chiseledBookShelfBlock)) {
             return;
         }
 
@@ -99,15 +97,11 @@ public class ChiseledBookShelf {
             return;
         }
 
-        Optional<Vec2> blockHitPos = ChiseledBookShelfBlock.getRelativeHitCoordinatesForBlockFace(blockHitResult,
-                blockState.getValue(HorizontalDirectionalBlock.FACING));
-        if (blockHitPos.isEmpty()) {
-            return;
-        }
+        OptionalInt hitSlot = chiseledBookShelfBlock.getHitSlot(blockHitResult, blockState);
 
-        int hitSlot = ChiseledBookShelfBlock.getHitSlot(blockHitPos.get());
+        if (hitSlot.isEmpty()) return;
 
-        ItemStack bookStack = chiseledBookShelfBlockEntity.getItem(hitSlot);
+        ItemStack bookStack = chiseledBookShelfBlockEntity.getItem(hitSlot.getAsInt());
         if (bookStack.isEmpty()) {
             return;
         }

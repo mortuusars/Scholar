@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
+import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
 import net.minecraft.client.GameNarrator;
@@ -80,20 +81,19 @@ public abstract class SpreadBookScreen extends Screen {
         createBottomButtons();
     }
 
-    protected void createNextPageButton() {
-        ImageButton nextPageButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
-                308, 0, 15, TEXTURE, 512, 512,
-                (button) -> pageForward());
-        nextPageButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.next_page")));
-        this.nextPageButton = addRenderableWidget(nextPageButton);
-    }
-
     protected void createPrevPageButton() {
         ImageButton prevPageButton = new ImageButton(leftPos + 12, topPos + 156, 13, 15,
-                295, 0, 15, TEXTURE, 512, 512,
+                Widgets.PREVIOUS_PAGE_SPRITES,
                 (button) -> pageBack());
         prevPageButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.previous_page")));
         this.prevPageButton = addRenderableWidget(prevPageButton);
+    }
+
+    protected void createNextPageButton() {
+        ImageButton nextPageButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
+                Widgets.NEXT_PAGE_SPRITES, (button) -> pageForward());
+        nextPageButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.next_page")));
+        this.nextPageButton = addRenderableWidget(nextPageButton);
     }
 
     protected void createBottomButtons() {

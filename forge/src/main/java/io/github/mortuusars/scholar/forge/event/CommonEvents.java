@@ -1,8 +1,8 @@
-package io.github.mortuusars.scholar.forge.event;
+package io.github.mortuusars.scholar.neoforge.event;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.network.forge.PacketsImpl;
+import io.github.mortuusars.scholar.network.neoforge.PacketsImpl;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

@@ -32,8 +32,8 @@ public abstract class ChiseledBookShelfBlockEntityMixin extends BlockEntityParen
 
     @Override
     protected CompoundTag onGetUpdateTag(CompoundTag tag) {
-        if (Config.Common.CHISELED_BOOKSHELF_TOOLTIP.get() || Config.Common.CHISELED_BOOKSHELF_COLORS.get()) {
-            ContainerHelper.saveAllItems(tag, this.items);
+        if ((Config.Common.CHISELED_BOOKSHELF_TOOLTIP.get() || Config.Common.CHISELED_BOOKSHELF_COLORS.get()) && level != null) {;
+            ContainerHelper.saveAllItems(tag, this.items, level.registryAccess());
         }
 
         return tag;

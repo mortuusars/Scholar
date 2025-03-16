@@ -2,22 +2,31 @@ package io.github.mortuusars.scholar.network.packet.server;
 
 import com.google.common.collect.Lists;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.network.PacketDirection;
-import io.github.mortuusars.scholar.network.packet.IPacket;
+import io.github.mortuusars.scholar.network.packet.Packet;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.Filterable;
 import net.minecraft.server.network.FilteredText;
 import net.minecraft.server.network.TextFilter;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.WritableBookContent;
+import net.minecraft.world.item.component.WrittenBookContent;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -33,38 +42,30 @@ import java.util.function.UnaryOperator;
  * Similar to {@link net.minecraft.network.protocol.game.ServerboundEditBookPacket} but for lecterns.
  * Contains logic copied from {@link net.minecraft.server.network.ServerGamePacketListenerImpl}, which is not ideal, but hopefully it'll not cause any issues.
  */
-public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optional<String> title) implements IPacket {
+public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optional<String> title) implements Packet {
     public static final ResourceLocation ID = Scholar.resource("lectern_edit_book");
+    public static final Type<LecternEditBookC2SP> TYPE = new Type<>(ID);
 
-    private static final int TITLE_MAX_CHARS = 128;
-    private static final int PAGE_MAX_CHARS = 8192;
-    private static final int MAX_PAGES_COUNT = 200;
+    public static final int TITLE_MAX_CHARS = 128;
+    public static final int PAGE_MAX_CHARS = 8192;
+    public static final int MAX_PAGES_COUNT = 200;
 
-    @Override
-    public ResourceLocation getId() {
-        return ID;
-    }
-
-    public static LecternEditBookC2SP fromBuffer(FriendlyByteBuf buffer) {
-        return new LecternEditBookC2SP(
-                buffer.readBlockPos(),
-                buffer.readCollection(FriendlyByteBuf.limitValue(Lists::newArrayListWithCapacity, MAX_PAGES_COUNT),
-                        friendlyByteBuf -> friendlyByteBuf.readUtf(PAGE_MAX_CHARS)),
-                buffer.readOptional(friendlyByteBuf -> friendlyByteBuf.readUtf(TITLE_MAX_CHARS)));
-    }
+    public static final StreamCodec<FriendlyByteBuf, LecternEditBookC2SP> STREAM_CODEC = StreamCodec.composite(
+            BlockPos.STREAM_CODEC, LecternEditBookC2SP::lecternPos,
+            ByteBufCodecs.stringUtf8(PAGE_MAX_CHARS).apply(ByteBufCodecs.list(MAX_PAGES_COUNT)), LecternEditBookC2SP::pages,
+            ByteBufCodecs.optional(ByteBufCodecs.stringUtf8(TITLE_MAX_CHARS)), LecternEditBookC2SP::title,
+            LecternEditBookC2SP::new
+    );
 
     @Override
-    public FriendlyByteBuf toBuffer(FriendlyByteBuf buffer) {
-        buffer.writeBlockPos(lecternPos);
-        buffer.writeCollection(pages, (friendlyByteBuf, string) -> friendlyByteBuf.writeUtf(string, PAGE_MAX_CHARS));
-        buffer.writeOptional(title, (friendlyByteBuf, string) -> friendlyByteBuf.writeUtf(string, TITLE_MAX_CHARS));
-        return buffer;
+    public @NotNull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
     @Override
-    public boolean handle(PacketDirection direction, @Nullable Player player) {
+    public boolean handle(PacketFlow direction, Player player) {
         if (!(player instanceof ServerPlayer serverPlayer)) {
-            Scholar.LOGGER.error("Cannot handle {} packet: player is not ServerPlayer.", getId());
+            Scholar.LOGGER.error("Cannot handle {} packet: player is not ServerPlayer.", ID);
             return true;
         }
 
@@ -90,51 +91,37 @@ public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optio
     private void updateBookContents(ServerPlayer player, List<FilteredText> pages, LecternBlockEntity lecternBlockEntity) {
         ItemStack itemStack = lecternBlockEntity.getBook();
         if (!itemStack.is(Items.WRITABLE_BOOK)) return;
-        updateBookPages(player, pages, UnaryOperator.identity(), itemStack, lecternBlockEntity);
+
+        List<Filterable<String>> list = pages.stream().map((FilteredText text) -> filterableFromOutgoing(player, text)).toList();
+        itemStack.set(DataComponents.WRITABLE_BOOK_CONTENT, new WritableBookContent(list));
     }
 
     private void signBook(ServerPlayer player, FilteredText title, List<FilteredText> pages, LecternBlockEntity lecternBlockEntity) {
         ItemStack itemStack = lecternBlockEntity.getBook();
-
         if (!itemStack.is(Items.WRITABLE_BOOK)) return;
 
-        ItemStack writtenBookStack = new ItemStack(Items.WRITTEN_BOOK);
-        CompoundTag compoundTag = itemStack.getTag();
-        if (compoundTag != null) {
-            writtenBookStack.setTag(compoundTag.copy());
-        }
-        writtenBookStack.addTagElement("author", StringTag.valueOf(player.getName().getString()));
-        if (player.isTextFilteringEnabled()) {
-            writtenBookStack.addTagElement("title", StringTag.valueOf(title.filteredOrEmpty()));
-        } else {
-            writtenBookStack.addTagElement("filtered_title", StringTag.valueOf(title.filteredOrEmpty()));
-            writtenBookStack.addTagElement("title", StringTag.valueOf(title.raw()));
-        }
-
-        this.updateBookPages(player, pages, string -> Component.Serializer.toJson(Component.literal(string)), writtenBookStack, lecternBlockEntity);
-
+        ItemStack writtenBookStack = itemStack.transmuteCopy(Items.WRITTEN_BOOK);
+        writtenBookStack.remove(DataComponents.WRITABLE_BOOK_CONTENT);
+        List<Filterable<Component>> list = pages.stream()
+                .map((filteredText) -> this.filterableFromOutgoing(player, filteredText)
+                        .map(Component::literal)
+                        .map(c -> ((Component) c)))
+                .toList();
+        writtenBookStack.set(DataComponents.WRITTEN_BOOK_CONTENT,
+                new WrittenBookContent(this.filterableFromOutgoing(player, title), player.getName().getString(), 0, list, true));
         lecternBlockEntity.setBook(writtenBookStack, player);
     }
 
-    private void updateBookPages(ServerPlayer player, List<FilteredText> pages, UnaryOperator<String> updater, ItemStack book, LecternBlockEntity lecternBlockEntity) {
-        ListTag listTag = new ListTag();
-        if (player.isTextFilteringEnabled()) {
-            pages.stream().map(filteredText -> StringTag.valueOf(updater.apply(filteredText.filteredOrEmpty()))).forEach(listTag::add);
-        } else {
-            CompoundTag compoundTag = new CompoundTag();
-            int j = pages.size();
-            for (int i = 0; i < j; ++i) {
-                FilteredText filteredText2 = pages.get(i);
-                String string = filteredText2.raw();
-                listTag.add(StringTag.valueOf(updater.apply(string)));
-                if (!filteredText2.isFiltered()) continue;
-                compoundTag.putString(String.valueOf(i), updater.apply(filteredText2.filteredOrEmpty()));
-            }
-            if (!compoundTag.isEmpty()) {
-                book.addTagElement("filtered_pages", compoundTag);
-            }
+    private Filterable<String> filterableFromOutgoing(ServerPlayer player, FilteredText filteredText) {
+        return player.isTextFilteringEnabled() ? Filterable.passThrough(filteredText.filteredOrEmpty()) : Filterable.from(filteredText);
+    }
+
+    private void updateBookContents(ServerPlayer player, List<FilteredText> pages, int index) {
+        ItemStack itemStack = player.getInventory().getItem(index);
+        if (itemStack.is(Items.WRITABLE_BOOK)) {
+            List<Filterable<String>> list = pages.stream().map((FilteredText text) -> filterableFromOutgoing(player, text)).toList();
+            itemStack.set(DataComponents.WRITABLE_BOOK_CONTENT, new WritableBookContent(list));
         }
-        book.addTagElement("pages", listTag);
     }
 
     private <T, R> CompletableFuture<R> filterTextPacket(ServerPlayer player, T message, BiFunction<TextFilter, T, CompletableFuture<R>> processor) {

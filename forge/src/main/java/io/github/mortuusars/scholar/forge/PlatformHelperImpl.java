@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.forge;
+package io.github.mortuusars.scholar.neoforge;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;

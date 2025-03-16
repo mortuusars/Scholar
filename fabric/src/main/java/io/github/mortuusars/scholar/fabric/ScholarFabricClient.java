@@ -6,7 +6,7 @@ import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.client.gui.screen.edit.LecternSpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.screen.view.LecternSpreadBookViewScreen;
 import io.github.mortuusars.scholar.client.render.ChiseledBookShelf;
-import io.github.mortuusars.scholar.network.fabric.PacketsImpl;
+import io.github.mortuusars.scholar.network.fabric.FabricS2CPacketHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -33,11 +33,6 @@ public class ScholarFabricClient implements ClientModInitializer {
 
         HudRenderCallback.EVENT.register(ChiseledBookShelf::renderSlotTooltip);
 
-        PacketsImpl.registerS2CPackets();
-
-//        ModelLoadingPlugin.register((ModelLoadingPlugin.Context context) -> {
-//            context.modifyModelAfterBake()
-//                    .register(ModelModifier.WRAP_PHASE, ChiseledBookshelfBakedModelFabric::modifyModelAfterBake);
-//        });
+        FabricS2CPacketHandler.register();
     }
 }

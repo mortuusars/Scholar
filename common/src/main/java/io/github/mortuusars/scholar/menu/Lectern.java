@@ -30,7 +30,7 @@ public class Lectern {
         };
 
         PlatformHelper.openMenu(player, menuProvider, buffer -> {
-            buffer.writeItem(bookStack);
+            ItemStack.STREAM_CODEC.encode(buffer, bookStack);
             buffer.writeBlockPos(lecternBlockEntity.getBlockPos());
         });
     }
@@ -51,7 +51,7 @@ public class Lectern {
         };
 
         PlatformHelper.openMenu(player, menuProvider, buffer -> {
-            buffer.writeItem(bookStack);
+            ItemStack.STREAM_CODEC.encode(buffer, bookStack);
             buffer.writeBlockPos(lecternBlockEntity.getBlockPos());
         });
     }

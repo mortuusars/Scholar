@@ -1,16 +1,17 @@
 plugins {
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
+    id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
     id "me.modmuss50.mod-publish-plugin" version "0.8.4"
 }
 
 architectury {
-    minecraft = rootProject.minecraft_version
+    minecraft = project.minecraft_version
 }
 
 allprojects {
-    group = rootProject.mod_maven_group
-    version = rootProject.mod_version
+    group = project.mod_maven_group
+    version = project.mod_version
 }
 
 subprojects {
@@ -19,7 +20,7 @@ subprojects {
     apply plugin: 'maven-publish'
 
     base {
-        archivesName = "${mod_id}-${minecraft_version}"
+        archivesName = "$rootProject.archives_name-$project.name-${rootProject.minecraft_version}"
     }
 
     loom {
@@ -79,35 +80,40 @@ subprojects {
             }
         }
     }
+
     dependencies {
-        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+        minecraft "net.minecraft:minecraft:${rootProject.minecraft_version}"
 
         mappings loom.layered() {
             officialMojangMappings()
             parchment("org.parchmentmc.data:parchment-${parchment_version}@zip")
         }
 
-        modCompileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
-
-        // compile against the JEI API but do not include it at runtime
         modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-    }
-
-    tasks.withType(JavaCompile) {
-        options.encoding = "UTF-8"
-        options.release = 17
+        modCompileOnlyApi("curse.maven:jade-324717:${jade_neoforge_id}")
     }
 
     java {
+        // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+        // if it is present.
+        // If you remove this line, sources will not be generated.
         withSourcesJar()
+
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.release = 21
     }
 
     processResources {
         var expandProps = [
                 minecraft_version            : minecraft_version,
                 minecraft_version_range      : minecraft_version_range,
-                loader_version_range         : loader_version_range,
-                forge_version_range          : forge_version_range,
+                neoforge_version             : neoforge_version,
+                neoforge_version_range       : neoforge_version_range,
+                neoforge_loader_version_range: neoforge_loader_version_range,
                 mod_id                       : mod_id,
                 mod_name                     : mod_name,
                 mod_version                  : mod_version,
@@ -117,7 +123,7 @@ subprojects {
                 mod_page                     : mod_page,
                 mod_github                   : mod_github,
                 mod_license                  : mod_license,
-                mod_maven_group              : mod_maven_group
+                maven_group                  : mod_maven_group
         ]
         filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', "*.mixins.json"]) {
             expand expandProps
@@ -195,7 +201,7 @@ publishMods {
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         projectId = mod_curseforge_project_id
         minecraftVersions.add("${minecraft_version}")
-        javaVersions.add(JavaVersion.VERSION_17)
+        javaVersions.add(JavaVersion.VERSION_21)
         clientRequired = true
         serverRequired = true
     }
@@ -206,27 +212,26 @@ publishMods {
         minecraftVersions.add("${minecraft_version}")
     }
 
-    curseforge("curseforgeForge") {
+    curseforge("curseforgeNeoForge") {
         from cfOptions
-        file project(":forge")
-        modLoaders.add("forge")
-        displayName = "${mod_name} - Forge ${minecraft_version} - ${mod_version}"
+        file project(":neoforge")
+        modLoaders.add("neoforge")
+        displayName = "${mod_name} - NeoForge ${minecraft_version} - ${mod_version}"
     }
 
     curseforge("curseforgeFabric") {
         from cfOptions
         file project(":fabric")
         modLoaders.add("fabric")
-        modLoaders.add("quilt")
         displayName = "${mod_name} - Fabric ${minecraft_version} - ${mod_version}"
         requires("fabric-api")
         requires("forge-config-api-port-fabric")
     }
 
-    modrinth("modrinthForge") {
+    modrinth("modrinthNeoForge") {
         from mrOptions
-        file project(":forge")
-        modLoaders.add("forge")
+        file project(":neoforge")
+        modLoaders.add("neoforge")
         displayName = "${mod_name} - ${mod_version}"
     }
 
@@ -234,7 +239,6 @@ publishMods {
         from mrOptions
         file project(":fabric")
         modLoaders.add("fabric")
-        modLoaders.add("quilt")
         displayName = "${mod_name} - ${mod_version}"
         requires("fabric-api")
         requires("forge-config-api-port")

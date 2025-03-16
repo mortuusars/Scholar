@@ -1,13 +1,13 @@
 package io.github.mortuusars.scholar.mixin;
 
 import io.github.mortuusars.scholar.book.BookColor;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.WrittenBookItem;
+import net.minecraft.world.item.component.WrittenBookContent;
 import net.minecraft.world.item.crafting.BookCloningRecipe;
+import net.minecraft.world.item.crafting.CraftingInput;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,15 +25,15 @@ public class BookCloningRecipeMixin {
      * This mixin basically overrides whole method which may cause compatibility issues. But it would require more mixins to change it in specific parts.
      * Mods that modify this recipe should be very rare anyway.
      */
-    @Inject(method = "assemble(Lnet/minecraft/world/inventory/CraftingContainer;Lnet/minecraft/core/RegistryAccess;)Lnet/minecraft/world/item/ItemStack;",
+    @Inject(method = "assemble(Lnet/minecraft/world/item/crafting/CraftingInput;Lnet/minecraft/core/HolderLookup$Provider;)Lnet/minecraft/world/item/ItemStack;",
             at = @At("HEAD"), cancellable = true)
-    private void onAssemble(CraftingContainer container, RegistryAccess registryAccess, CallbackInfoReturnable<ItemStack> cir) {
+    private void onAssemble(CraftingInput input, HolderLookup.Provider registries, CallbackInfoReturnable<ItemStack> cir) {
         ItemStack inputBook = ItemStack.EMPTY;
         @Nullable Integer resultColor = null;
         int copies = 0;
 
-        for (int slot = 0; slot < container.getContainerSize(); ++slot) {
-            ItemStack stack = container.getItem(slot);
+        for (int slot = 0; slot < input.size(); ++slot) {
+            ItemStack stack = input.getItem(slot);
             if (stack.isEmpty()) {
                 continue;
             }
@@ -66,15 +66,19 @@ public class BookCloningRecipeMixin {
             return;
         }
 
-        if (inputBook.isEmpty() || inputBook.getTag() == null || copies < 1 || WrittenBookItem.getGeneration(inputBook) >= 2) {
+        if (inputBook.isEmpty() || copies < 1) {
             cir.setReturnValue(ItemStack.EMPTY);
             return; // Cannot be copied
         }
 
-        ItemStack resultStack = new ItemStack(Items.WRITTEN_BOOK, copies);
-        CompoundTag inputBookTag = inputBook.getTag().copy();
-        inputBookTag.putInt("generation", WrittenBookItem.getGeneration(inputBook) + 1);
-        resultStack.setTag(inputBookTag);
+        @Nullable WrittenBookContent content = inputBook.getOrDefault(DataComponents.WRITTEN_BOOK_CONTENT, WrittenBookContent.EMPTY).tryCraftCopy();
+        if (content == null) {
+            cir.setReturnValue(ItemStack.EMPTY);
+            return; // Cannot be copied
+        }
+
+        ItemStack resultStack = inputBook.copyWithCount(copies);
+        resultStack.set(DataComponents.WRITTEN_BOOK_CONTENT, content);
         BookColor.set(resultStack, resultColor);
         cir.setReturnValue(resultStack);
     }

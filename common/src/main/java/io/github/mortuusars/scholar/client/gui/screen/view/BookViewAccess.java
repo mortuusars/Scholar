@@ -1,8 +1,8 @@
 package io.github.mortuusars.scholar.client.gui.screen.view;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -10,6 +10,8 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WritableBookItem;
 import net.minecraft.world.item.WrittenBookItem;
+import net.minecraft.world.item.component.WritableBookContent;
+import net.minecraft.world.item.component.WrittenBookContent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -79,8 +81,8 @@ public interface BookViewAccess {
         }
 
         private static List<String> readPages(ItemStack itemStack) {
-            CompoundTag compoundTag = itemStack.getTag();
-            return (compoundTag != null ? loadPages(compoundTag) : ImmutableList.of());
+            WritableBookContent content = itemStack.getOrDefault(DataComponents.WRITABLE_BOOK_CONTENT, WritableBookContent.EMPTY);
+            return content.getPages(Minecraft.getInstance().isTextFilteringEnabled()).toList();
         }
 
         public int getPageCount() {
@@ -93,18 +95,15 @@ public interface BookViewAccess {
     }
 
     class WrittenBookAccess implements BookViewAccess {
-        private final List<String> pages;
+        private final List<Component> pages;
 
         public WrittenBookAccess(ItemStack itemStack) {
             this.pages = readPages(itemStack);
         }
 
-        private static List<String> readPages(ItemStack itemStack) {
-            CompoundTag compoundTag = itemStack.getTag();
-            return (WrittenBookItem.makeSureTagIsValid(compoundTag) ?
-                    loadPages(compoundTag) :
-                    ImmutableList.of(Component.Serializer.toJson(Component.translatable("book.invalid.tag")
-                            .withStyle(ChatFormatting.DARK_RED))));
+        private static List<Component> readPages(ItemStack itemStack) {
+            WrittenBookContent content = itemStack.getOrDefault(DataComponents.WRITTEN_BOOK_CONTENT, WrittenBookContent.EMPTY);
+            return content.getPages(Minecraft.getInstance().isTextFilteringEnabled());
         }
 
         public int getPageCount() {
@@ -112,17 +111,7 @@ public interface BookViewAccess {
         }
 
         public @NotNull FormattedText getPageRaw(int i) {
-            String string = this.pages.get(i);
-
-            try {
-                FormattedText formattedText = Component.Serializer.fromJson(string);
-                if (formattedText != null) {
-                    return formattedText;
-                }
-            } catch (Exception ignored) {
-            }
-
-            return FormattedText.of(string);
+            return pages.get(i);
         }
     }
 }

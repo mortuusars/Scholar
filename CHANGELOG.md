@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.21.1 - 1.1.1 - 2025-03-16
+- Ported to 1.21.
+
 ## 1.1.1 - 2025-03-16
 - Chiseled Bookshelf now displays colored books in their proper color (thanks Fuzss).
 - Added Mexican Spanish translation (thanks TheLegendofSaram).

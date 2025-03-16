@@ -10,6 +10,7 @@ import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
+import net.minecraft.util.StringUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -279,7 +280,7 @@ public class FormattedStringEditor {
 
     public boolean charTyped(char character) {
         return !suppressNextCharTyped
-                && SharedConstants.isAllowedChatCharacter(character)
+                && StringUtil.isAllowedChatCharacter(character)
                 && insertTextAtCursor(Character.toString(character));
     }
 
