@@ -1,12 +1,8 @@
 package io.github.mortuusars.scholar.book;
 
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.*;
-import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
-import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -15,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class BookColor {
-    public static final BookColor DEFAULT = new BookColor(0x99452E, null);
+    public static final BookColor DEFAULT = new BookColor(0xFF99452E, null);
     private final int color;
     @Nullable
     private final DyeColor dyeColor;
@@ -60,7 +56,19 @@ public class BookColor {
         COLORS.add(new BookColor(0xF588A7, DyeColor.PINK));
     }
 
-    public static int getTintColor(ItemStack stack, int tintIndex) {
+    public static final String TAG_COLOR = "color";
+    public static final String TAG_DISPLAY = "display";
+
+    public static int of(ItemStack stack) {
+        // Cannot use DyeableLeatherItem#getColor because it has different default color.
+        CompoundTag compoundTag = stack.getTagElement(TAG_DISPLAY);
+        if (compoundTag != null && compoundTag.contains(TAG_COLOR, Tag.TAG_ANY_NUMERIC)) {
+            return compoundTag.getInt(TAG_COLOR);
+        }
+        return DEFAULT.getValue();
+    }
+
+    public static int getItemTintColor(ItemStack stack, int tintIndex) {
         if (tintIndex == 0) {
             return of(stack);
         }
@@ -68,37 +76,8 @@ public class BookColor {
         return -1;
     }
 
-    public static int getBlockTintColor(BlockState blockState, @Nullable BlockAndTintGetter blockAndTintGetter, @Nullable BlockPos blockPos, int tintIndex) {
-        if (tintIndex >= 0 && blockAndTintGetter != null && blockPos != null) {
-            if (blockAndTintGetter.getBlockEntity(blockPos) instanceof ChiseledBookShelfBlockEntity blockEntity) {
-                if (tintIndex < blockEntity.getContainerSize()) {
-                    // TODO different colors for undyed books such as normal books and enchanted books?
-                    return of(blockEntity.getItem(tintIndex));
-                }
-            }
-        }
-
-        return -1;
-    }
-
-    public static final String TAG_COLOR = "color";
-    public static final String TAG_DISPLAY = "display";
-
     public static boolean hasCustomColor(ItemStack stack) {
         return stack.getItem() instanceof DyeableLeatherItem dyeableLeatherItem && dyeableLeatherItem.hasCustomColor(stack);
-    }
-
-    public static int of(ItemStack stack) {
-        if (stack.isEmpty() || (!(stack.getItem() instanceof WrittenBookItem) && !(stack.getItem() instanceof WritableBookItem))) {
-            return 0xFFFFFFFF;
-        }
-
-        // Cannot use DyeableLeatherItem#getColor because it has different default color.
-        CompoundTag compoundTag = stack.getTagElement(TAG_DISPLAY);
-        if (compoundTag != null && compoundTag.contains(TAG_COLOR, Tag.TAG_ANY_NUMERIC)) {
-            return compoundTag.getInt(TAG_COLOR);
-        }
-        return DEFAULT.getValue();
     }
 
     public static void clear(ItemStack stack) {

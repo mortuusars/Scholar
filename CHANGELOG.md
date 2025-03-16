@@ -1,5 +1,8 @@
 # Changelog
 
+## UNRELEASED
+- Chiseled Bookshelf now displays colored books in their proper color (thanks Fuzss). 
+
 ## 1.1.0 - 2025-03-13
 
 - *Book Editing:*

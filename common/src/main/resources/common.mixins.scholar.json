@@ -10,9 +10,9 @@
     "LecternBlockMixin",
     "WritableBookItemMixin",
     "WrittenBookItemMixin",
-    "chiseled_bookshelf_tooltip.BlockEntityParentMixin",
-    "chiseled_bookshelf_tooltip.ChiseledBookShelfBlockEntityMixin",
-    "chiseled_bookshelf_tooltip.ChiseledBookShelfBlockMixin"
+    "chiseled_bookshelf.BlockEntityParentMixin",
+    "chiseled_bookshelf.ChiseledBookShelfBlockEntityMixin",
+    "chiseled_bookshelf.ChiseledBookShelfBlockMixin"
   ],
   "injectors": {
     "defaultRequire": -1
