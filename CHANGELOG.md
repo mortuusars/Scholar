@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2 - 2025-03-19
+- Formatting hotkeys now use Ctrl as a modifier, instead of Alt.
+  - Changed color hotkeys slightly.
+
 ## 1.1.1 - 2025-03-16
 - Chiseled Bookshelf now displays colored books in their proper color (thanks Fuzss).
 - Added Mexican Spanish translation (thanks TheLegendofSaram).

@@ -3,7 +3,6 @@ package io.github.mortuusars.scholar.client.gui.widget.textbox.text;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Scholar;
 import net.minecraft.ChatFormatting;
-import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
@@ -222,24 +221,27 @@ public class FormattedStringEditor {
             return true;
         }
 
-        if (Screen.hasAltDown()) {
-            @Nullable Formatting formatting = switch (key) {
-                case InputConstants.KEY_0 -> Formatting.of(Formatting.Color.BLACK);
-                case InputConstants.KEY_1 -> Formatting.of(Formatting.Color.DARK_BLUE);
-                case InputConstants.KEY_2 -> Formatting.of(Formatting.Color.DARK_GREEN);
-                case InputConstants.KEY_3 -> Formatting.of(Formatting.Color.DARK_AQUA);
-                case InputConstants.KEY_4 -> Formatting.of(Formatting.Color.DARK_RED);
-                case InputConstants.KEY_5 -> Formatting.of(Formatting.Color.DARK_PURPLE);
-                case InputConstants.KEY_6 -> Formatting.of(Formatting.Color.GOLD);
-                case InputConstants.KEY_7 -> Formatting.of(Formatting.Color.GRAY);
-                case InputConstants.KEY_8 -> Formatting.of(Formatting.Color.DARK_GRAY);
-                case InputConstants.KEY_9 -> Formatting.of(Formatting.Color.BLUE);
-                case InputConstants.KEY_A -> Formatting.of(Formatting.Color.GREEN);
-                case InputConstants.KEY_B -> Formatting.of(Formatting.Color.AQUA);
-                case InputConstants.KEY_C -> Formatting.of(Formatting.Color.RED);
-                case InputConstants.KEY_D -> Formatting.of(Formatting.Color.LIGHT_PURPLE);
-                case InputConstants.KEY_E -> Formatting.of(Formatting.Color.YELLOW);
-                case InputConstants.KEY_F -> Formatting.of(Formatting.Color.WHITE);
+        @Nullable Formatting formatting = handleFormattingKeys(key);
+        if (formatting != null) {
+            applyFormatting(formatting);
+            return true;
+        }
+
+        return false;
+    }
+
+    protected Formatting handleFormattingKeys(int key) {
+        if (Screen.hasControlDown() && !Screen.hasShiftDown() && !Screen.hasAltDown()) {
+            return switch (key) {
+                case InputConstants.KEY_1 -> Formatting.of(Formatting.Color.BLACK);
+                case InputConstants.KEY_2 -> Formatting.of(Formatting.Color.DARK_BLUE);
+                case InputConstants.KEY_3 -> Formatting.of(Formatting.Color.DARK_GREEN);
+                case InputConstants.KEY_4 -> Formatting.of(Formatting.Color.DARK_AQUA);
+                case InputConstants.KEY_5 -> Formatting.of(Formatting.Color.DARK_RED);
+                case InputConstants.KEY_6 -> Formatting.of(Formatting.Color.DARK_PURPLE);
+                case InputConstants.KEY_7 -> Formatting.of(Formatting.Color.GOLD);
+                case InputConstants.KEY_8 -> Formatting.of(Formatting.Color.GRAY);
+                // --
                 case InputConstants.KEY_K -> Formatting.of(Formatting.Format.OBFUSCATED);
                 case InputConstants.KEY_L -> Formatting.of(Formatting.Format.BOLD);
                 case InputConstants.KEY_M -> Formatting.of(Formatting.Format.STRIKETHROUGH);
@@ -248,14 +250,23 @@ public class FormattedStringEditor {
                 case InputConstants.KEY_R -> Formatting.EMPTY;
                 default -> null;
             };
-
-            if (formatting != null) {
-                applyFormatting(formatting);
-                return true;
-            }
         }
 
-        return false;
+        if (Screen.hasControlDown() && Screen.hasShiftDown() && !Screen.hasAltDown()) {
+            return switch (key) {
+                case InputConstants.KEY_1 -> Formatting.of(Formatting.Color.DARK_GRAY);
+                case InputConstants.KEY_2 -> Formatting.of(Formatting.Color.BLUE);
+                case InputConstants.KEY_3 -> Formatting.of(Formatting.Color.GREEN);
+                case InputConstants.KEY_4 -> Formatting.of(Formatting.Color.AQUA);
+                case InputConstants.KEY_5 -> Formatting.of(Formatting.Color.RED);
+                case InputConstants.KEY_6 -> Formatting.of(Formatting.Color.LIGHT_PURPLE);
+                case InputConstants.KEY_7 -> Formatting.of(Formatting.Color.YELLOW);
+                case InputConstants.KEY_8 -> Formatting.of(Formatting.Color.WHITE);
+                default -> null;
+            };
+        }
+
+        return null;
     }
 
     public void applyFormatting(Formatting formatting) {

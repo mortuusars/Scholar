@@ -6,12 +6,21 @@ loom {
     accessWidenerPath = file("src/main/resources/scholar.accesswidener")
 }
 
+configurations {
+    create("junit")
+}
+
 dependencies {
     // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
     // Do NOT use other classes from fabric loader
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
 
     modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+
+    // Needed for mixin to fix formatting key conflicts
+    modCompileOnly("mezz.jei:jei-${minecraft_version}-common:${jei_version}")
+    modCompileOnly("mezz.jei:jei-${minecraft_version}-gui:${jei_version}")
 
     api "fuzs.forgeconfigapiport:forgeconfigapiport-common:${forge_config_api_version}"
 }
