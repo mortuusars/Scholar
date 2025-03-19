@@ -194,7 +194,7 @@ task printLatestVersionChangelog {
 
 publishMods {
     changelog = project.ext.changelog
-    type = BETA
+    type = STABLE
     dryRun = providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null || providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null
 
     def cfOptions = curseforgeOptions {
