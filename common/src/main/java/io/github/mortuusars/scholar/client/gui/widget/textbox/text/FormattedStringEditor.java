@@ -3,6 +3,7 @@ package io.github.mortuusars.scholar.client.gui.widget.textbox.text;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Scholar;
 import net.minecraft.ChatFormatting;
+import net.minecraft.SharedConstants;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
