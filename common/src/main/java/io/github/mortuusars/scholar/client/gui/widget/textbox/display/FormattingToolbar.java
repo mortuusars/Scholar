@@ -5,6 +5,7 @@ import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.text.Formatting;
 import io.github.mortuusars.scholar.client.util.Pos2i;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
@@ -15,13 +16,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class FormattingToolbar {
     public static final ResourceLocation TEXTURE = Scholar.resource("textures/gui/formatting_toolbar.png");
+
+    public static final Map<Character, String> HOTKEYS = new HashMap<>();
+
     protected final TextBox textBox;
     protected Positioner positioner = Positioner.ABOVE_SELECTION;
     protected int width, height, x, y;
@@ -29,6 +30,32 @@ public class FormattingToolbar {
     protected boolean shouldUpdate = true;
 
     protected final List<FormattingButton> buttons = new ArrayList<>();
+
+    static {
+        HOTKEYS.put(Formatting.Format.OBFUSCATED.getChar(), "Ctrl+K");
+        HOTKEYS.put(Formatting.Format.BOLD.getChar(), "Ctrl+L");
+        HOTKEYS.put(Formatting.Format.STRIKETHROUGH.getChar(), "Ctrl+M");
+        HOTKEYS.put(Formatting.Format.UNDERLINE.getChar(), "Ctrl+N");
+        HOTKEYS.put(Formatting.Format.ITALIC.getChar(), "Ctrl+O");
+        HOTKEYS.put(Formatting.RESET.getChar(), "Ctrl+R");
+
+        HOTKEYS.put(Formatting.Color.BLACK.getChar(), "Ctrl+1");
+        HOTKEYS.put(Formatting.Color.DARK_BLUE.getChar(), "Ctrl+2");
+        HOTKEYS.put(Formatting.Color.DARK_GREEN.getChar(), "Ctrl+3");
+        HOTKEYS.put(Formatting.Color.DARK_AQUA.getChar(), "Ctrl+4");
+        HOTKEYS.put(Formatting.Color.DARK_RED.getChar(), "Ctrl+5");
+        HOTKEYS.put(Formatting.Color.DARK_PURPLE.getChar(), "Ctrl+6");
+        HOTKEYS.put(Formatting.Color.GOLD.getChar(), "Ctrl+7");
+        HOTKEYS.put(Formatting.Color.GRAY.getChar(), "Ctrl+8");
+        HOTKEYS.put(Formatting.Color.DARK_GRAY.getChar(), "Ctrl+Shift+1");
+        HOTKEYS.put(Formatting.Color.BLUE.getChar(), "Ctrl+Shift+2");
+        HOTKEYS.put(Formatting.Color.GREEN.getChar(), "Ctrl+Shift+3");
+        HOTKEYS.put(Formatting.Color.AQUA.getChar(), "Ctrl+Shift+4");
+        HOTKEYS.put(Formatting.Color.RED.getChar(), "Ctrl+Shift+5");
+        HOTKEYS.put(Formatting.Color.LIGHT_PURPLE.getChar(), "Ctrl+Shift+6");
+        HOTKEYS.put(Formatting.Color.YELLOW.getChar(), "Ctrl+Shift+7");
+        HOTKEYS.put(Formatting.Color.WHITE.getChar(), "Ctrl+Shift+8");
+    }
 
     public FormattingToolbar(TextBox textBox) {
         this.textBox = textBox;
@@ -162,10 +189,9 @@ public class FormattingToolbar {
         }
 
         if (hoveredButton != null) {
-            String hotkey = Character.toString(hoveredButton.formatting().getChar()).toUpperCase();
             MutableComponent component = Component.translatable(
                             "gui.scholar.formatting." + hoveredButton.formatting.getName())
-                    .append(" §8Alt+" + hotkey);
+                    .append(" §8" + HOTKEYS.getOrDefault(hoveredButton.formatting.getChar(), ""));
             guiGraphics.renderTooltip(Minecraft.getInstance().font, component, mouseX, mouseY + 20);
         }
 

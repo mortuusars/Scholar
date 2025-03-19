@@ -10,7 +10,8 @@
     "LecternBlockMixin",
     "chiseled_bookshelf.BlockEntityParentMixin",
     "chiseled_bookshelf.ChiseledBookShelfBlockEntityMixin",
-    "chiseled_bookshelf.ChiseledBookShelfBlockMixin"
+    "chiseled_bookshelf.ChiseledBookShelfBlockMixin",
+    "jei.JeiKeyConflictContextMixin"
   ],
   "injectors": {
     "defaultRequire": -1

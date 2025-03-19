@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.2 - 2025-03-19
+- Formatting hotkeys now use Ctrl as a modifier, instead of Alt.
+  - Changed color hotkeys slightly.
+
 ## 1.21.1 - 1.1.1 - 2025-03-16
 - Ported to 1.21.
 
