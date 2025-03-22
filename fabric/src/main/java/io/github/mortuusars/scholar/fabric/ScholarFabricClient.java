@@ -22,6 +22,9 @@ public class ScholarFabricClient implements ClientModInitializer {
     public void onInitializeClient() {
         BlockRenderLayerMap.INSTANCE.putBlock(Blocks.CHISELED_BOOKSHELF, RenderType.cutout());
         ColorProviderRegistry.BLOCK.register(ChiseledBookShelf::getSlotTintColor, Blocks.CHISELED_BOOKSHELF);
+        if (PlatformHelper.isModLoaded("lolmcbv")) {
+            MoreChiseledBookshelfVariantsCompat.initClient();
+        }
 
         ColorProviderRegistry.ITEM.register(BookColor::getItemTintColor, Items.WRITABLE_BOOK);
         ColorProviderRegistry.ITEM.register(BookColor::getItemTintColor, Items.WRITTEN_BOOK);

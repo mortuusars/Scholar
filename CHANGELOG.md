@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.3 - 2025-03-22
+- [Fabric] Added 'colored books in bookshelves' compat with `More Chiseled Bookshelf Variants`.
+- Changed structure of `colored books in bookshelves` assets.  
+
 ## 1.1.2 - 2025-03-19
 - Formatting hotkeys now use Ctrl as a modifier, instead of Alt.
   - Changed color hotkeys slightly.

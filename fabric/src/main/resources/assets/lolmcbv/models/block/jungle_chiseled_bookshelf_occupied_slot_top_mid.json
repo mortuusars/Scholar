@@ -1,7 +1,7 @@
 {
   "parent": "scholar:block/template_chiseled_bookshelf_slot_top_mid_tinted",
   "textures": {
-    "texture": "minecraft:block/chiseled_bookshelf_occupied",
+    "texture": "lolmcbv:block/jungle_chiseled_bookshelf_occupied",
     "tinted": "scholar:block/chiseled_bookshelf_untinted_books"
   }
 }
