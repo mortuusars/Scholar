@@ -1,6 +1,5 @@
 package io.github.mortuusars.scholar.neoforge.event;
 
-import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.network.neoforge.PacketsImpl;
 import io.github.mortuusars.scholar.network.packet.C2SPackets;

@@ -1,11 +1,13 @@
 package io.github.mortuusars.scholar.fabric;
 
+import io.github.mortuusars.scholar.PlatformHelper;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.client.gui.screen.edit.LecternSpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.screen.view.LecternSpreadBookViewScreen;
 import io.github.mortuusars.scholar.client.render.ChiseledBookShelf;
+import io.github.mortuusars.scholar.fabric.integration.MoreChiseledBookshelfVariantsCompat;
 import io.github.mortuusars.scholar.network.fabric.FabricS2CPacketHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -22,6 +24,9 @@ public class ScholarFabricClient implements ClientModInitializer {
     public void onInitializeClient() {
         BlockRenderLayerMap.INSTANCE.putBlock(Blocks.CHISELED_BOOKSHELF, RenderType.cutout());
         ColorProviderRegistry.BLOCK.register(ChiseledBookShelf::getSlotTintColor, Blocks.CHISELED_BOOKSHELF);
+        if (PlatformHelper.isModLoaded("lolmcbv")) {
+            MoreChiseledBookshelfVariantsCompat.initClient();
+        }
 
         ColorProviderRegistry.ITEM.register(BookColor::getItemTintColor, Items.WRITABLE_BOOK);
         ColorProviderRegistry.ITEM.register(BookColor::getItemTintColor, Items.WRITTEN_BOOK);
