@@ -32,7 +32,7 @@ public class BuiltInResourcePacks {
 
     public record Pack(ResourceLocation id, Component name, Activation activation) {}
 
-    public record Activation(ActivationType fabric, ActivationType forge) {
+    public record Activation(ActivationType fabric, ActivationType neoforge) {
         public Activation(ActivationType type) {
             this(type, type);
         }

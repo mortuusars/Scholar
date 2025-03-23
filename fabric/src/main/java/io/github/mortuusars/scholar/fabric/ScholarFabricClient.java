@@ -7,6 +7,7 @@ import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.client.gui.screen.edit.LecternSpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.screen.view.LecternSpreadBookViewScreen;
 import io.github.mortuusars.scholar.client.render.ChiseledBookShelf;
+import io.github.mortuusars.scholar.client.resource.BuiltInResourcePacks;
 import io.github.mortuusars.scholar.fabric.integration.MoreChiseledBookshelfVariantsCompat;
 import io.github.mortuusars.scholar.network.fabric.FabricS2CPacketHandler;
 import net.fabricmc.api.ClientModInitializer;

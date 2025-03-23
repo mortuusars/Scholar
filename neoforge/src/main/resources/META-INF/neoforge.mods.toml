@@ -6,7 +6,9 @@ displayURL="${mod_page}"
 logoFile="logo.png"
 
 [[mixins]]
-config="common.mixins.scholar.json"
+config="scholar-common.mixins.json"
+[[mixins]]
+config="scholar-neoforge.mixins.json"
 
 [[mods]]
 modId="${mod_id}"
