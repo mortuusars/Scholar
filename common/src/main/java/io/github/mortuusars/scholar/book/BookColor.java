@@ -69,7 +69,7 @@ public class BookColor {
     }
 
     public static int getItemTintColor(ItemStack stack, int tintIndex) {
-        if (tintIndex == 0) {
+        if (tintIndex == 1) {
             return of(stack);
         }
 

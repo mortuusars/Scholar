@@ -123,6 +123,11 @@ subprojects {
             expand expandProps
         }
         inputs.properties(expandProps)
+
+        from(rootProject.file("common/src/main/resources")) {
+            include("resourcepacks/**")
+            duplicatesStrategy = DuplicatesStrategy.WARN
+        }
     }
 
     publishing {

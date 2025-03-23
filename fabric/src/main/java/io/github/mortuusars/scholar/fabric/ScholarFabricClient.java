@@ -1,19 +1,26 @@
 package io.github.mortuusars.scholar.fabric;
 
+import io.github.mortuusars.scholar.PlatformHelper;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.client.gui.screen.edit.LecternSpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.screen.view.LecternSpreadBookViewScreen;
 import io.github.mortuusars.scholar.client.render.ChiseledBookShelf;
+import io.github.mortuusars.scholar.client.resource.BuiltInResourcePacks;
+import io.github.mortuusars.scholar.fabric.integration.MoreChiseledBookshelfVariantsCompat;
 import io.github.mortuusars.scholar.network.fabric.PacketsImpl;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
@@ -26,6 +33,17 @@ public class ScholarFabricClient implements ClientModInitializer {
             MoreChiseledBookshelfVariantsCompat.initClient();
         }
 
+        FabricLoader.getInstance().getModContainer(Scholar.ID).ifPresent(container -> {
+            for (BuiltInResourcePacks.Pack pack : BuiltInResourcePacks.get()) {
+                ResourcePackActivationType activationType = switch (pack.activation().fabric()) {
+                    case DEFAULT_DISABLED -> ResourcePackActivationType.NORMAL;
+                    case DEFAULT_ENABLED -> ResourcePackActivationType.DEFAULT_ENABLED;
+                    case ALWAYS_ENABLED -> ResourcePackActivationType.ALWAYS_ENABLED;
+                };
+                ResourceManagerHelper.registerBuiltinResourcePack(pack.id(), container, pack.name(), activationType);
+            }
+        });
+
         ColorProviderRegistry.ITEM.register(BookColor::getItemTintColor, Items.WRITABLE_BOOK);
         ColorProviderRegistry.ITEM.register(BookColor::getItemTintColor, Items.WRITTEN_BOOK);
 
@@ -37,10 +55,5 @@ public class ScholarFabricClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register(ChiseledBookShelf::renderSlotTooltip);
 
         PacketsImpl.registerS2CPackets();
-
-//        ModelLoadingPlugin.register((ModelLoadingPlugin.Context context) -> {
-//            context.modifyModelAfterBake()
-//                    .register(ModelModifier.WRAP_PHASE, ChiseledBookshelfBakedModelFabric::modifyModelAfterBake);
-//        });
     }
 }
