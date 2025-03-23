@@ -46,4 +46,8 @@ public class PlatformHelperImpl {
     public static boolean isModLoaded(String modId) {
         return FabricLoader.getInstance().isModLoaded(modId);
     }
+
+    public static boolean isModLoading(String modId) {
+        return isModLoaded(modId); // On Fabric, we can use the same method.
+    }
 }

@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "scholar:item/cover",
+    "layer1": "scholar:item/cover",
+    "layer2": "scholar:item/paper",
+    "layer3": "scholar:item/quill"
+  }
+}

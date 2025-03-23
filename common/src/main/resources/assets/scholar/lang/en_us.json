@@ -79,5 +79,8 @@
   "key.scholar.export_book": "Export Book",
   "key.scholar.import_book": "Import Book",
   "key.scholar.toggle_book_tools": "Toggle Extra Editing Tools",
-  "subtitle.scholar.book.signed": "Book signing scribbles"
+  "subtitle.scholar.book.signed": "Book signing scribbles",
+  "resourcepack.scholar.colored_books.name": "Scholar: Colored Books",
+  "resourcepack.scholar.chiseled_bookshelf_colored_books.name": "Scholar: Chiseled Bookshelf Colored Books",
+  "resourcepack.scholar.chiseled_bookshelf_colored_books_lolmcbv_compat.name": "Scholar: MCBV Colored Books compat"
 }

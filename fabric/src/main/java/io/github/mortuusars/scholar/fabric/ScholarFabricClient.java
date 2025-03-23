@@ -14,6 +14,9 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.item.Items;
@@ -27,6 +30,17 @@ public class ScholarFabricClient implements ClientModInitializer {
         if (PlatformHelper.isModLoaded("lolmcbv")) {
             MoreChiseledBookshelfVariantsCompat.initClient();
         }
+
+        FabricLoader.getInstance().getModContainer(Scholar.ID).ifPresent(container -> {
+            for (BuiltInResourcePacks.Pack pack : BuiltInResourcePacks.get()) {
+                ResourcePackActivationType activationType = switch (pack.activation().fabric()) {
+                    case DEFAULT_DISABLED -> ResourcePackActivationType.NORMAL;
+                    case DEFAULT_ENABLED -> ResourcePackActivationType.DEFAULT_ENABLED;
+                    case ALWAYS_ENABLED -> ResourcePackActivationType.ALWAYS_ENABLED;
+                };
+                ResourceManagerHelper.registerBuiltinResourcePack(pack.id(), container, pack.name(), activationType);
+            }
+        });
 
         ColorProviderRegistry.ITEM.register(BookColor::getItemTintColor, Items.WRITABLE_BOOK);
         ColorProviderRegistry.ITEM.register(BookColor::getItemTintColor, Items.WRITTEN_BOOK);

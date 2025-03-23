@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.4 - 2025-03-22
+- Colored Books and Chiseled Bookshelf book colors are now added using built-in resourcepacks.
+  - You can disable these features easily now or increase their priority to fix mods or resourcepacks overriding the changes.
+
 ## 1.1.3 - 2025-03-22
 - [Fabric] Added 'colored books in bookshelves' compat with `More Chiseled Bookshelf Variants`.
 - Changed structure of `colored books in bookshelves` assets.  
