@@ -2,10 +2,14 @@ package io.github.mortuusars.scholar.client.render;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.book.BookColor;
+import io.github.mortuusars.scholar.integration.Mods;
+import io.github.mortuusars.scholar.integration.mcbv.MoreChiseledBookshelfVariantsIntegration;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -13,6 +17,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WritableBookItem;
 import net.minecraft.world.item.WrittenBookItem;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
@@ -23,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.OptionalInt;
+import java.util.function.BiConsumer;
 
 public class ChiseledBookShelf {
     public static final int DEFAULT_TINT_SLOT_0 = 0xFF1AB8BC;
@@ -117,5 +124,23 @@ public class ChiseledBookShelf {
         guiGraphics.pose().popPose();
 
         guiGraphics.renderTooltip(minecraft.font, bookStack, x + 16, y + 12);
+    }
+
+    // --
+
+    public static void registerBookshelfBlockColors(BiConsumer<BlockColor, Block> consumer) {
+        consumer.accept(ChiseledBookShelf::getSlotTintColor, Blocks.CHISELED_BOOKSHELF);
+
+        if (Mods.MCBV.isLoading()) {
+            MoreChiseledBookshelfVariantsIntegration.registerBlockColors(consumer);
+        }
+    }
+
+    public static void setBookshelfRenderLayer(BiConsumer<Block, RenderType> consumer) {
+        consumer.accept(Blocks.CHISELED_BOOKSHELF, RenderType.cutout());
+
+        if (Mods.MCBV.isLoading()) {
+            MoreChiseledBookshelfVariantsIntegration.setRenderLayer(consumer);
+        }
     }
 }

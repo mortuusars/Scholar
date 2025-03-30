@@ -24,6 +24,9 @@ dependencies {
     modCompileOnly("mezz.jei:jei-${minecraft_version}-common:${jei_version}")
     modCompileOnly("mezz.jei:jei-${minecraft_version}-gui:${jei_version}")
 
+    // More Chiseled Bookshelf Variants
+    modCompileOnly("maven.modrinth:more-chiseled-bookshelf-variants:Mv3952ns")
+
     testImplementation(platform("org.junit:junit-bom:${project.property("jupiterVersion")}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     "junit"(platform("org.junit:junit-bom:${project.property("jupiterVersion")}"))

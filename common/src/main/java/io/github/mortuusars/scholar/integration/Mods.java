@@ -1,0 +1,17 @@
+package io.github.mortuusars.scholar.integration;
+
+import io.github.mortuusars.scholar.PlatformHelper;
+
+public class Mods {
+    public static final Mod MCBV = new Mod("lolmcbv");
+
+    public record Mod(String id) {
+        public boolean isLoaded() {
+            return PlatformHelper.isModLoaded(id);
+        }
+
+        public boolean isLoading() {
+            return PlatformHelper.isModLoading(id);
+        }
+    }
+}
