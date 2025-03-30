@@ -23,6 +23,8 @@ dependencies {
     modCompileOnly("mezz.jei:jei-${minecraft_version}-gui:${jei_version}")
 
     modCompileOnly("maven.modrinth:more-chiseled-bookshelf-variants:rb2kjXS0")
+    modCompileOnly("maven.modrinth:blueprint:z4m8zvm5")
+    modCompileOnly("maven.modrinth:woodworks:236Amnif")
 
     api "fuzs.forgeconfigapiport:forgeconfigapiport-common:${forge_config_api_version}"
 }

@@ -50,6 +50,9 @@ dependencies {
     modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}") { transitive = false }
 
+    modImplementation("maven.modrinth:blueprint:z4m8zvm5")
+    modImplementation("maven.modrinth:woodworks:236Amnif")
+
     modRuntimeOnly("maven.modrinth:embeddium:0.3.31+mc1.20.1")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }

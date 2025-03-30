@@ -216,6 +216,7 @@ publishMods {
         file project(":forge")
         modLoaders.add("forge")
         displayName = "${mod_name} - Forge ${minecraft_version} - ${mod_version}"
+        optional("woodworks")
     }
 
     curseforge("curseforgeFabric") {
@@ -234,6 +235,7 @@ publishMods {
         file project(":forge")
         modLoaders.add("forge")
         displayName = "${mod_name} - ${mod_version}"
+        optional("woodworks")
     }
 
     modrinth("modrinthFabric") {

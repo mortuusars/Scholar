@@ -1,6 +1,7 @@
 # Changelog
 
 ## 1.1.5 - 2025-03-30
+- [Forge] Added compat for Woodworks (thanks Flyte-less for help)
 - [Forge] MCBV compat now works properly
 
 ## 1.1.4 - 2025-03-22

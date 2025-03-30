@@ -1,0 +1,7 @@
+{
+  "parent": "scholar:block/woodworks/template_chiseled_dark_oak_bookshelf_slot_bottom_right_tinted",
+  "textures": {
+    "texture": "woodworks:block/chiseled_dark_oak_bookshelf_occupied",
+    "tinted": "scholar:block/woodworks/chiseled_dark_oak_bookshelf_untinted_books"
+  }
+}
