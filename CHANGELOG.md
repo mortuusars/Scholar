@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.5 - 2025-03-30
+- [Forge] MCBV compat now works properly
+
 ## 1.1.4 - 2025-03-22
 - Colored Books and Chiseled Bookshelf book colors are now added using built-in resourcepacks.
   - You can disable these features easily now or increase their priority to fix mods or resourcepacks overriding the changes.

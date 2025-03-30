@@ -22,5 +22,7 @@ dependencies {
     modCompileOnly("mezz.jei:jei-${minecraft_version}-common:${jei_version}")
     modCompileOnly("mezz.jei:jei-${minecraft_version}-gui:${jei_version}")
 
+    modCompileOnly("maven.modrinth:more-chiseled-bookshelf-variants:rb2kjXS0")
+
     api "fuzs.forgeconfigapiport:forgeconfigapiport-common:${forge_config_api_version}"
 }
