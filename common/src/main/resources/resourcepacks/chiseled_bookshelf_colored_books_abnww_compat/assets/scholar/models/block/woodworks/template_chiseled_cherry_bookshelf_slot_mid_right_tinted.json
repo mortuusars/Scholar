@@ -1,0 +1,21 @@
+{
+    "textures": {
+	"particle": "#texture"
+    },
+	"elements": [
+		{
+			"from": [3, 0, 0],
+			"to": [6, 16, 0],
+			"faces": {
+				"north": {"uv": [10, 0, 13, 16], "texture": "#texture", "cullface": "north"}
+			}
+		},
+		{
+			"from": [3, 0, 0],
+			"to": [6, 16, 0],
+			"faces": {
+				"north": {"uv": [10, 0, 13, 16], "texture": "#tinted", "cullface": "north", "tintindex": 4 }
+			}
+		}
+	]
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "scholar:block/woodworks/template_chiseled_mangrove_bookshelf_slot_bottom_left_tinted",
+  "textures": {
+    "texture": "woodworks:block/chiseled_mangrove_bookshelf_occupied",
+    "tinted": "scholar:block/woodworks/chiseled_mangrove_bookshelf_untinted_books"
+  }
+}
