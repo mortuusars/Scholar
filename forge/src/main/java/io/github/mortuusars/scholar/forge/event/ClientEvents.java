@@ -10,13 +10,10 @@ import io.github.mortuusars.scholar.client.resource.BuiltInResourcePacks;
 import io.github.mortuusars.scholar.forge.resource.ModFilePackResources;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -26,8 +23,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-
-import java.util.List;
 
 @SuppressWarnings("unused")
 public class ClientEvents {
@@ -39,13 +34,15 @@ public class ClientEvents {
                 ScholarClient.init();
                 MenuScreens.register(Scholar.MenuTypes.LECTERN_SPREAD_BOOK_VIEW.get(), LecternSpreadBookViewScreen::new);
                 MenuScreens.register(Scholar.MenuTypes.LECTERN_SPREAD_BOOK_EDIT.get(), LecternSpreadBookEditScreen::new);
-                ItemBlockRenderTypes.setRenderLayer(Blocks.CHISELED_BOOKSHELF, RenderType.cutout());
+
+                //noinspection deprecation
+                ChiseledBookShelf.setBookshelfRenderLayer(ItemBlockRenderTypes::setRenderLayer);
             });
         }
 
         @SubscribeEvent
         public static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
-            event.register(ChiseledBookShelf::getSlotTintColor, Blocks.CHISELED_BOOKSHELF);
+            ChiseledBookShelf.registerBookshelfBlockColors(event::register);
         }
 
         @SubscribeEvent
