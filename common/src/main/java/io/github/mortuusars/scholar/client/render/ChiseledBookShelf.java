@@ -5,18 +5,20 @@ import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.integration.Mods;
 import io.github.mortuusars.scholar.integration.mcbv.MoreChiseledBookshelfVariantsIntegration;
 import net.minecraft.client.DeltaTracker;
-import io.github.mortuusars.scholar.integration.woodworks.WoodworksIntegration;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WritableBookItem;
 import net.minecraft.world.item.WrittenBookItem;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
@@ -26,8 +28,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.OptionalInt;
-import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.BiConsumer;
 
@@ -69,12 +69,12 @@ public class ChiseledBookShelf {
     }
 
     public static int getDefaultTintColorForSlot(BlockState state, int slot) {
-        if (Mods.WOODWORKS.isLoaded()) {
+        /*if (Mods.WOODWORKS.isLoaded()) {
             OptionalInt color = WoodworksIntegration.getDefaultTintColor(state, slot);
             if (color.isPresent()) {
                 return color.getAsInt();
             }
-        }
+        }*/
 
         return switch (slot) {
             case 1 -> DEFAULT_TINT_SLOT_1;
@@ -114,7 +114,6 @@ public class ChiseledBookShelf {
         OptionalInt hitSlot = chiseledBookShelfBlock.getHitSlot(blockHitResult, blockState);
 
         if (hitSlot.isEmpty()) return;
-        int hitSlot = getHitSlot(blockState, blockHitPos.get());
 
         ItemStack bookStack = chiseledBookShelfBlockEntity.getItem(hitSlot.getAsInt());
         if (bookStack.isEmpty()) {
@@ -134,30 +133,19 @@ public class ChiseledBookShelf {
         guiGraphics.renderTooltip(minecraft.font, bookStack, x + 16, y + 12);
     }
 
-    public static int getHitSlot(BlockState state, Vec2 hitPos) {
-        if (Mods.WOODWORKS.isLoaded()) {
-            OptionalInt slot = WoodworksIntegration.getHitSlot(state, hitPos);
-            if (slot.isPresent()) {
-                return slot.getAsInt();
-            }
-        }
-
-        return ChiseledBookShelfBlock.getHitSlot(hitPos);
-    }
-
     // --
 
     public static void registerBookshelfBlockColors(BiConsumer<BlockColor, Block> consumer) {
         consumer.accept(ChiseledBookShelf::getSlotTintColor, Blocks.CHISELED_BOOKSHELF);
 
         if (Mods.MCBV.isLoading()) MoreChiseledBookshelfVariantsIntegration.registerBlockColors(consumer);
-        if (Mods.WOODWORKS.isLoading()) WoodworksIntegration.registerBlockColors(consumer);
+        // if (Mods.WOODWORKS.isLoading()) WoodworksIntegration.registerBlockColors(consumer);
     }
 
     public static void setBookshelfRenderLayer(BiConsumer<Block, RenderType> consumer) {
         consumer.accept(Blocks.CHISELED_BOOKSHELF, RenderType.cutout());
 
         if (Mods.MCBV.isLoading()) MoreChiseledBookshelfVariantsIntegration.setRenderLayer(consumer);
-        if (Mods.WOODWORKS.isLoading()) WoodworksIntegration.setRenderLayer(consumer);
+        // if (Mods.WOODWORKS.isLoading()) WoodworksIntegration.setRenderLayer(consumer);
     }
 }
