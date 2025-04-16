@@ -1,0 +1,7 @@
+{
+  "parent": "scholar:block/template_chiseled_bookshelf_slot_top_mid_tinted",
+  "textures": {
+    "texture": "woodster:block/crimson_chiseled_bookshelf_6",
+    "tinted": "woodster:block/crimson_chiseled_bookshelf_7"
+  }
+}

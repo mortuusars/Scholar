@@ -34,6 +34,13 @@ public class BuiltInResourcePacks {
                     new Activation(ActivationType.DEFAULT_ENABLED)));
         }
 
+        if (Mods.WOODSTER.isLoading()) {
+            packs.add(new Pack(
+                    Scholar.resource("chiseled_bookshelf_colored_books_woodster_compat"),
+                    Component.translatable("resourcepack.scholar.chiseled_bookshelf_colored_books_woodster_compat.name"),
+                    new Activation(ActivationType.DEFAULT_ENABLED)));
+        }
+
         return packs;
     }
 

@@ -26,6 +26,7 @@ dependencies {
 
     // More Chiseled Bookshelf Variants
     modCompileOnly("maven.modrinth:more-chiseled-bookshelf-variants:Mv3952ns")
+    modCompileOnly("curse.maven:woodster-869951:6425772")
 
     testImplementation(platform("org.junit:junit-bom:${project.property("jupiterVersion")}"))
     testImplementation("org.junit.jupiter:junit-jupiter")

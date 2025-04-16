@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.6 - 2025-04-16
+- [NeoForge] Added Woodster compat for book colors in chiseled bookshelves.
+
 ## 1.1.5 - 2025-03-30
 - [NeoForge] MCBV compat now works properly 
 

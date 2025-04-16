@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.integration.woodworks;
+package io.github.mortuusars.scholar.integration.woodster;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.mortuusars.scholar.Scholar;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.OptionalInt;
 import java.util.function.BiConsumer;
 
-public class WoodworksIntegration {
+public class WoodsterIntegration {
     public static void registerBlockColors(BiConsumer<BlockColor, Block> consumer) {
         Scholar.LOGGER.info("Registering chiseled bookshelf block colors to 'Woodworks'. " +
                 "If Woodworks bookshelves displaying wrongly - try without Scholar installed, and if incompatibility " +
@@ -42,11 +42,4 @@ public class WoodworksIntegration {
     public static OptionalInt getDefaultTintColor(BlockState state, int slot) {
         throw new AssertionError();
     }
-//
-//    public static OptionalInt getHitSlot(BlockState state, Vec2 hitPos) {
-//        if (state.getBlock() instanceof BlueprintChiseledBookShelfBlock block) {
-//            return OptionalInt.of(block.m_261279_(hitPos));
-//        }
-//        return OptionalInt.empty();
-//    }
 }
