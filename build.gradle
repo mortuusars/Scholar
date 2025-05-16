@@ -144,7 +144,7 @@ subprojects {
             var path = System.getenv("LOCAL_MAVEN")
             if (path != null) {
                 maven {
-                    name = 'local'
+                    name = 'mortuusarsMaven'
                     url = uri(path + "/maven")
                 }
             }

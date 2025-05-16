@@ -2,6 +2,7 @@ package io.github.mortuusars.scholar.mixin.chiseled_bookshelf;
 
 import io.github.mortuusars.scholar.Config;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -23,6 +24,10 @@ public abstract class ChiseledBookShelfBlockMixin {
     private static void onAddBook(Level level, BlockPos pos, Player player, ChiseledBookShelfBlockEntity blockEntity,
                                   ItemStack bookStack, int slot, CallbackInfo ci) {
         if (Config.Common.CHISELED_BOOKSHELF_COLORS.get() && level.isClientSide) {
+            if (BuiltInRegistries.BLOCK.getKey(blockEntity.getBlockState().getBlock()).getNamespace().equals("apotheosis")) {
+                return; // Fix crash with apotheosis shelf. Scholar doesn't support them anyway currently.
+            }
+
             blockEntity.setItem(slot, bookStack.split(1));
             if (player.isCreative()) {
                 bookStack.grow(1);

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.5.1 - 2025-05-16
+- [Forge] Fixed crash with Apotheosis bookshelf. 
+
 ## 1.1.5 - 2025-03-30
 - [Forge] Added compat for Woodworks (thanks Flyte-less for help)
 - [Forge] MCBV compat now works properly
