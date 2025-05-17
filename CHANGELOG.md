@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.7 - 2025-05-17
+- [NeoForge] Re-enabled compat with Woodworks.
+
 ## 1.1.6 - 2025-04-16
 - [NeoForge] Added Woodster compat for book colors in chiseled bookshelves.
 

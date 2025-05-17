@@ -42,11 +42,4 @@ public class WoodworksIntegration {
     public static OptionalInt getDefaultTintColor(BlockState state, int slot) {
         throw new AssertionError();
     }
-//
-//    public static OptionalInt getHitSlot(BlockState state, Vec2 hitPos) {
-//        if (state.getBlock() instanceof BlueprintChiseledBookShelfBlock block) {
-//            return OptionalInt.of(block.m_261279_(hitPos));
-//        }
-//        return OptionalInt.empty();
-//    }
 }
