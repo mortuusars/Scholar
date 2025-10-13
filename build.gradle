@@ -146,11 +146,19 @@ subprojects {
         }
 
         repositories {
-            var path = System.getenv("LOCAL_MAVEN")
-            if (path != null) {
+            var localPath = System.getenv("MAVEN_LOCAL")
+            if (localPath != null) {
                 maven {
-                    name = 'mortuusarsResources'
-                    url = uri(path + "/maven")
+                    name = 'mortuusarsLocal'
+                    url = uri(localPath + "/maven")
+                }
+            }
+
+            var resourcesPath = System.getenv("MAVEN_GITHUB_RESOURCES")
+            if (resourcesPath != null) {
+                maven {
+                    name = 'mortuusarsGithubResources'
+                    url = uri(resourcesPath + "/maven")
                 }
             }
         }
