@@ -1,16 +1,11 @@
 package io.github.mortuusars.scholar.network.packet.server;
 
-import com.google.common.collect.Lists;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.network.packet.Packet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
@@ -27,7 +22,6 @@ import net.minecraft.world.item.component.WritableBookContent;
 import net.minecraft.world.item.component.WrittenBookContent;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +30,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.UnaryOperator;
 
 /**
  * Similar to {@link net.minecraft.network.protocol.game.ServerboundEditBookPacket} but for lecterns.
@@ -69,21 +62,19 @@ public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optio
             return true;
         }
 
-        serverPlayer.server.execute(() -> {
-            if (!(player.level().getBlockEntity(lecternPos) instanceof LecternBlockEntity lecternBlockEntity)) {
-                Scholar.LOGGER.error("Cannot update lectern book: no lectern block entity at lecternPos '{}'", lecternPos);
-                return;
-            }
+        if (!(player.level().getBlockEntity(lecternPos) instanceof LecternBlockEntity lecternBlockEntity)) {
+            Scholar.LOGGER.error("Cannot update lectern book: no lectern block entity at lecternPos '{}'", lecternPos);
+            return false;
+        }
 
-            ArrayList<String> bookPages = new ArrayList<>();
-            Optional<String> title = title();
-            title.ifPresent(bookPages::add);
-            pages().stream().limit(100L).forEach(bookPages::add);
-            Consumer<List<FilteredText>> consumer = title.isPresent()
-                    ? list -> signBook(serverPlayer, list.get(0), list.subList(1, list.size()), lecternBlockEntity)
-                    : list -> updateBookContents(serverPlayer, list, lecternBlockEntity);
-            this.filterTextPacket(serverPlayer,bookPages).thenAcceptAsync(consumer, serverPlayer.server);
-        });
+        ArrayList<String> bookPages = new ArrayList<>();
+        Optional<String> title = title();
+        title.ifPresent(bookPages::add);
+        pages().stream().limit(100L).forEach(bookPages::add);
+        Consumer<List<FilteredText>> consumer = title.isPresent()
+                ? list -> signBook(serverPlayer, list.getFirst(), list.subList(1, list.size()), lecternBlockEntity)
+                : list -> updateBookContents(serverPlayer, list, lecternBlockEntity);
+        filterTextPacket(serverPlayer,bookPages).thenAccept(consumer);
 
         return true;
     }
@@ -114,14 +105,6 @@ public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optio
 
     private Filterable<String> filterableFromOutgoing(ServerPlayer player, FilteredText filteredText) {
         return player.isTextFilteringEnabled() ? Filterable.passThrough(filteredText.filteredOrEmpty()) : Filterable.from(filteredText);
-    }
-
-    private void updateBookContents(ServerPlayer player, List<FilteredText> pages, int index) {
-        ItemStack itemStack = player.getInventory().getItem(index);
-        if (itemStack.is(Items.WRITABLE_BOOK)) {
-            List<Filterable<String>> list = pages.stream().map((FilteredText text) -> filterableFromOutgoing(player, text)).toList();
-            itemStack.set(DataComponents.WRITABLE_BOOK_CONTENT, new WritableBookContent(list));
-        }
     }
 
     private <T, R> CompletableFuture<R> filterTextPacket(ServerPlayer player, T message, BiFunction<TextFilter, T, CompletableFuture<R>> processor) {

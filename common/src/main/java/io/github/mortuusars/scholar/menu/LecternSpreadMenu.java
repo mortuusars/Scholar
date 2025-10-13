@@ -21,10 +21,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class LecternSpreadMenu extends LecternMenu {
+    protected final Container lecternContainer;
     protected final BlockPos lecternPos;
 
     public LecternSpreadMenu(int containerId, Container lectern, ContainerData lecternData, BlockPos lecternPos) {
         super(containerId, lectern, lecternData);
+        this.lecternContainer = lectern;
         this.lecternPos = lecternPos;
     }
 

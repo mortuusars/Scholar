@@ -20,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements MenuAccess<LecternSpreadBookEditMenu> {
@@ -115,9 +116,13 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
     @Override
     protected void sendChanges(@Nullable String title) {
         removeEmptyTrailingPages();
-        Minecraft.getInstance().execute(() -> {
-            Packets.sendToServer(new LecternEditBookC2SP(getMenu().getLecternPos(), pages, Optional.ofNullable(title)));
-        });
+        // Copying 'pages' list to not cause ConcurrentModificationException when packet is encoded:
+        Packets.sendToServer(new LecternEditBookC2SP(getMenu().getLecternPos(), new ArrayList<>(pages), Optional.ofNullable(title)));
+    }
+
+    @Override
+    protected void updateLocalCopy() {
+        super.updateLocalCopy();
     }
 
     // --
@@ -190,7 +195,7 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
 
     protected void sendButtonClick(int buttonId) {
         if (Minecraft.getInstance().gameMode != null) {
-//            saveChanges(false, null);
+            saveChanges(false, null);
             Minecraft.getInstance().gameMode.handleInventoryButtonClick(this.menu.containerId, buttonId);
         }
     }

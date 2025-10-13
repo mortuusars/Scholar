@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.8 - 2025-10-13
+- Fixed pressing "Take Book" on a lectern not saving last edits.
+- Fixed page contents not saving in some cases.
+
 ## 1.1.7 - 2025-05-17
 - [NeoForge] Re-enabled compat with Woodworks.
 

@@ -386,7 +386,8 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     protected void enterSignMode() {
         saveChanges(false, null);
-        minecraft.setScreen(new BookSigningScreen(this, bookColor, title -> saveChanges(true, title)));
+        minecraft.execute(() ->
+            minecraft.setScreen(new BookSigningScreen(this, bookColor, title -> saveChanges(true, title))));
     }
 
     // --
@@ -398,8 +399,13 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     protected void setPageText(Spread.Side side, String text) {
         int pageIndex = side.getPageIndexFromSpread(currentSpread);
-        if (pageIndex >= 0 && pageIndex < this.pages.size()) {
 
+        // Add empty pages until current page index
+        while (pageIndex > pages.size() - 1 && pageIndex < getPageCount()) {
+            appendEmptyPage();
+        }
+
+        if (pageIndex >= 0 && pageIndex < this.pages.size()) {
             String currentText = getPageText(side);
             getHistory().add(() -> {
                 pages.set(pageIndex, text);
@@ -435,7 +441,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         Change change = Change.create(() -> {
             pages.add(pageIndex, "");
             while (pages.size() >= 100) {
-                pages.remove(pages.size() - 1);
+                pages.removeLast();
             }
             setTextBoxes();
             bookModified = true;
@@ -614,9 +620,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             FileDialogs.loadFile(defaultDirectory, title, "Text Files (.txt)", false, "*.txt").ifPresent(filePath -> {
                 try {
                     String content = Files.readString(Path.of(filePath));
-                    Minecraft.getInstance().execute(() -> {
-                        setBookContents(content, withFormatting);
-                    });
+                    Minecraft.getInstance().execute(() -> setBookContents(content, withFormatting));
                 } catch (IOException e) {
                     Minecraft.getInstance().execute(() -> player.displayClientMessage(
                             Component.translatable("gui.scholar.import_book.failure"), false));
