@@ -17,10 +17,12 @@ import net.minecraft.world.item.WrittenBookItem;
 import org.jetbrains.annotations.NotNull;
 
 public class LecternSpreadMenu extends LecternMenu {
+    protected final Container lecternContainer;
     protected final BlockPos lecternPos;
 
     public LecternSpreadMenu(int containerId, Container lectern, ContainerData lecternData, BlockPos lecternPos) {
         super(containerId, lectern, lecternData);
+        this.lecternContainer = lectern;
         this.lecternPos = lecternPos;
     }
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.6 - 2025-10-13
+- Fixed pressing "Take Book" on a lectern not saving last edits.
+- Fixed page contents not saving in some cases.
+
 ## 1.1.5.1 - 2025-05-16
 - [Forge] Fixed crash with Apotheosis bookshelf. 
 
