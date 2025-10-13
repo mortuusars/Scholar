@@ -437,7 +437,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         Change change = Change.create(() -> {
             pages.add(pageIndex, "");
             while (pages.size() >= 100) {
-                pages.removeLast();
+                pages.remove(pages.size() - 1);
             }
             setTextBoxes();
             bookModified = true;

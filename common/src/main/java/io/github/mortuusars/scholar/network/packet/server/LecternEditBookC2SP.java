@@ -68,21 +68,19 @@ public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optio
             return true;
         }
 
-        serverPlayer.server.execute(() -> {
-            if (!(player.level().getBlockEntity(lecternPos) instanceof LecternBlockEntity lecternBlockEntity)) {
-                Scholar.LOGGER.error("Cannot update lectern book: no lectern block entity at lecternPos '{}'", lecternPos);
-                return;
-            }
+        if (!(player.level().getBlockEntity(lecternPos) instanceof LecternBlockEntity lecternBlockEntity)) {
+            Scholar.LOGGER.error("Cannot update lectern book: no lectern block entity at lecternPos '{}'", lecternPos);
+            return false;
+        }
 
-            ArrayList<String> bookPages = new ArrayList<>();
-            Optional<String> title = title();
-            title.ifPresent(bookPages::add);
-            pages().stream().limit(100L).forEach(bookPages::add);
-            Consumer<List<FilteredText>> consumer = title.isPresent()
-                    ? list -> signBook(serverPlayer, list.get(0), list.subList(1, list.size()), lecternBlockEntity)
-                    : list -> updateBookContents(serverPlayer, list, lecternBlockEntity);
-            this.filterTextPacket(serverPlayer,bookPages).thenAcceptAsync(consumer, serverPlayer.server);
-        });
+        ArrayList<String> bookPages = new ArrayList<>();
+        Optional<String> title = title();
+        title.ifPresent(bookPages::add);
+        pages().stream().limit(100L).forEach(bookPages::add);
+        Consumer<List<FilteredText>> consumer = title.isPresent()
+                ? list -> signBook(serverPlayer, list.get(0), list.subList(1, list.size()), lecternBlockEntity)
+                : list -> updateBookContents(serverPlayer, list, lecternBlockEntity);
+        this.filterTextPacket(serverPlayer,bookPages).thenAccept(consumer);
 
         return true;
     }
