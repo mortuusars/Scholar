@@ -1,5 +1,6 @@
 package io.github.mortuusars.scholar.fabric;
 
+import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.client.ConfigScreenFactoryRegistry;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.book.BookColor;
@@ -18,12 +19,15 @@ import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 
 public class ScholarFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ChiseledBookShelf.setBookshelfRenderLayer(BlockRenderLayerMap.INSTANCE::putBlock);
         ChiseledBookShelf.registerBookshelfBlockColors(ColorProviderRegistry.BLOCK::register);
+
+        ConfigScreenFactoryRegistry.INSTANCE.register(Scholar.ID, ConfigurationScreen::new);
 
         FabricLoader.getInstance().getModContainer(Scholar.ID).ifPresent(container -> {
             for (BuiltInResourcePacks.Pack pack : BuiltInResourcePacks.get()) {

@@ -3,10 +3,12 @@ package io.github.mortuusars.scholar.neoforge;
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.loading.FMLEnvironment;
 import org.jetbrains.annotations.Nullable;
 
 @Mod(Scholar.ID)
@@ -35,5 +37,9 @@ public class ScholarNeoForge {
         RegisterImpl.DATA_COMPONENT_TYPES.register(modEventBus);
         RegisterImpl.PARTICLE_TYPES.register(modEventBus);
         RegisterImpl.CUSTOM_STATS.register(modEventBus);
+
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            ScholarNeoForgeClient.init(container);
+        }
     }
 }
