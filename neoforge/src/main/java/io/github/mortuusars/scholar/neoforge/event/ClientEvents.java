@@ -3,9 +3,12 @@ package io.github.mortuusars.scholar.neoforge.event;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.book.BookColor;
+import io.github.mortuusars.scholar.client.chiseled_bookshelf.BookshelfDefaultColorsReloadListener;
+import io.github.mortuusars.scholar.client.chiseled_bookshelf.BookshelfItemColorsReloadListener;
+import io.github.mortuusars.scholar.client.chiseled_bookshelf.ChiseledBookshelfTooltip;
 import io.github.mortuusars.scholar.client.gui.screen.edit.LecternSpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.screen.view.LecternSpreadBookViewScreen;
-import io.github.mortuusars.scholar.client.render.ChiseledBookShelf;
+import io.github.mortuusars.scholar.client.chiseled_bookshelf.ChiseledBookshelfColors;
 import io.github.mortuusars.scholar.client.resource.BuiltInResourcePacks;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.server.packs.PackLocationInfo;
@@ -22,10 +25,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
-import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
+import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforgespi.locating.IModFile;
 
@@ -40,15 +40,20 @@ public class ClientEvents {
         public static void clientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
                 ScholarClient.init();
-
                 //noinspection deprecation
-                ChiseledBookShelf.setBookshelfRenderLayer(ItemBlockRenderTypes::setRenderLayer);
+                ChiseledBookshelfColors.setBookshelfRenderLayer(ItemBlockRenderTypes::setRenderLayer);
             });
         }
 
         @SubscribeEvent
         public static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
-            ChiseledBookShelf.registerBookshelfBlockColors(event::register);
+            ChiseledBookshelfColors.registerBookshelfBlockColors(event::register);
+        }
+
+        @SubscribeEvent
+        public static void registerClientReloadListeners(RegisterClientReloadListenersEvent event) {
+            event.registerReloadListener(new BookshelfDefaultColorsReloadListener());
+            event.registerReloadListener(new BookshelfItemColorsReloadListener());
         }
 
         @SubscribeEvent
@@ -97,7 +102,7 @@ public class ClientEvents {
     public static class ForgeBus {
         @SubscribeEvent
         public static void onRenderGuiPost(RenderGuiEvent.Post event) {
-            ChiseledBookShelf.renderSlotTooltip(event.getGuiGraphics(), event.getPartialTick());
+            ChiseledBookshelfTooltip.renderSlotTooltip(event.getGuiGraphics(), event.getPartialTick());
         }
     }
 }
