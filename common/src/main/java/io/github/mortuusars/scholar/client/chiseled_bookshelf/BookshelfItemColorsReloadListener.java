@@ -37,8 +37,8 @@ public class BookshelfItemColorsReloadListener extends SimpleJsonResourceReloadL
             }
 
             CODEC.decode(JsonOps.INSTANCE, entry.getValue())
-                  .ifError(err -> LOGGER.error("Contents of '{}' cannot be parsed as a valid id to color map: {}", location, err))
-                  .ifSuccess(data -> itemColors.putAll(data.getFirst()));
+                  .resultOrPartial(err -> LOGGER.error("Contents of '{}' cannot be parsed as a valid id to color map: {}", location, err))
+                  .ifPresent(data -> itemColors.putAll(data.getFirst()));
         }
 
         ChiseledBookshelfColors.ITEM_COLORS = ImmutableMap.copyOf(itemColors);
