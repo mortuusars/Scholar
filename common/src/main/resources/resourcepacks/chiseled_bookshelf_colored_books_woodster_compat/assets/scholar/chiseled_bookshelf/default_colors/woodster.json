@@ -1,0 +1,90 @@
+{
+  "woodster:acacia_chiseled_bookshelf": [
+    "#4EE0D7",
+    "#4EE0D7",
+    "#4EE0D7",
+    "#4EE0D7",
+    "#4EE0D7",
+    "#4EE0D7"
+  ],
+  "woodster:bamboo_chiseled_bookshelf": [
+    "#FFFF9E",
+    "#FFFF9E",
+    "#FFFF9E",
+    "#FFFF9E",
+    "#FFFF9E",
+    "#FFFF9E"
+  ],
+  "woodster:birch_chiseled_bookshelf": [
+    "#88D3DE",
+    "#CF8D8C",
+    "#88D3DE",
+    "#CF8D8C",
+    "#88D3DE",
+    "#CF8D8C"
+  ],
+  "woodster:cherry_chiseled_bookshelf": [
+    "#F55678",
+    "#F55678",
+    "#F55678",
+    "#F55678",
+    "#F55678",
+    "#F55678"
+  ],
+  "woodster:crimson_chiseled_bookshelf": [
+    "#2B1A26",
+    "#545366",
+    "#2B1A26",
+    "#545366",
+    "#2B1A26",
+    "#545366"
+  ],
+  "woodster:dark_oak_chiseled_bookshelf": [
+    "#306EC5",
+    "#A743E5",
+    "#A743E5",
+    "#A743E5",
+    "#306EC5",
+    "#306EC5"
+  ],
+  "woodster:jungle_chiseled_bookshelf": [
+    "#8CC647",
+    "#8CC647",
+    "#8CC647",
+    "#8CC647",
+    "#8CC647",
+    "#8CC647"
+  ],
+  "woodster:mangrove_chiseled_bookshelf": [
+    "#36BD48",
+    "#36BD48",
+    "#36BD48",
+    "#36BD48",
+    "#36BD48",
+    "#36BD48"
+  ],
+  "woodster:pale_oak_chiseled_bookshelf": [
+    "#DC4E17",
+    "#FF810D",
+    "#DC4E17",
+    "#FF810D",
+    "#DC4E17",
+    "#FF810D"
+  ],
+  "woodster:spruce_chiseled_bookshelf": [
+    "#2B32FD",
+    "#FD2B4E",
+    "#FD2B4E",
+    "#FD2B4E",
+    "#FD2B4E",
+    "#2B32FD"
+  ],
+  "woodster:warped_chiseled_bookshelf": [
+    "#545366",
+    "#2B1A26",
+    "#545366",
+    "#2B1A26",
+    "#545366",
+    "#2B1A26"
+  ]
+}

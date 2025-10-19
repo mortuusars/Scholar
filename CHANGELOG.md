@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.9 - 2025-10-19
+- Changed how support to show actual book colors in modded bookshelves is added. [Wiki Page](https://github.com/mortuusars/Scholar/wiki/Actual-book-colors-in-Chiseled-Bookshelves-customization)
+    - Only resourcepack is now required, changes from Scholar's side are not needed anymore.
+- Bumped version to align with 1.21.1.
+
 ## 1.1.6 - 2025-10-13
 - Fixed pressing "Take Book" on a lectern not saving last edits.
 - Fixed page contents not saving in some cases.

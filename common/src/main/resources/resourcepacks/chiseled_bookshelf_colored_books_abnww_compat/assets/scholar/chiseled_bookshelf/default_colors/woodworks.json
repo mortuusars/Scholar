@@ -1,0 +1,82 @@
+{
+  "woodworks:chiseled_acacia_bookshelf": [
+    "#FF9E0B",
+    "#2FAEA6",
+    "#D43137",
+    "#4158CC",
+    "#DB5D0F",
+    "#FFC22A"
+  ],
+  "woodworks:chiseled_bamboo_bookshelf": [
+    "#C86D5A",
+    "#8CB34A",
+    "#51C15F",
+    "#95AC1C",
+    "#BE8F20",
+    "#E15549"
+  ],
+  "woodworks:chiseled_birch_bookshelf": [
+    "#59ADB1",
+    "#C21C93",
+    "#6397C1",
+    "#D5740C",
+    "#5F42E9",
+    "#F23B09"
+  ],
+  "woodworks:chiseled_cherry_bookshelf": [
+    "#8CAEFF",
+    "#9ADDE1",
+    "#D9DC8E",
+    "#FF8759",
+    "#E58FDE",
+    "#CDD8C3"
+  ],
+  "woodworks:chiseled_crimson_bookshelf": [
+    "#14B7BF",
+    "#8D33E8",
+    "#C58242",
+    "#E81752",
+    "#C443A2",
+    "#93BE33"
+  ],
+  "woodworks:chiseled_dark_oak_bookshelf": [
+    "#4493C7",
+    "#7BB939",
+    "#725CCA",
+    "#EB2561",
+    "#CD7460",
+    "#945BC1"
+  ],
+  "woodworks:chiseled_jungle_bookshelf": [
+    "#CE2C00",
+    "#FF7309",
+    "#F97C12",
+    "#9C15DA",
+    "#353CD2",
+    "#2FB937"
+  ],
+  "woodworks:chiseled_mangrove_bookshelf": [
+    "#D73F7C",
+    "#DE662A",
+    "#D17C1F",
+    "#9DA92E",
+    "#829B8C",
+    "#E4583E"
+  ],
+  "woodworks:chiseled_spruce_bookshelf": [
+    "#E46924",
+    "#58B567",
+    "#7DAB5D",
+    "#5F49F2",
+    "#D300B9",
+    "#EC001D"
+  ],
+  "woodworks:chiseled_warped_bookshelf": [
+    "#6A64EA",
+    "#C66495",
+    "#72AD80",
+    "#C39732",
+    "#D17738",
+    "#CF2F4A"
+  ]
+}
