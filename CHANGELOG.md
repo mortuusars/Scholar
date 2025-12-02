@@ -1,6 +1,7 @@
 # Changelog
 
 ## 1.1.10 - 2025-12-03
+- Added translations to config options
 - Removed `chiseled_bookshelf_colors` config option as it was not working properly and not needed anyway as it is disabled by removing a resourcepack. 
 
 ## 1.1.9 - 2025-10-19
