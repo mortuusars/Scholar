@@ -1,6 +1,5 @@
 package io.github.mortuusars.scholar.mixin.chiseled_bookshelf;
 
-import io.github.mortuusars.scholar.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +21,7 @@ public abstract class ChiseledBookShelfBlockMixin {
     @Inject(method = "addBook", at = @At(value = "RETURN"))
     private static void onAddBook(Level level, BlockPos pos, Player player, ChiseledBookShelfBlockEntity blockEntity,
                                   ItemStack bookStack, int slot, CallbackInfo ci) {
-        if (Config.Common.CHISELED_BOOKSHELF_COLORS.get() && level.isClientSide) {
+        if (level.isClientSide()) {
             blockEntity.setItem(slot, bookStack.split(1));
             if (player.isCreative()) {
                 bookStack.grow(1);

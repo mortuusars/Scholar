@@ -1,6 +1,5 @@
 package io.github.mortuusars.scholar.mixin.chiseled_bookshelf;
 
-import io.github.mortuusars.scholar.Config;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -25,14 +24,12 @@ public abstract class ChiseledBookShelfBlockEntityMixin extends BlockEntityParen
 
     @Override
     protected Packet<ClientGamePacketListener> onGetUpdatePacket(@Nullable Packet<ClientGamePacketListener> packet) {
-        return Config.Common.CHISELED_BOOKSHELF_TOOLTIP.get() || Config.Common.CHISELED_BOOKSHELF_COLORS.get()
-                ? ClientboundBlockEntityDataPacket.create((ChiseledBookShelfBlockEntity) (Object) this)
-                : super.onGetUpdatePacket(packet);
+        return ClientboundBlockEntityDataPacket.create((ChiseledBookShelfBlockEntity) (Object) this);
     }
 
     @Override
     protected CompoundTag onGetUpdateTag(CompoundTag tag) {
-        if ((Config.Common.CHISELED_BOOKSHELF_TOOLTIP.get() || Config.Common.CHISELED_BOOKSHELF_COLORS.get()) && level != null) {;
+        if (level != null) {
             ContainerHelper.saveAllItems(tag, this.items, level.registryAccess());
         }
 

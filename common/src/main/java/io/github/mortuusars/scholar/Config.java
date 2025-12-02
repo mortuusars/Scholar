@@ -3,7 +3,6 @@ package io.github.mortuusars.scholar;
 import com.mojang.logging.LogUtils;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-
 public class Config {
     public static class Common {
         public static final ModConfigSpec SPEC;
@@ -14,7 +13,6 @@ public class Config {
         public static final ModConfigSpec.BooleanValue SNEAK_OPENS_VANILLA_BOOK_SCREEN;
 
         // Misc
-        public static final ModConfigSpec.BooleanValue CHISELED_BOOKSHELF_COLORS;
         public static final ModConfigSpec.BooleanValue CHISELED_BOOKSHELF_TOOLTIP;
         public static final ModConfigSpec.BooleanValue BOOK_ENCHANTMENT_GLINT;
 
@@ -35,12 +33,6 @@ public class Config {
             builder.pop();
 
             builder.push("misc");
-            CHISELED_BOOKSHELF_COLORS = builder
-                    .comment("Colored books in Chiseled Bookshelf will have correct colors displayed on the block. Default: true",
-                            "Note: resourcepacks that modify Chiseled Bookshelf may break the coloring.",
-                            "Note 2: even if this setting is disabled - bookshelf will not look quite the same if you look closely.",
-                            "To restore fully - overwrite bookshelf slot models added by Scholar using a resourcepack.")
-                    .define("chiseled_bookshelf_colors", true);
             CHISELED_BOOKSHELF_TOOLTIP = builder
                     .comment("Hovering over a slot in a Chiseled Bookshelf will show tooltip of a book that's stored in that slot. Default: true")
                     .define("chiseled_bookshelf_tooltip", true);
