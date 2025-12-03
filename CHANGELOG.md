@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.11.1 - 2025-12-04
+- Removed unused item translations (from the old book coloring system) (forgot to do that in previous release)
+
 ## 1.1.11 - 2025-12-04
 - Removed unused book models and textures (from the old book coloring system) 
 
