@@ -1,46 +1,32 @@
 package io.github.mortuusars.scholar.client.chiseled_bookshelf;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
+import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.util.HexColor;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class BookshelfItemColorsReloadListener extends SimpleJsonResourceReloadListener {
-    private static final Logger LOGGER = LogUtils.getLogger();
-
-    public static final Codec<Map<ResourceLocation, Integer>> CODEC = Codec.unboundedMap(ResourceLocation.CODEC, HexColor.CODEC);
+public class BookshelfItemColorsReloadListener extends SimpleJsonResourceReloadListener<Map<ResourceLocation, Integer>> {
+    public static final ResourceLocation ID = Scholar.resource("bookshelf_item_colors_reload_listener");
 
     public BookshelfItemColorsReloadListener() {
-        super(new Gson(), "chiseled_bookshelf/item_colors");
+        super(Codec.unboundedMap(ResourceLocation.CODEC, HexColor.CODEC), FileToIdConverter.json("chiseled_bookshelf/item_colors"));
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler) {
-        Map<ResourceLocation, Integer> itemColors = new HashMap<>();
+    protected void apply(Map<ResourceLocation, Map<ResourceLocation, Integer>> map, ResourceManager resourceManager, ProfilerFiller profiler) {
+        Map<ResourceLocation, Integer> result = new HashMap<>();
 
-        for (Map.Entry<ResourceLocation, JsonElement> entry : map.entrySet()) {
-            ResourceLocation location = entry.getKey();
-            if (!location.getNamespace().equals("scholar")) {
-                LOGGER.info("Ignoring chiseled bookshelf item color definition '{}' because it's not in Scholar namespace.", location);
-                continue;
-            }
-
-            CODEC.decode(JsonOps.INSTANCE, entry.getValue())
-                  .ifError(err -> LOGGER.error("Contents of '{}' cannot be parsed as a valid id to color map: {}", location, err))
-                  .ifSuccess(data -> itemColors.putAll(data.getFirst()));
+        for (Map<ResourceLocation, Integer> value : map.values()) {
+            result.putAll(value);
         }
 
-        ChiseledBookshelfColors.ITEM_COLORS = ImmutableMap.copyOf(itemColors);
+        ChiseledBookshelfColors.ITEM_COLORS = result;
     }
 }

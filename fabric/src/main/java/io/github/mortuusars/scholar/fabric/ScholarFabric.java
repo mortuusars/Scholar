@@ -24,8 +24,8 @@ public class ScholarFabric implements ModInitializer {
 
         Scholar.init();
 
-        CauldronInteraction.WATER.map().put(Items.WRITABLE_BOOK, CauldronInteraction.DYED_ITEM);
-        CauldronInteraction.WATER.map().put(Items.WRITTEN_BOOK, CauldronInteraction.DYED_ITEM);
+        CauldronInteraction.WATER.map().put(Items.WRITABLE_BOOK, CauldronInteraction.WATER.map().get(Items.LEATHER_HELMET));
+        CauldronInteraction.WATER.map().put(Items.WRITTEN_BOOK, CauldronInteraction.WATER.map().get(Items.LEATHER_HELMET));
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             ScholarFabric.server = server;

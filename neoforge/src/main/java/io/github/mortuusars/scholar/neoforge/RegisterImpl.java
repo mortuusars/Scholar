@@ -11,6 +11,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
@@ -58,7 +59,7 @@ public class RegisterImpl {
     }
 
     public static <T extends BlockEntity> BlockEntityType<T> newBlockEntityType(Register.BlockEntitySupplier<T> blockEntitySupplier, Block... validBlocks) {
-        return BlockEntityType.Builder.of(blockEntitySupplier::create, validBlocks).build(null);
+        return new BlockEntityType<>(blockEntitySupplier::create, validBlocks);
     }
 
     public static <T extends Item> Supplier<T> item(String id, Supplier<T> supplier) {
@@ -68,11 +69,11 @@ public class RegisterImpl {
     public static <T extends Entity> Supplier<EntityType<T>> entityType(String id, EntityType.EntityFactory<T> factory, MobCategory category,
                                                                         float width, float height, int clientTrackingRange, boolean velocityUpdates, int updateInterval) {
         return ENTITY_TYPES.register(id, () -> EntityType.Builder.of(factory, category)
-                .sized(width, height)
-                .clientTrackingRange(clientTrackingRange)
-                .setShouldReceiveVelocityUpdates(velocityUpdates)
-                .updateInterval(updateInterval)
-                .build(id));
+              .sized(width, height)
+              .clientTrackingRange(clientTrackingRange)
+              .setShouldReceiveVelocityUpdates(velocityUpdates)
+              .updateInterval(updateInterval)
+              .build(ResourceKey.create(Registries.ENTITY_TYPE, Scholar.resource(id))));
     }
 
     public static <T extends Entity> Supplier<EntityType<T>> entityType(String id, EntityType.EntityFactory<T> factory, MobCategory category, boolean receiveVelocityUpdates, Consumer<EntityType.Builder<T>> typeBuilder) {
@@ -80,7 +81,7 @@ public class RegisterImpl {
             EntityType.Builder<T> builder = EntityType.Builder.of(factory, category);
             builder.setShouldReceiveVelocityUpdates(receiveVelocityUpdates);
             typeBuilder.accept(builder);
-            return builder.build(id);
+            return builder.build(ResourceKey.create(Registries.ENTITY_TYPE, Scholar.resource(id)));
         });
     }
 
@@ -111,7 +112,7 @@ public class RegisterImpl {
     public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>
     Supplier<ArgumentTypeInfo<A, T>> commandArgumentType(String id, Class<A> infoClass, I argumentTypeInfo) {
         return COMMAND_ARGUMENT_TYPES.register(id,
-                () -> ArgumentTypeInfos.registerByClass(infoClass, argumentTypeInfo));
+              () -> ArgumentTypeInfos.registerByClass(infoClass, argumentTypeInfo));
     }
 
     public static <T extends FeatureConfiguration> Supplier<Feature<?>> worldGenFeature(String name, Supplier<Feature<T>> featureSupplier) {

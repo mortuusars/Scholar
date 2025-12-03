@@ -6,7 +6,6 @@ import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
-import io.github.mortuusars.scholar.client.util.RenderUtil;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,6 +14,7 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -152,15 +152,13 @@ public abstract class SpreadBookScreen extends Screen {
     // -- Render
 
     protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        RenderUtil.withColorMultiplied(bookColor, () -> {
-            // Cover
-            guiGraphics.blit(TEXTURE, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,
-                    0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
-        });
+        // Cover
+        guiGraphics.blit(RenderType::guiTexturedOverlay, TEXTURE, leftPos, topPos,
+              0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512, bookColor);
 
         // Paper
-        guiGraphics.blit(TEXTURE, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,
-                0, BOOK_HEIGHT, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
+        guiGraphics.blit(RenderType::guiTextured, TEXTURE, leftPos, topPos,
+              0, BOOK_HEIGHT, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
     }
 
     protected void renderPageNumbers(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread) {

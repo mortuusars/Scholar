@@ -7,7 +7,6 @@ import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.display.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedString;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
-import io.github.mortuusars.scholar.client.util.RenderUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,6 +14,7 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -87,26 +87,26 @@ public class BookSigningScreen extends Screen {
 
         // TITLE
         titleTextBox = new TextBox(font, leftPos + 21, topPos + 71, 108, 9)
-                .setFontColor(textColor)
-                .setFontUnfocusedColor(textColor)
-                .setSelectionColor(selectionColor)
-                .setSelectionUnfocusedColor(selectionUnfocusedColor)
-                .setHorizontalAlignment(HorizontalAlignment.CENTER)
-                .setOnTextChanged(this::setTitleText)
-                .setTextValidator(text -> text != null && font.wordWrapHeight(text, 108) <= 9 && !text.contains("\n"));
+              .setFontColor(textColor)
+              .setFontUnfocusedColor(textColor)
+              .setSelectionColor(selectionColor)
+              .setSelectionUnfocusedColor(selectionUnfocusedColor)
+              .setHorizontalAlignment(HorizontalAlignment.CENTER)
+              .setOnTextChanged(this::setTitleText)
+              .setTextValidator(text -> text != null && font.wordWrapHeight(text, 108) <= 9 && !text.contains("\n"));
         addRenderableWidget(titleTextBox);
 
         // SIGN
         signButton = new ImageButton(leftPos + 46, topPos + 108, 22, 22,
-                SIGN_BUTTON_SPRITES, b -> signAlbum(), Component.translatable("book.finalizeButton"));
+              SIGN_BUTTON_SPRITES, b -> signAlbum(), Component.translatable("book.finalizeButton"));
         MutableComponent component = Component.translatable("book.finalizeButton")
-                .append("\n").append(Component.translatable("book.finalizeWarning").withStyle(ChatFormatting.GRAY));
+              .append("\n").append(Component.translatable("book.finalizeWarning").withStyle(ChatFormatting.GRAY));
         signButton.setTooltip(Tooltip.create(component));
         addRenderableWidget(signButton);
 
         // CANCEL
         cancelSigningButton = new ImageButton(leftPos + 83, topPos + 108, 22, 22,
-                CANCEL_BUTTON_SPRITES, b -> cancelSigning(), CommonComponents.GUI_CANCEL);
+              CANCEL_BUTTON_SPRITES, b -> cancelSigning(), CommonComponents.GUI_CANCEL);
         cancelSigningButton.setTooltip(Tooltip.create(CommonComponents.GUI_CANCEL));
         addRenderableWidget(cancelSigningButton);
 
@@ -132,13 +132,13 @@ public class BookSigningScreen extends Screen {
 
         renderTransparentBackground(guiGraphics);
 
-        RenderUtil.withColorMultiplied(bookColor, () -> {
-            guiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, 0,
-                    imageWidth, imageHeight, textureWidth, textureHeight);
-        });
+        // Cover
+        guiGraphics.blit(RenderType::guiTextured, TEXTURE, leftPos, topPos,
+              0, 0, imageWidth, imageHeight, textureWidth, textureHeight, bookColor);
 
-        guiGraphics.blit(TEXTURE, leftPos, topPos + 31, 0, 0, 180,
-                imageWidth, 76, textureWidth, textureHeight);
+        // Label
+        guiGraphics.blit(RenderType::guiTextured, TEXTURE, leftPos, topPos + 31,
+              0, 180, imageWidth, 76, textureWidth, textureHeight);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
@@ -152,19 +152,19 @@ public class BookSigningScreen extends Screen {
 
     protected void renderLabels(GuiGraphics guiGraphics) {
         MutableComponent component = Component.translatable("book.editTitle");
-        guiGraphics.drawString(font, component,  leftPos + 149 / 2 - font.width(component) / 2, topPos + 51,
-                enterBookTitleFontColor, false);
+        guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 51,
+              enterBookTitleFontColor, false);
 
         component = Component.translatable("book.byAuthor", player.getName());
         guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 81,
-                byAuthorFontColor, false);
+              byAuthorFontColor, false);
     }
 
     protected void signAlbum() {
         if (canSign()) {
             onSign.accept(titleText.trim());
             minecraft.getSoundManager().play(
-                    SimpleSoundInstance.forUI(Scholar.SoundEvents.BOOK_SIGNED.get(), 1f, 0.8f));
+                  SimpleSoundInstance.forUI(Scholar.SoundEvents.BOOK_SIGNED.get(), 1f, 0.8f));
             onClose();
         }
     }

@@ -19,13 +19,13 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 @SuppressWarnings("unused")
 public class CommonEvents {
-    @EventBusSubscriber(modid = Scholar.ID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = Scholar.ID)
     public static class ModBus {
         @SubscribeEvent
         public static void commonSetup(FMLCommonSetupEvent event) {
             event.enqueueWork(() -> {
-                CauldronInteraction.WATER.map().put(Items.WRITABLE_BOOK, CauldronInteraction.DYED_ITEM);
-                CauldronInteraction.WATER.map().put(Items.WRITTEN_BOOK, CauldronInteraction.DYED_ITEM);
+                CauldronInteraction.WATER.map().put(Items.WRITABLE_BOOK, CauldronInteraction.WATER.map().get(Items.LEATHER_HELMET));
+                CauldronInteraction.WATER.map().put(Items.WRITTEN_BOOK, CauldronInteraction.WATER.map().get(Items.LEATHER_HELMET));
             });
         }
 
@@ -49,8 +49,5 @@ public class CommonEvents {
                         (StreamCodec<FriendlyByteBuf, Packet>) definition.codec(), PacketsImpl::handle);
             }
         }
-    }
-
-    public static class GameBus {
     }
 }

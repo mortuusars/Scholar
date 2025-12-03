@@ -11,14 +11,6 @@ public class BookColor {
         return DyedItemColor.getOrDefault(stack, DEFAULT);
     }
 
-    public static int getItemTintColor(ItemStack stack, int tintIndex) {
-        if (tintIndex == 1) {
-            return of(stack);
-        }
-
-        return -1;
-    }
-
     public static void set(ItemStack stack, int color) {
         stack.set(DataComponents.DYED_COLOR, new DyedItemColor(color, color != DEFAULT));
     }

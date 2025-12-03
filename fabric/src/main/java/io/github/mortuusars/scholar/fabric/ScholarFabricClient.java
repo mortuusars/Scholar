@@ -3,7 +3,6 @@ package io.github.mortuusars.scholar.fabric;
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.client.ConfigScreenFactoryRegistry;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
-import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.ChiseledBookshelfTooltip;
 import io.github.mortuusars.scholar.client.gui.screen.edit.LecternSpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.screen.view.LecternSpreadBookViewScreen;
@@ -20,7 +19,6 @@ import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 
 public class ScholarFabricClient implements ClientModInitializer {
@@ -44,9 +42,6 @@ public class ScholarFabricClient implements ClientModInitializer {
                 ResourceManagerHelper.registerBuiltinResourcePack(pack.id(), container, pack.name(), activationType);
             }
         });
-
-        ColorProviderRegistry.ITEM.register(BookColor::getItemTintColor, Items.WRITABLE_BOOK);
-        ColorProviderRegistry.ITEM.register(BookColor::getItemTintColor, Items.WRITTEN_BOOK);
 
         ScholarClient.KeyMappings.register(KeyBindingHelper::registerKeyBinding);
 

@@ -54,7 +54,7 @@ public class ChiseledBookshelfTooltip {
         int x = minecraft.getWindow().getGuiScaledWidth() / 2 + 16;
         int y = minecraft.getWindow().getGuiScaledHeight() / 2 - 9;
 
-        TooltipRenderUtil.renderTooltipBackground(guiGraphics, x, y, 18, 18, 400);
+        TooltipRenderUtil.renderTooltipBackground(guiGraphics, x, y, 18, 18, 400, null);
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(0, 0, 400);

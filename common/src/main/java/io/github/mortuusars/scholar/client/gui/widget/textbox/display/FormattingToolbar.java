@@ -9,6 +9,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -184,8 +185,9 @@ public class FormattingToolbar {
                 }
             }
 
-            guiGraphics.blit(TEXTURE, x + button.area.getX(), y + button.area.getY(),
-                    button.uv.x, button.uv.y + vOffset, button.area.getWidth(), button.area.getHeight());
+            guiGraphics.blit(RenderType::guiTextured, TEXTURE, x + button.area.getX(), y + button.area.getY(),
+                    button.uv.x, button.uv.y + vOffset,
+                  button.area.getWidth(), button.area.getHeight(), 256, 256);
         }
 
         if (hoveredButton != null) {
@@ -217,6 +219,12 @@ public class FormattingToolbar {
         }
 
         return false;
+    }
+
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return isVisible() && shouldShow()
+              && mouseX >= x && mouseX < x + width
+              && mouseY >= y && mouseY < y + height;
     }
 
     public interface Positioner {

@@ -2,7 +2,6 @@ package io.github.mortuusars.scholar.neoforge.event;
 
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
-import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.BookshelfDefaultColorsReloadListener;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.BookshelfItemColorsReloadListener;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.ChiseledBookshelfTooltip;
@@ -19,7 +18,6 @@ import net.minecraft.server.packs.repository.BuiltInPackSource;
 import net.minecraft.server.packs.repository.KnownPack;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
-import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
@@ -34,7 +32,7 @@ import java.util.Optional;
 
 @SuppressWarnings("unused")
 public class ClientEvents {
-    @EventBusSubscriber(modid = Scholar.ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Scholar.ID, value = Dist.CLIENT)
     public static class ModBus {
         @SubscribeEvent
         public static void clientSetup(FMLClientSetupEvent event) {
@@ -51,21 +49,15 @@ public class ClientEvents {
         }
 
         @SubscribeEvent
-        public static void registerClientReloadListeners(RegisterClientReloadListenersEvent event) {
-            event.registerReloadListener(new BookshelfDefaultColorsReloadListener());
-            event.registerReloadListener(new BookshelfItemColorsReloadListener());
+        public static void registerClientReloadListeners(AddClientReloadListenersEvent event) {
+            event.addListener(BookshelfDefaultColorsReloadListener.ID, new BookshelfDefaultColorsReloadListener());
+            event.addListener(BookshelfItemColorsReloadListener.ID, new BookshelfItemColorsReloadListener());
         }
 
         @SubscribeEvent
         public static void registerMenuScreens(RegisterMenuScreensEvent event) {
             event.register(Scholar.MenuTypes.LECTERN_SPREAD_BOOK_VIEW.get(), LecternSpreadBookViewScreen::new);
             event.register(Scholar.MenuTypes.LECTERN_SPREAD_BOOK_EDIT.get(), LecternSpreadBookEditScreen::new);
-        }
-
-        @SubscribeEvent
-        public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
-            event.register(BookColor::getItemTintColor, Items.WRITABLE_BOOK);
-            event.register(BookColor::getItemTintColor, Items.WRITTEN_BOOK);
         }
 
         @SubscribeEvent
@@ -96,10 +88,7 @@ public class ClientEvents {
                 }
             });
         }
-    }
 
-    @EventBusSubscriber(modid = Scholar.ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
-    public static class ForgeBus {
         @SubscribeEvent
         public static void onRenderGuiPost(RenderGuiEvent.Post event) {
             ChiseledBookshelfTooltip.renderSlotTooltip(event.getGuiGraphics(), event.getPartialTick());

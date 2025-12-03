@@ -1,46 +1,33 @@
 package io.github.mortuusars.scholar.client.chiseled_bookshelf;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.JsonOps;
+import io.github.mortuusars.scholar.Scholar;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class BookshelfDefaultColorsReloadListener extends SimpleJsonResourceReloadListener {
-    private static final Logger LOGGER = LogUtils.getLogger();
-
-    public static final Codec<Map<ResourceLocation, BookshelfDefaultColors>> CODEC =
-          Codec.unboundedMap(ResourceLocation.CODEC, BookshelfDefaultColors.CODEC);
+public class BookshelfDefaultColorsReloadListener extends SimpleJsonResourceReloadListener<Map<ResourceLocation, BookshelfDefaultColors>> {
+    public static final ResourceLocation ID = Scholar.resource("bookshelf_default_colors");
 
     public BookshelfDefaultColorsReloadListener() {
-        super(new Gson(), "chiseled_bookshelf/default_colors");
+        super(Codec.unboundedMap(ResourceLocation.CODEC, BookshelfDefaultColors.CODEC),
+              FileToIdConverter.json("chiseled_bookshelf/default_colors"));
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, JsonElement> map, ResourceManager resourceManager, ProfilerFiller profiler) {
-        Map<ResourceLocation, BookshelfDefaultColors> bookshelfColors = new HashMap<>();
+    protected void apply(Map<ResourceLocation, Map<ResourceLocation, BookshelfDefaultColors>> map,
+                         ResourceManager resourceManager, ProfilerFiller profiler) {
+        Map<ResourceLocation, BookshelfDefaultColors> result = new HashMap<>();
 
-        for (Map.Entry<ResourceLocation, JsonElement> entry : map.entrySet()) {
-            ResourceLocation location = entry.getKey();
-            if (!location.getNamespace().equals("scholar")) {
-                LOGGER.info("Ignoring chiseled bookshelf default color definition '{}' because it's not in Scholar namespace.", location);
-                continue;
-            }
-
-            CODEC.decode(JsonOps.INSTANCE, entry.getValue())
-                  .ifError(err -> LOGGER.error("Contents of '{}' cannot be parsed as a valid id to color list map: {}", location, err))
-                  .ifSuccess(data -> bookshelfColors.putAll(data.getFirst()));
+        for (Map<ResourceLocation, BookshelfDefaultColors> value : map.values()) {
+            result.putAll(value);
         }
 
-        ChiseledBookshelfColors.DEFAULT_SLOT_COLORS = ImmutableMap.copyOf(bookshelfColors);
+        ChiseledBookshelfColors.DEFAULT_SLOT_COLORS = result;
     }
 }
