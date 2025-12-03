@@ -1,7 +1,10 @@
 # Changelog
 
-## 1.1.10 - 1.21.4 - 2025-12-03
+## 1.1.11 - 1.21.4
 - Port to 1.21.4
+
+## 1.1.11 - 2025-12-04
+- Removed unused book models and textures (from the old book coloring system) 
 
 ## 1.1.10 - 2025-12-03
 - Added translations to config options
