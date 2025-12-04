@@ -485,7 +485,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     protected void sendChanges(@Nullable String title) {
-        int slotId = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : 40;
+        int slotId = hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : 40;
         Objects.requireNonNull(minecraft.getConnection()).send(
               new ServerboundEditBookPacket(slotId, this.pages, Optional.ofNullable(title)));
     }
@@ -644,7 +644,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
                     Files.writeString(Path.of(filePath), content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                     MutableComponent filePathComponent = Component.literal(filePath).withStyle(Style.EMPTY
                           .withUnderlined(true)
-                          .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, filePath)));
+                          .withClickEvent(new ClickEvent.OpenFile(filePath)));
                     Minecraft.getInstance().execute(() -> player.displayClientMessage(
                           Component.translatable("gui.scholar.export_book.success")
                                 .append(filePathComponent), false));

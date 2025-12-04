@@ -1,10 +1,7 @@
 package io.github.mortuusars.scholar.client.gui.screen.view;
 
-import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.item.ItemStack;
@@ -15,9 +12,6 @@ import net.minecraft.world.item.component.WrittenBookContent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.IntFunction;
 
 public interface BookViewAccess {
     BookViewAccess EMPTY = new BookViewAccess() {
@@ -44,32 +38,6 @@ public interface BookViewAccess {
             return new WritableBookAccess(itemStack);
         } else {
             return EMPTY;
-        }
-    }
-
-    static List<String> loadPages(CompoundTag compoundTag) {
-        ImmutableList.Builder<String> builder = ImmutableList.builder();
-        Objects.requireNonNull(builder);
-        loadPages(compoundTag, builder::add);
-        return builder.build();
-    }
-
-    static void loadPages(CompoundTag compoundTag, Consumer<String> consumer) {
-        ListTag listTag = compoundTag.getList("pages", 8).copy();
-        IntFunction<String> intFunction;
-        if (Minecraft.getInstance().isTextFilteringEnabled() && compoundTag.contains("filtered_pages", 10)) {
-            CompoundTag compoundTag2 = compoundTag.getCompound("filtered_pages");
-            intFunction = (ix) -> {
-                String string = String.valueOf(ix);
-                return compoundTag2.contains(string) ? compoundTag2.getString(string) : listTag.getString(ix);
-            };
-        } else {
-            Objects.requireNonNull(listTag);
-            intFunction = listTag::getString;
-        }
-
-        for (int i = 0; i < listTag.size(); ++i) {
-            consumer.accept(intFunction.apply(i));
         }
     }
 

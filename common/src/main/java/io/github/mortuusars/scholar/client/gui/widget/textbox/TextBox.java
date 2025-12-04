@@ -218,7 +218,6 @@ public class TextBox extends AbstractWidget {
         } else {
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate(0, 0, 50);
-            RenderSystem.disableBlend();
             guiGraphics.fill(
                     getX() + cursor.x,
                     getY() + cursor.y - 1,

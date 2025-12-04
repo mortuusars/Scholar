@@ -12,6 +12,6 @@ public class BookColor {
     }
 
     public static void set(ItemStack stack, int color) {
-        stack.set(DataComponents.DYED_COLOR, new DyedItemColor(color, color != DEFAULT));
+        stack.set(DataComponents.DYED_COLOR, new DyedItemColor(color));
     }
 }

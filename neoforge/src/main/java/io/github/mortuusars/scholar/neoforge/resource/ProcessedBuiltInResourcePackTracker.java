@@ -18,10 +18,10 @@ public class ProcessedBuiltInResourcePackTracker {
             if (!file.exists()) return;
             try {
                 CompoundTag data = NbtIo.readCompressed(file.toPath(), NbtAccounter.unlimitedHeap());
-                ListTag values = data.getList("packs", Tag.TAG_STRING);
+                ListTag values = data.getListOrEmpty("packs");
 
                 for (int i = 0; i < values.size(); i++) {
-                    savedPacks.add(values.getString(i));
+                    values.getString(i).ifPresent(savedPacks::add);
                 }
             } catch (IOException e) {
                 Scholar.LOGGER.warn("[Scholar Default Built-in Resource Packs] Could not read {}", file.getAbsolutePath(), e);

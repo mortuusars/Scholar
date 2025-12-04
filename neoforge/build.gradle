@@ -51,13 +51,7 @@ dependencies {
     modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
 
     modRuntimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}") { transitive = false }
-    modRuntimeOnly("curse.maven:jade-324717:${jade_neoforge_id}") { transitive = false }
-
-    // modRuntimeOnly("curse.maven:embeddium-908741:6118392")
-
-    // modImplementation("curse.maven:woodster-869951:6425772")
-    // modCompileOnly("curse.maven:blueprint-382216:6505319")
-    // modCompileOnly("curse.maven:woodworks-543610:6499291")
+    modRuntimeOnly("maven.modrinth:jade:${jade_neoforge_version}") { transitive = false }
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')

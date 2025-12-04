@@ -51,12 +51,6 @@ dependencies {
 
     modImplementation("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_port_version}")
 
-    modRuntimeOnly("maven.modrinth:sodium:mc1.21.4-0.6.13-fabric")
-    modRuntimeOnly("maven.modrinth:modmenu:13.0.3")
-
-    // modCompileOnly("maven.modrinth:more-chiseled-bookshelf-variants:Mv3952ns")
-    // modRuntimeOnly("maven.modrinth:more-chiseled-bookshelf-variants:Mv3952ns")
-
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 }
