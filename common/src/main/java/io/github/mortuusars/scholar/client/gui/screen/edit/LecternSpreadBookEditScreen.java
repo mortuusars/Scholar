@@ -154,7 +154,7 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
 
         if ((isRightPage(page) && isHoveringOverLeftPageNumber(x, y))
                 || (isLeftPage(page) && isHoveringOverRightPageNumber(x, y))) {
-            guiGraphics.renderTooltip(font, Component.translatable("gui.scholar.lectern.set_current_page"), x, y);
+            guiGraphics.setTooltipForNextFrame(font, Component.translatable("gui.scholar.lectern.set_current_page"), x, y);
         }
     }
 

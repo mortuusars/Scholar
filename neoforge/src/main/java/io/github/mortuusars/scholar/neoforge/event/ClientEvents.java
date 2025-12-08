@@ -38,7 +38,6 @@ public class ClientEvents {
         public static void clientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
                 ScholarClient.init();
-                //noinspection deprecation
                 ChiseledBookshelfColors.setBookshelfRenderLayer(ItemBlockRenderTypes::setRenderLayer);
             });
         }

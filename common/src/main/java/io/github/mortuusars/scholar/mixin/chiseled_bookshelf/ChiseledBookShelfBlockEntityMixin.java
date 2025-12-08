@@ -1,13 +1,16 @@
 package io.github.mortuusars.scholar.mixin.chiseled_bookshelf;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
+import net.minecraft.world.level.storage.TagValueOutput;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,11 +31,9 @@ public abstract class ChiseledBookShelfBlockEntityMixin extends BlockEntityParen
     }
 
     @Override
-    protected CompoundTag onGetUpdateTag(CompoundTag tag) {
-        if (level != null) {
-            ContainerHelper.saveAllItems(tag, this.items, level.registryAccess());
-        }
-
-        return tag;
+    protected CompoundTag onGetUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+        TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registries);
+        ContainerHelper.saveAllItems(output, this.items, true);
+        return output.buildResult();
     }
 }

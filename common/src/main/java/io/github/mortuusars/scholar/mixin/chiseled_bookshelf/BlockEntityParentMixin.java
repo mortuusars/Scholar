@@ -1,6 +1,8 @@
 package io.github.mortuusars.scholar.mixin.chiseled_bookshelf;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.sugar.Local;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -16,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.At;
  * could modify methods in a (hopefully) more compatible with other mods way.
  */
 @Mixin(BlockEntity.class)
-public class BlockEntityParentMixin {
+public abstract class BlockEntityParentMixin {
     @Shadow @Nullable protected Level level;
 
     @ModifyReturnValue(method = "getUpdatePacket", at = @At("RETURN"))
@@ -25,7 +27,7 @@ public class BlockEntityParentMixin {
     }
 
     @ModifyReturnValue(method = "getUpdateTag", at = @At("RETURN"))
-    protected CompoundTag onGetUpdateTag(CompoundTag original) {
+    protected CompoundTag onGetUpdateTag(CompoundTag original, @Local(argsOnly = true) HolderLookup.Provider registries) {
         return original;
     }
 }

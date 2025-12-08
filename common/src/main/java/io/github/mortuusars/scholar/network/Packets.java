@@ -40,11 +40,13 @@ public class Packets {
     // --
 
     public static void sendToOtherClients(@NotNull ServerPlayer except, Packet packet) {
-        except.server.getPlayerList().getPlayers().forEach(player -> {
-            if (!player.equals(except)) {
-                sendToClient(packet, player);
-            }
-        });
+        if (except.getServer() != null) {
+            except.getServer().getPlayerList().getPlayers().forEach(player -> {
+                if (!player.equals(except)) {
+                    sendToClient(packet, player);
+                }
+            });
+        }
     }
 
     public static void sendToPlayersNear(Packet packet, ServerLevel level, @Nullable ServerPlayer excluded,

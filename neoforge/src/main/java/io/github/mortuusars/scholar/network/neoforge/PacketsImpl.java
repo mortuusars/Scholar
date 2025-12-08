@@ -1,10 +1,10 @@
 package io.github.mortuusars.scholar.network.neoforge;
 
-
 import io.github.mortuusars.scholar.network.packet.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
@@ -20,7 +20,7 @@ public class PacketsImpl {
     }
 
     public static void sendToServer(Packet packet) {
-        PacketDistributor.sendToServer(packet);
+        ClientPacketDistributor.sendToServer(packet);
     }
 
     public static void sendToClient(Packet packet, ServerPlayer player) {

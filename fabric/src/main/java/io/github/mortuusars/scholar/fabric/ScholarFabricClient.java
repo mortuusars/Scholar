@@ -10,8 +10,8 @@ import io.github.mortuusars.scholar.client.chiseled_bookshelf.ChiseledBookshelfC
 import io.github.mortuusars.scholar.client.resource.BuiltInResourcePacks;
 import io.github.mortuusars.scholar.network.fabric.FabricS2CPacketHandler;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -24,7 +24,7 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 public class ScholarFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        ChiseledBookshelfColors.setBookshelfRenderLayer(BlockRenderLayerMap.INSTANCE::putBlock);
+        ChiseledBookshelfColors.setBookshelfRenderLayer(BlockRenderLayerMap::putBlock);
         ChiseledBookshelfColors.registerBookshelfBlockColors(ColorProviderRegistry.BLOCK::register);
 
         ConfigScreenFactoryRegistry.INSTANCE.register(Scholar.ID, ConfigurationScreen::new);

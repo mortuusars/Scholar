@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow"
+    id 'com.gradleup.shadow'
 }
 
 architectury {
@@ -51,7 +51,7 @@ dependencies {
 
     modImplementation("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_port_version}")
 
-    common(project(path: ':common', configuration: 'namedElements')) { transitive false }
+    common(project(path: ':common', configuration: 'namedElements')) { transitive = false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 }
 
@@ -63,5 +63,4 @@ shadowJar {
 remapJar {
     injectAccessWidener = true
     input.set shadowJar.archiveFile
-    dependsOn shadowJar
 }

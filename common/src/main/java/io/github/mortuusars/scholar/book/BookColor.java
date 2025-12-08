@@ -12,6 +12,10 @@ public class BookColor {
     }
 
     public static void set(ItemStack stack, int color) {
-        stack.set(DataComponents.DYED_COLOR, new DyedItemColor(color));
+        if (color == DEFAULT) {
+            stack.remove(DataComponents.DYED_COLOR);
+        } else {
+            stack.set(DataComponents.DYED_COLOR, new DyedItemColor(color));
+        }
     }
 }

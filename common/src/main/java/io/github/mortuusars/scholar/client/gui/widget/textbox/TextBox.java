@@ -1,7 +1,6 @@
 package io.github.mortuusars.scholar.client.gui.widget.textbox;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.display.FormattedStringDisplayCache;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.display.FormattingToolbar;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.display.HorizontalAlignment;
@@ -18,7 +17,7 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -194,7 +193,8 @@ public class TextBox extends AbstractWidget {
             int y0 = getY() + rect.getY();
             int x1 = x0 + rect.getWidth();
             int y1 = y0 + rect.getHeight();
-            guiGraphics.fill(RenderType.guiTextHighlight(), x0, y0, x1, y1, color);
+            guiGraphics.fill(RenderPipelines.GUI_INVERT, x0, y0, x1, y1, 0xFFFFFFFF);
+            guiGraphics.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, x0, y0, x1, y1, color);
         }
     }
 
@@ -216,15 +216,12 @@ public class TextBox extends AbstractWidget {
                         color, false);
             }
         } else {
-            guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(0, 0, 50);
             guiGraphics.fill(
                     getX() + cursor.x,
                     getY() + cursor.y - 1,
                     getX() + cursor.x + 1,
                     getY() + cursor.y + font.lineHeight,
                     color);
-            guiGraphics.pose().popPose();
         }
     }
 

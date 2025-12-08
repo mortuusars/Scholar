@@ -123,7 +123,7 @@ public class LecternSpreadBookViewScreen extends SpreadBookViewScreen implements
         int page = getMenu().getPage();
         if ((isRightPage(page) && isHoveringOverLeftPageNumber(x, y))
                 || (page < getPageCount() - 1 && isLeftPage(page) && isHoveringOverRightPageNumber(x, y))) {
-            guiGraphics.renderTooltip(font, Component.translatable("gui.scholar.lectern.set_current_page"), x, y);
+            guiGraphics.setTooltipForNextFrame(font, Component.translatable("gui.scholar.lectern.set_current_page"), x, y);
         }
     }
 

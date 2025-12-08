@@ -21,7 +21,7 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
@@ -222,12 +222,12 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
         if (isToolsVisible()) {
             // Import/Export buttons BG
-            guiGraphics.blit(RenderType::guiTexturedOverlay, TEXTURE, leftPos + 295, topPos + 14, 0, 388,
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + 295, topPos + 14, 0, 388,
                   23, 48, 512, 512, bookColor);
         }
 
         // Enter Sign Mode button BG
-        guiGraphics.blit(RenderType::guiTexturedOverlay, TEXTURE, leftPos - 29, topPos + 14, 0, 360,
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos - 29, topPos + 14, 0, 360,
               29, 28, 512, 512, bookColor);
     }
 
@@ -245,7 +245,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             tooltip.add(Component.translatable("gui.scholar.tools.tooltip.paste_with_formatting"));
             tooltip.add(Component.translatable("gui.scholar.tools.tooltip.undo"));
             tooltip.add(Component.translatable("gui.scholar.tools.tooltip.redo"));
-            guiGraphics.renderTooltip(font, tooltip, Optional.empty(), mouseX, mouseY + 20);
+            guiGraphics.setTooltipForNextFrame(font, tooltip, Optional.empty(), mouseX, mouseY + 20);
         }
     }
 

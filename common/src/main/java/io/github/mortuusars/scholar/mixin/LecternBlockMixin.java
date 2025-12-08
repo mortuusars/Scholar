@@ -33,7 +33,7 @@ public abstract class LecternBlockMixin {
         ItemStack bookStack = lecternBlockEntity.getBook();
 
         if (bookStack.is(Items.WRITABLE_BOOK)) {
-            boolean hasPlayerEditing = serverPlayer.serverLevel().players().stream()
+            boolean hasPlayerEditing = serverPlayer.level().players().stream()
                     .anyMatch(pl -> pl.containerMenu instanceof LecternSpreadBookEditMenu lecternMenu
                             && lecternMenu.getLecternPos().equals(pos));
 

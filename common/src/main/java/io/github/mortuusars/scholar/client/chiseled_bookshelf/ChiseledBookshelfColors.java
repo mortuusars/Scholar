@@ -4,6 +4,7 @@ import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.book.BookColor;
 import net.minecraft.client.color.block.BlockColor;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -54,13 +55,13 @@ public class ChiseledBookshelfColors {
     // This greatly simplifies adding colored book support - any resourcepack will now just work out of the box.
     // (in the previous version each block needed to be changed manually in code, using its reference)
 
-    public static void setBookshelfRenderLayer(BiConsumer<Block, RenderType> consumer) {
+    public static void setBookshelfRenderLayer(BiConsumer<Block, ChunkSectionLayer> consumer) {
         Scholar.LOGGER.info("Scholar is setting RenderType of all 'ChiseledBookShelfBlock's " +
               "to 'cutout' so the books could have proper colors in bookshelves.");
         Scholar.LOGGER.info("If Chiseled Bookshelves do not look correctly, please report to the Scholar github.");
         BuiltInRegistries.BLOCK.stream()
               .filter(bl -> bl instanceof ChiseledBookShelfBlock)
-              .forEach(bl -> consumer.accept(bl, RenderType.cutout()));
+              .forEach(bl -> consumer.accept(bl, ChunkSectionLayer.CUTOUT));
     }
 
     public static void registerBookshelfBlockColors(BiConsumer<BlockColor, Block> consumer) {

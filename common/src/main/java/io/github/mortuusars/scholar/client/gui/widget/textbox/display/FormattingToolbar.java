@@ -5,11 +5,10 @@ import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.text.Formatting;
 import io.github.mortuusars.scholar.client.util.Pos2i;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -164,9 +163,6 @@ public class FormattingToolbar {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         if (!isVisible() || !shouldShow()) return;
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(0, 0, 500);
-
         @Nullable FormattingButton hoveredButton = null;
 
         for (FormattingButton button : buttons) {
@@ -185,7 +181,7 @@ public class FormattingToolbar {
                 }
             }
 
-            guiGraphics.blit(RenderType::guiTextured, TEXTURE, x + button.area.getX(), y + button.area.getY(),
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x + button.area.getX(), y + button.area.getY(),
                     button.uv.x, button.uv.y + vOffset,
                   button.area.getWidth(), button.area.getHeight(), 256, 256);
         }
@@ -194,10 +190,8 @@ public class FormattingToolbar {
             MutableComponent component = Component.translatable(
                             "gui.scholar.formatting." + hoveredButton.formatting.getName())
                     .append(" §8" + HOTKEYS.getOrDefault(hoveredButton.formatting.getChar(), ""));
-            guiGraphics.renderTooltip(Minecraft.getInstance().font, component, mouseX, mouseY + 20);
+            guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font, component, mouseX, mouseY + 20);
         }
-
-        guiGraphics.pose().popPose();
     }
 
     // -- Input

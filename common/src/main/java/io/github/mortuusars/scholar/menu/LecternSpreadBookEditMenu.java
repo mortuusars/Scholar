@@ -78,7 +78,7 @@ public class LecternSpreadBookEditMenu extends LecternSpreadMenu {
         if (player instanceof ServerPlayer serverPlayer
                 && player.level().getBlockEntity(getLecternPos()) instanceof LecternBlockEntity be
                 && be.hasBook()) {
-            serverPlayer.serverLevel().players().stream()
+            serverPlayer.level().players().stream()
                     .filter(pl -> !pl.equals(serverPlayer)
                             && pl.containerMenu instanceof LecternSpreadMenu lecternMenu
                             && lecternMenu.getLecternPos().equals(getLecternPos()))

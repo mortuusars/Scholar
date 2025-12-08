@@ -14,7 +14,7 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -133,11 +133,11 @@ public class BookSigningScreen extends Screen {
         renderTransparentBackground(guiGraphics);
 
         // Cover
-        guiGraphics.blit(RenderType::guiTextured, TEXTURE, leftPos, topPos,
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos,
               0, 0, imageWidth, imageHeight, textureWidth, textureHeight, bookColor);
 
         // Label
-        guiGraphics.blit(RenderType::guiTextured, TEXTURE, leftPos, topPos + 31,
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos + 31,
               0, 180, imageWidth, 76, textureWidth, textureHeight);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);

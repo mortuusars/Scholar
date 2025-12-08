@@ -14,6 +14,7 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
@@ -153,11 +154,11 @@ public abstract class SpreadBookScreen extends Screen {
 
     protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         // Cover
-        guiGraphics.blit(RenderType::guiTexturedOverlay, TEXTURE, leftPos, topPos,
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos,
               0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512, bookColor);
 
         // Paper
-        guiGraphics.blit(RenderType::guiTextured, TEXTURE, leftPos, topPos,
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos,
               0, BOOK_HEIGHT, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
     }
 
