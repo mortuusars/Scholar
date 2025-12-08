@@ -13,9 +13,9 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -84,15 +84,15 @@ public abstract class SpreadBookScreen extends Screen {
 
     protected void createPrevPageButton() {
         ImageButton prevPageButton = new ImageButton(leftPos + 12, topPos + 156, 13, 15,
-                Widgets.PREVIOUS_PAGE_SPRITES,
-                (button) -> pageBack());
+              Widgets.PREVIOUS_PAGE_SPRITES,
+              (button) -> pageBack());
         prevPageButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.previous_page")));
         this.prevPageButton = addRenderableWidget(prevPageButton);
     }
 
     protected void createNextPageButton() {
         ImageButton nextPageButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
-                Widgets.NEXT_PAGE_SPRITES, (button) -> pageForward());
+              Widgets.NEXT_PAGE_SPRITES, (button) -> pageForward());
         nextPageButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.next_page")));
         this.nextPageButton = addRenderableWidget(nextPageButton);
     }
@@ -100,8 +100,8 @@ public abstract class SpreadBookScreen extends Screen {
     protected void createBottomButtons() {
         if (Config.Client.SHOW_DONE_BUTTON.get()) {
             addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, (button) -> onClose())
-                    .bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20)
-                    .build());
+                  .bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20)
+                  .build());
         }
     }
 
@@ -129,7 +129,7 @@ public abstract class SpreadBookScreen extends Screen {
     }
 
     public int getSpreadCount() {
-        return (int)Math.ceil(getPageCount() / 2.0);
+        return (int) Math.ceil(getPageCount() / 2.0);
     }
 
     protected boolean pageBack() {
@@ -170,13 +170,13 @@ public abstract class SpreadBookScreen extends Screen {
     protected void renderLeftPageNumber(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
         String leftPageNumber = Integer.toString(currentSpread * 2 + 1);
         guiGraphics.drawString(font, leftPageNumber, leftPos + 69 + (8 - font.width(leftPageNumber) / 2),
-                topPos + 157, color, false);
+              topPos + 157, color, false);
     }
 
     protected void renderRightPageNumber(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
         String rightPageNumber = Integer.toString(currentSpread * 2 + 2);
         guiGraphics.drawString(font, rightPageNumber, leftPos + 208 + (8 - font.width(rightPageNumber) / 2),
-                topPos + 157, color, false);
+              topPos + 157, color, false);
     }
 
     protected void renderTools(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -185,30 +185,34 @@ public abstract class SpreadBookScreen extends Screen {
     // -- Input
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (ScholarClient.KeyMappings.toggleBookTools.matches(keyCode, scanCode)) {
+    public boolean keyPressed(KeyEvent event) {
+        if (ScholarClient.KeyMappings.toggleBookTools.matches(event)) {
             toggleBookTools();
             return true;
         }
 
         if (!(getFocused() instanceof TextBox)) {
-            if (Minecraft.getInstance().options.keyInventory.matches(keyCode, scanCode)) {
+            if (Minecraft.getInstance().options.keyInventory.matches(event)) {
                 this.onClose();
                 return true;
             }
 
-            if (keyCode == InputConstants.KEY_LEFT || keyCode == InputConstants.KEY_PAGEUP || Minecraft.getInstance().options.keyLeft.matches(keyCode, scanCode)) {
+            if (event.key() == InputConstants.KEY_LEFT
+                  || event.key() == InputConstants.KEY_PAGEUP
+                  || Minecraft.getInstance().options.keyLeft.matches(event)) {
                 pageBack();
                 return true;
             }
 
-            if (keyCode == InputConstants.KEY_RIGHT || keyCode == InputConstants.KEY_PAGEDOWN || Minecraft.getInstance().options.keyRight.matches(keyCode, scanCode)) {
+            if (event.key() == InputConstants.KEY_RIGHT
+                  || event.key() == InputConstants.KEY_PAGEDOWN
+                  || Minecraft.getInstance().options.keyRight.matches(event)) {
                 pageForward();
                 return true;
             }
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     // --
@@ -216,7 +220,7 @@ public abstract class SpreadBookScreen extends Screen {
     protected boolean isHovering(int x, int y, int width, int height, double mouseX, double mouseY) {
         mouseX -= this.leftPos;
         mouseY -= this.topPos;
-        return mouseX >= (double)(x - 1) && mouseX < (double)(x + width + 1) && mouseY >= (double)(y - 1) && mouseY < (double)(y + height + 1);
+        return mouseX >= (double) (x - 1) && mouseX < (double) (x + width + 1) && mouseY >= (double) (y - 1) && mouseY < (double) (y + height + 1);
     }
 
     protected boolean isHoveringOverRightPageNumber(double mouseX, double mouseY) {
@@ -237,17 +241,17 @@ public abstract class SpreadBookScreen extends Screen {
 
     protected void playButtonClickSound(float volume, float pitch) {
         Minecraft.getInstance().getSoundManager().play(
-                SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), pitch, volume));
+              SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), pitch, volume));
     }
 
     protected void playButtonClickSound(float pitch) {
         Minecraft.getInstance().getSoundManager().play(
-                SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), pitch, 0.3f));
+              SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), pitch, 0.3f));
     }
 
     protected void playButtonClickSound() {
         Minecraft.getInstance().getSoundManager().play(
-                SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1, 0.3f));
+              SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1, 0.3f));
     }
 
     protected void playPageTurnSound(float volume, float pitch) {

@@ -4,16 +4,8 @@ import io.github.mortuusars.scholar.Config;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
-import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -22,7 +14,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.OptionalInt;
 
 public class ChiseledBookshelfTooltip {
@@ -51,7 +42,7 @@ public class ChiseledBookshelfTooltip {
             return;
         }
 
-        OptionalInt hitSlot = chiseledBookShelfBlock.getHitSlot(blockHitResult, blockState);
+        OptionalInt hitSlot = chiseledBookShelfBlock.getHitSlot(blockHitResult, blockState.getValue(ChiseledBookShelfBlock.FACING));
 
         if (hitSlot.isEmpty()) return;
 
@@ -66,17 +57,7 @@ public class ChiseledBookshelfTooltip {
         TooltipRenderUtil.renderTooltipBackground(guiGraphics, x, y, 18, 18, null);
         guiGraphics.renderItem(bookStack, x + 1, y + 1);
 
-
-//        List<Component> lines = Screen.getTooltipFromItem(minecraft, bookStack);
-//        ResourceLocation style = bookStack.get(DataComponents.TOOLTIP_STYLE);
-
-//        guiGraphics.renderTooltip(minecraft.font, List.of(ClientTooltipComponent.create(Component.literal("asd").getVisualOrderText())),
-//              x + 16, y + 12, DefaultTooltipPositioner.INSTANCE, null);
-
-//        guiGraphics.renderTooltip(minecraft.font, List.of(ClientTooltipComponent.create(Component.literal("asd").getVisualOrderText())),
-//              x + 16, y + 12, DefaultTooltipPositioner.INSTANCE, null);
-
         guiGraphics.setTooltipForNextFrame(minecraft.font, bookStack, x + 16, y + 12);
-        guiGraphics.renderDeferredTooltip();
+        guiGraphics.renderDeferredElements();
     }
 }

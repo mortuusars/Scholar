@@ -1,7 +1,5 @@
 accessWidener   v2  named
 
-accessible method net/minecraft/world/level/block/ChiseledBookShelfBlock getHitSlot (Lnet/minecraft/world/phys/BlockHitResult;Lnet/minecraft/world/level/block/state/BlockState;)Ljava/util/OptionalInt;
-
 accessible field net/minecraft/world/level/block/entity/LecternBlockEntity bookAccess Lnet/minecraft/world/Container;
 accessible field net/minecraft/world/level/block/entity/LecternBlockEntity dataAccess Lnet/minecraft/world/inventory/ContainerData;
 

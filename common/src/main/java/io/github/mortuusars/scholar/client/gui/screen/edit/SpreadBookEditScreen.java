@@ -20,7 +20,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.*;
@@ -157,7 +158,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     protected void createImportExportButtons() {
         importBookButton = new ImageButton(leftPos + 297, topPos + 16, 18, 18, IMPORT_BOOK_SPRITES,
-              b -> importBook(Screen.hasShiftDown()), Component.translatable("gui.scholar.import_book"));
+              b -> importBook(minecraft.hasShiftDown()), Component.translatable("gui.scholar.import_book"));
         importBookButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.import_book")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.importBook))
               .append(CommonComponents.NEW_LINE)
@@ -165,7 +166,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         addRenderableWidget(importBookButton);
 
         exportBookButton = new ImageButton(leftPos + 297, topPos + 41, 18, 18, EXPORT_BOOK_SPRITES,
-              b -> exportBook(Screen.hasShiftDown()), Component.translatable("gui.scholar.export_book"));
+              b -> exportBook(minecraft.hasShiftDown()), Component.translatable("gui.scholar.export_book"));
         exportBookButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.export_book")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.exportBook))
               .append(CommonComponents.NEW_LINE)
@@ -252,24 +253,24 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     // -- Input
 
     @Override
-    public boolean keyPressed(int key, int scanCode, int modifiers) {
-        if (ScholarClient.KeyMappings.importBook.matches(key, scanCode)) {
+    public boolean keyPressed(KeyEvent event) {
+        if (ScholarClient.KeyMappings.importBook.matches(event)) {
             playButtonClickSound();
-            importBook(Screen.hasShiftDown());
+            importBook(event.hasShiftDown());
             return true;
         }
 
-        if (ScholarClient.KeyMappings.exportBook.matches(key, scanCode)) {
+        if (ScholarClient.KeyMappings.exportBook.matches(event)) {
             playButtonClickSound();
-            exportBook(Screen.hasShiftDown());
+            exportBook(event.hasShiftDown());
             return true;
         }
 
-        if (Screen.hasControlDown() && key == InputConstants.KEY_Z && !Screen.hasAltDown()) {
+        if (event.hasControlDown() && event.key() == InputConstants.KEY_Z && !event.hasAltDown()) {
             @Nullable Change change;
             float pitch;
 
-            if (Screen.hasShiftDown()) {
+            if (event.hasShiftDown()) {
                 change = getHistory().redo();
                 pitch = change == null ? 1.4f : 0.8f;
             } else {
@@ -282,35 +283,35 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         }
 
         if ((!(getFocused() instanceof TextBox textBox) || !textBox.getEditor().isSelecting())
-              && key == InputConstants.KEY_C && Screen.hasControlDown() && !Screen.hasAltDown()) {
-            String bookContents = getBookContents(Screen.hasShiftDown());
+              && event.key() == InputConstants.KEY_C && event.hasControlDown() && !event.hasAltDown()) {
+            String bookContents = getBookContents(event.hasShiftDown());
             Minecraft.getInstance().keyboardHandler.setClipboard(bookContents);
             return true;
         }
 
-        if (Screen.hasControlDown() && Screen.hasShiftDown() && key == InputConstants.KEY_INSERT) {
-            insertEmptyPage(Screen.hasAltDown() ? Spread.Side.RIGHT : Spread.Side.LEFT);
+        if (event.hasControlDown() && event.hasShiftDown() && event.key() == InputConstants.KEY_INSERT) {
+            insertEmptyPage(event.hasAltDown() ? Spread.Side.RIGHT : Spread.Side.LEFT);
             return true;
         }
 
-        if (Screen.hasControlDown() && Screen.hasShiftDown() && key == InputConstants.KEY_DELETE) {
-            removePage(Screen.hasAltDown() ? Spread.Side.RIGHT : Spread.Side.LEFT);
+        if (event.hasControlDown() && event.hasShiftDown() && event.key() == InputConstants.KEY_DELETE) {
+            removePage(event.hasAltDown() ? Spread.Side.RIGHT : Spread.Side.LEFT);
             return true;
         }
 
-        return super.keyPressed(key, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
         int x = width - 12;
         int y = 6;
-        if (mouseX >= x - 3 && mouseX < x + 12 + 3 && mouseY >= y - 3 && mouseY < y + 12) {
+        if (event.x() >= x - 3 && event.x() < x + 12 + 3 && event.y() >= y - 3 && event.y() < y + 12) {
             toggleBookTools();
             return true;
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, isDoubleClick);
     }
 
     // --

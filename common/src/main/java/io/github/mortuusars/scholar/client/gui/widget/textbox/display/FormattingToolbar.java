@@ -7,6 +7,8 @@ import io.github.mortuusars.scholar.client.gui.widget.textbox.text.Formatting;
 import io.github.mortuusars.scholar.client.util.Pos2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
@@ -196,14 +198,14 @@ public class FormattingToolbar {
 
     // -- Input
 
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
         return false;
     }
 
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isVisible() && shouldShow() && button == InputConstants.MOUSE_BUTTON_LEFT) {
+    public boolean mouseClicked(MouseButtonEvent event) {
+        if (isVisible() && shouldShow() && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             for (FormattingButton formattingButton : buttons) {
-                if (formattingButton.isHovering((int) (mouseX - x), (int) (mouseY - y))) {
+                if (formattingButton.isHovering((int) (event.x() - x), (int) (event.y() - y))) {
                     getTextBox().getEditor().applyFormatting(Formatting.of(formattingButton.formatting()));
                     Minecraft.getInstance().getSoundManager().play(
                             SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1, 0.3f));

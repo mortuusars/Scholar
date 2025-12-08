@@ -37,7 +37,7 @@ public class ScholarNeoForge {
         RegisterImpl.PARTICLE_TYPES.register(modEventBus);
         RegisterImpl.CUSTOM_STATS.register(modEventBus);
 
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FMLEnvironment.getDist().isClient()) {
             ScholarNeoForgeClient.init(container);
         }
     }

@@ -7,9 +7,9 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.util.Mth;
-import net.minecraft.util.StringUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -152,8 +152,8 @@ public class FormattedStringEditor {
 
     public void selectWord(int index) {
         setSelectionRange(
-                StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), -1, index, false),
-                StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), 1, index, false));
+              StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), -1, index, false),
+              StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), 1, index, false));
     }
 
     public String getSelectedString(boolean withFormatting) {
@@ -166,8 +166,8 @@ public class FormattedStringEditor {
 
     private boolean suppressNextCharTyped = false;
 
-    public boolean keyPressed(int key) {
-        if (onKeyPressed(key)) {
+    public boolean keyPressed(KeyEvent event) {
+        if (onKeyPressed(event)) {
             suppressNextCharTyped = true;
             return true;
         }
@@ -175,54 +175,54 @@ public class FormattedStringEditor {
         return false;
     }
 
-    private boolean onKeyPressed(int key) {
-        if (Screen.isSelectAll(key)) {
+    private boolean onKeyPressed(KeyEvent event) {
+        if (event.isSelectAll()) {
             selectAll();
             return true;
         }
-        if (key == InputConstants.KEY_C && Screen.hasControlDown() && !Screen.hasAltDown()) {
-            copy(Screen.hasShiftDown());
+        if (event.key() == InputConstants.KEY_C && event.hasControlDown() && !event.hasAltDown()) {
+            copy(event.hasShiftDown());
             return true;
         }
-        if (key == InputConstants.KEY_V && Screen.hasControlDown() && !Screen.hasAltDown()) {
-            paste(Screen.hasShiftDown());
+        if (event.key() == InputConstants.KEY_V && event.hasControlDown() && !event.hasAltDown()) {
+            paste(event.hasShiftDown());
             return true;
         }
-        if (key == InputConstants.KEY_X && Screen.hasControlDown() && !Screen.hasAltDown()) {
-            cut(Screen.hasShiftDown());
+        if (event.key() == InputConstants.KEY_X && event.hasControlDown() && !event.hasAltDown()) {
+            cut(event.hasShiftDown());
             return true;
         }
-        CursorStep cursorStep = Screen.hasControlDown() ? CursorStep.WORD : CursorStep.CHARACTER;
-        if (key == InputConstants.KEY_BACKSPACE) {
+        CursorStep cursorStep = event.hasControlDown() ? CursorStep.WORD : CursorStep.CHARACTER;
+        if (event.key() == InputConstants.KEY_BACKSPACE) {
             removeFromCursor(-1, cursorStep);
             return true;
         }
-        if (key == InputConstants.KEY_DELETE) {
+        if (event.key() == InputConstants.KEY_DELETE) {
             removeFromCursor(1, cursorStep);
             return true;
         }
-        if (key == InputConstants.KEY_LEFT) {
-            moveCursorBy(-1, Screen.hasShiftDown(), cursorStep);
+        if (event.key() == InputConstants.KEY_LEFT) {
+            moveCursorBy(-1, event.hasShiftDown(), cursorStep);
             return true;
         }
-        if (key == InputConstants.KEY_RIGHT) {
-            moveCursorBy(1, Screen.hasShiftDown(), cursorStep);
+        if (event.key() == InputConstants.KEY_RIGHT) {
+            moveCursorBy(1, event.hasShiftDown(), cursorStep);
             return true;
         }
-        if (key == InputConstants.KEY_HOME) {
-            setCursorToStart(Screen.hasShiftDown());
+        if (event.key() == InputConstants.KEY_HOME) {
+            setCursorToStart(event.hasShiftDown());
             return true;
         }
-        if (key == InputConstants.KEY_END) {
-            setCursorToEnd(Screen.hasShiftDown());
+        if (event.key() == InputConstants.KEY_END) {
+            setCursorToEnd(event.hasShiftDown());
             return true;
         }
-        if (key == InputConstants.KEY_RETURN || key == InputConstants.KEY_NUMPADENTER) {
+        if (event.key() == InputConstants.KEY_RETURN || event.key() == InputConstants.KEY_NUMPADENTER) {
             insertTextAtCursor("\n");
             return true;
         }
 
-        @Nullable Formatting formatting = handleFormattingKeys(key);
+        @Nullable Formatting formatting = handleFormattingKeys(event);
         if (formatting != null) {
             applyFormatting(formatting);
             return true;
@@ -231,9 +231,9 @@ public class FormattedStringEditor {
         return false;
     }
 
-    protected Formatting handleFormattingKeys(int key) {
-        if (Screen.hasControlDown() && !Screen.hasShiftDown() && !Screen.hasAltDown()) {
-            return switch (key) {
+    protected Formatting handleFormattingKeys(KeyEvent event) {
+        if (event.hasControlDown() && !event.hasShiftDown() && !event.hasAltDown()) {
+            return switch (event.key()) {
                 case InputConstants.KEY_1 -> Formatting.of(Formatting.Color.BLACK);
                 case InputConstants.KEY_2 -> Formatting.of(Formatting.Color.DARK_BLUE);
                 case InputConstants.KEY_3 -> Formatting.of(Formatting.Color.DARK_GREEN);
@@ -253,8 +253,8 @@ public class FormattedStringEditor {
             };
         }
 
-        if (Screen.hasControlDown() && Screen.hasShiftDown() && !Screen.hasAltDown()) {
-            return switch (key) {
+        if (event.hasControlDown() && event.hasShiftDown() && !event.hasAltDown()) {
+            return switch (event.key()) {
                 case InputConstants.KEY_1 -> Formatting.of(Formatting.Color.DARK_GRAY);
                 case InputConstants.KEY_2 -> Formatting.of(Formatting.Color.BLUE);
                 case InputConstants.KEY_3 -> Formatting.of(Formatting.Color.GREEN);
@@ -289,10 +289,10 @@ public class FormattedStringEditor {
         }
     }
 
-    public boolean charTyped(char character) {
+    public boolean charTyped(CharacterEvent event) {
         return !suppressNextCharTyped
-                && StringUtil.isAllowedChatCharacter(character)
-                && insertTextAtCursor(Character.toString(character));
+              && event.isAllowedChatCharacter()
+              && insertTextAtCursor(event.codepointAsString());
     }
 
     public void cut(boolean withFormatting) {
@@ -407,7 +407,7 @@ public class FormattedStringEditor {
 
     public enum CursorStep {
         CHARACTER,
-        WORD;
+        WORD
     }
 
     public interface Validator {

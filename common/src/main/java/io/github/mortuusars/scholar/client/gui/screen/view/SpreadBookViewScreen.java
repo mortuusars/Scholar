@@ -3,6 +3,7 @@ package io.github.mortuusars.scholar.client.gui.screen.view;
 import com.mojang.datafixers.util.Pair;
 import io.github.mortuusars.scholar.client.gui.screen.SpreadBookScreen;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.Style;
@@ -104,15 +105,17 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
 
     // --
 
-    public boolean mouseClicked(double x, double y, int button) {
-        if (button == 0) {
-            Style style = this.getClickedComponentStyleAt(x, y);
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
+        if (event.button() == 0) {
+            Style style = this.getClickedComponentStyleAt(event.x(), event.y());
             if (style != null && this.handleComponentClicked(style)) {
                 return true;
             }
         }
 
-        return super.mouseClicked(x, y, button);
+        return super.mouseClicked(event, isDoubleClick);
     }
 
     public boolean handleComponentClicked(Style style) {

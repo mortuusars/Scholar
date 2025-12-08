@@ -7,6 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -128,15 +129,15 @@ public class LecternSpreadBookViewScreen extends SpreadBookViewScreen implements
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
         int page = getMenu().getPage();
-        if (isRightPage(page) && isHoveringOverLeftPageNumber(mouseX, mouseY)) {
+        if (isRightPage(page) && isHoveringOverLeftPageNumber(event.x(), event.y())) {
             sendButtonClick(LecternMenu.BUTTON_PAGE_JUMP_RANGE_START + page - 1);
-        } else if (page < getPageCount() - 1 && isLeftPage(page) && isHoveringOverRightPageNumber(mouseX, mouseY)) {
+        } else if (page < getPageCount() - 1 && isLeftPage(page) && isHoveringOverRightPageNumber(event.x(), event.y())) {
             sendButtonClick(LecternMenu.BUTTON_PAGE_JUMP_RANGE_START + page + 1);
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, isDoubleClick);
     }
 
     // --

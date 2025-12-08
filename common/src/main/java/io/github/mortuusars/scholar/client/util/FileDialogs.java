@@ -43,7 +43,7 @@ public class FileDialogs {
     }
 
     private static @Nullable PointerBuffer createFiltersBuffer(String[] filters, MemoryStack stack) {
-        if (Minecraft.ON_OSX || filters.length == 0) { // MacOS has some issues with filters. It's better to not use them at all right now.
+        if (filters.length == 0) { // MacOS has some issues with filters. It's better to not use them at all right now.
             return null;
         }
 

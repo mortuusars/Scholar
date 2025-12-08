@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar.client.gui.widget.textbox;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.display.FormattedStringDisplayCache;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.display.FormattingToolbar;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.display.HorizontalAlignment;
@@ -16,6 +17,9 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -233,10 +237,10 @@ public class TextBox extends AbstractWidget {
     // -- Input
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
         if (!isFocused() || !isActive() || !visible) return false;
 
-        if (handleKeyPressed(keyCode, scanCode, modifiers)) {
+        if (handleKeyPressed(event)) {
             lastActionTime = System.currentTimeMillis();
             onTextChanged().accept(getEditor().getString());
             refreshDisplayCache();
@@ -246,28 +250,29 @@ public class TextBox extends AbstractWidget {
         return false;
     }
 
-    protected boolean handleKeyPressed(int keyCode, int scanCode, int modifiers) {
-        if (getFormattingToolbar().keyPressed(keyCode, scanCode, modifiers)) {
+    protected boolean handleKeyPressed(KeyEvent event) {
+        if (getFormattingToolbar().keyPressed(event)) {
             return true;
-        } else if (keyCode == InputConstants.KEY_UP) {
+        } else if (event.key() == InputConstants.KEY_UP) {
             changeLine(-1);
             return true;
-        } else if (keyCode == InputConstants.KEY_DOWN) {
+        } else if (event.key() == InputConstants.KEY_DOWN) {
             changeLine(1);
             return true;
-        } else if (keyCode == InputConstants.KEY_HOME) {
+        } else if (event.key() == InputConstants.KEY_HOME) {
             keyHome();
             return true;
-        } else if (keyCode == InputConstants.KEY_END) {
+        } else if (event.key() == InputConstants.KEY_END) {
             keyEnd();
             return true;
         }
 
-        return getEditor().keyPressed(keyCode);
+        return getEditor().keyPressed(event);
     }
 
-    public boolean charTyped(char codePoint, int modifiers) {
-        if (isFocused() && getEditor().charTyped(codePoint)) {
+    @Override
+    public boolean charTyped(CharacterEvent event) {
+        if (isFocused() && getEditor().charTyped(event)) {
             lastActionTime = System.currentTimeMillis();
             onTextChanged().accept(getEditor().getString());
             refreshDisplayCache();
@@ -283,35 +288,35 @@ public class TextBox extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
         if (!isActive() || !visible) return false;
 
-        if (getFormattingToolbar().mouseClicked(mouseX, mouseY, button)) {
+        if (getFormattingToolbar().mouseClicked(event)) {
             refreshDisplayCache();
             onTextChanged().accept(getEditor().getString());
             canDrag = false;
             return true;
         }
 
-        if (isHovered && button == InputConstants.MOUSE_BUTTON_LEFT) {
+        if (isHovered && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             long currentTime = System.currentTimeMillis();
             FormattedStringDisplayCache display = getDisplayCache();
 
-            int indexAtMousePos = display.getCharIndexAtPosition(font, (int) (mouseX - getX()), (int) (mouseY - getY()));
+            int indexAtMousePos = display.getCharIndexAtPosition(font, (int) (event.x() - getX()), (int) (event.y() - getY()));
 
-            if (Math.abs(lastClickPos.x - (int) mouseX) < 4 && Math.abs(lastClickPos.y - (int) mouseY) < 4 && currentTime - lastActionTime < 250L) {
+            if (Math.abs(lastClickPos.x - (int) event.x()) < 4 && Math.abs(lastClickPos.y - (int) event.y()) < 4 && currentTime - lastActionTime < 250L) {
                 if (!getEditor().isSelecting()) {
                     getEditor().selectWord(indexAtMousePos);
                 } else {
                     getEditor().selectAll();
                 }
             } else {
-                getEditor().setCursorPos(indexAtMousePos, Screen.hasShiftDown());
+                getEditor().setCursorPos(indexAtMousePos, Minecraft.getInstance().hasShiftDown());
             }
 
             refreshDisplayCache();
 
-            lastClickPos = new Pos2i((int) mouseX, (int) mouseY);
+            lastClickPos = new Pos2i((int) event.x(), (int) event.y());
             lastActionTime = currentTime;
             canDrag = true;
             return true;
@@ -321,10 +326,10 @@ public class TextBox extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (button == 0 && canDrag) {
+    public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
+        if (event.button() == 0 && canDrag) {
             FormattedStringDisplayCache display = getDisplayCache();
-            int indexAtMousePos = display.getCharIndexAtPosition(font, (int) (mouseX - getX()), (int) (mouseY - getY()));
+            int indexAtMousePos = display.getCharIndexAtPosition(font, (int) (event.x() + mouseX - getX()), (int) (event.y() + mouseY - getY()));
             getEditor().setCursorPos(indexAtMousePos, true);
             refreshDisplayCache();
             return true;
@@ -340,28 +345,28 @@ public class TextBox extends AbstractWidget {
         int y = cursor.y + (font.lineHeight * yChange);
         int index = getDisplayCache().getCharIndexAtPosition(font, x, y);
 
-        getEditor().setCursorPos(index, Screen.hasShiftDown());
+        getEditor().setCursorPos(index, Minecraft.getInstance().hasShiftDown());
     }
 
     public void keyHome() {
-        if (Screen.hasControlDown()) {
-            getEditor().setCursorToStart(Screen.hasShiftDown());
+        if (Minecraft.getInstance().hasControlDown()) {
+            getEditor().setCursorToStart(Minecraft.getInstance().hasShiftDown());
         } else {
             int cursorPos = getEditor().getCursorPos();
             int lineIndex = getDisplayCache().findLineIndexByCharIndex(cursorPos);
             Line line = getDisplayCache().getLine(lineIndex);
-            getEditor().setCursorPos(line.firstCharIndex(), Screen.hasShiftDown());
+            getEditor().setCursorPos(line.firstCharIndex(), Minecraft.getInstance().hasShiftDown());
         }
     }
 
     public void keyEnd() {
-        if (Screen.hasControlDown()) {
-            getEditor().setCursorToEnd(Screen.hasShiftDown());
+        if (Minecraft.getInstance().hasControlDown()) {
+            getEditor().setCursorToEnd(Minecraft.getInstance().hasShiftDown());
         } else {
             int cursorPos = getEditor().getCursorPos();
             int lineIndex = getDisplayCache().findLineIndexByCharIndex(cursorPos);
             Line line = getDisplayCache().getLine(lineIndex);
-            getEditor().setCursorPos(line.lastCharIndex() + 1, Screen.hasShiftDown());
+            getEditor().setCursorPos(line.lastCharIndex() + 1, Minecraft.getInstance().hasShiftDown());
         }
     }
 

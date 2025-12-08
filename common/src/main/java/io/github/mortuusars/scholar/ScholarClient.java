@@ -6,8 +6,6 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
-import java.awt.*;
-import java.util.Comparator;
 import java.util.function.Consumer;
 
 public class ScholarClient {
@@ -15,14 +13,17 @@ public class ScholarClient {
     }
 
     public static class KeyMappings {
+        public static final KeyMapping.Category SCHOLAR_CATEGORY = KeyMapping.Category.register(
+              Scholar.resource("key.scholar.categories.scholar"));
+
         public static KeyMapping toggleBookTools = new KeyMapping("key.scholar.toggle_book_tools",
-                InputConstants.KEY_F1, "key.scholar.categories.scholar");
+                InputConstants.KEY_F1, SCHOLAR_CATEGORY);
 
         public static KeyMapping importBook = new KeyMapping("key.scholar.import_book",
-                InputConstants.KEY_F6, "key.scholar.categories.scholar");
+                InputConstants.KEY_F6, SCHOLAR_CATEGORY);
 
         public static KeyMapping exportBook = new KeyMapping("key.scholar.export_book",
-                InputConstants.KEY_F7, "key.scholar.categories.scholar");
+                InputConstants.KEY_F7, SCHOLAR_CATEGORY);
 
         public static void register(Consumer<KeyMapping> registerFunction) {
             registerFunction.accept(toggleBookTools);
