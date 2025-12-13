@@ -1,22 +1,25 @@
 package io.github.mortuusars.scholar.client.gui.screen.view;
 
 import com.mojang.datafixers.util.Pair;
+import io.github.mortuusars.scholar.book.Spread;
 import io.github.mortuusars.scholar.client.gui.screen.SpreadBookScreen;
+import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.Style;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.*;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class SpreadBookViewScreen extends SpreadBookScreen {
     protected BookViewAccess bookAccess;
+    protected Style pageTextStyle;
     protected Pair<List<FormattedCharSequence>, List<FormattedCharSequence>> cachedPageComponents;
     protected int cachedSpread;
 
@@ -25,6 +28,7 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
         this.bookAccess = bookAccess;
         this.cachedPageComponents = Pair.of(Collections.emptyList(), Collections.emptyList());
         this.cachedSpread = -1;
+        this.pageTextStyle = Style.EMPTY.withoutShadow().withColor(textColor);
     }
 
     public BookViewAccess getBookAccess() {
@@ -44,7 +48,7 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
 
     public boolean setPage(int pageIndex) {
         pageIndex = Mth.clamp(pageIndex, 0, getBookAccess().getPageCount() - 1);
-        int spreadIndex = (int)(pageIndex / 2f);
+        int spreadIndex = (int) (pageIndex / 2f);
         if (spreadIndex != this.currentSpread) {
             this.currentSpread = spreadIndex;
             this.cachedSpread = -1;
@@ -57,126 +61,99 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         updateButtonVisibility();
-
-        renderTransparentBackground(guiGraphics);
-        renderBook(guiGraphics, mouseX, mouseY, partialTick);
-        renderPageNumbers(guiGraphics, mouseX, mouseY, partialTick, currentSpread);
-        renderTools(guiGraphics, mouseX, mouseY, partialTick);
-
-        updateAndCacheContentsIfNeeded();
-
-        renderPageContents(guiGraphics, cachedPageComponents.getFirst(), leftPos + TEXT_LEFT_X, topPos + TEXT_Y);
-        renderPageContents(guiGraphics, cachedPageComponents.getSecond(), leftPos + TEXT_RIGHT_X, topPos + TEXT_Y);
-
-        Style style = getClickedComponentStyleAt(mouseX, mouseY);
-        if (style != null) {
-            guiGraphics.renderComponentHoverEffect(font, style, mouseX, mouseY);
-        }
-
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+        visitText(guiGraphics.textRenderer(GuiGraphics.HoveredTextEffects.TOOLTIP_AND_CURSOR), Spread.Side.LEFT);
+        visitText(guiGraphics.textRenderer(GuiGraphics.HoveredTextEffects.TOOLTIP_AND_CURSOR), Spread.Side.RIGHT);
     }
 
     @Override
-    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        // Stops blur from rendering
+    public void renderBackground(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+        renderBook(guiGraphics, mouseX, mouseY, partialTick);
+        renderPageNumbers(guiGraphics, mouseX, mouseY, partialTick, currentSpread);
+        renderTools(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     protected void updateAndCacheContentsIfNeeded() {
         if (cachedSpread != currentSpread) {
-            FormattedText leftFormattedText = getBookAccess().getPage(currentSpread * 2);
-            FormattedText rightFormattedText = getBookAccess().getPageCount() > currentSpread * 2 + 1 ?
-                    getBookAccess().getPage(currentSpread * 2 + 1) : FormattedText.EMPTY;
+            Component leftComponent = ComponentUtils.mergeStyles(getBookAccess().getPage(currentSpread * 2), pageTextStyle);
+            Component rightComponent = ComponentUtils.mergeStyles(getBookAccess().getPage(currentSpread * 2 + 1), pageTextStyle);
 
             cachedPageComponents = Pair.of(
-                    font.split(leftFormattedText, TEXT_WIDTH),
-                    font.split(rightFormattedText, TEXT_WIDTH));
+                  font.split(leftComponent, TEXT_WIDTH),
+                  font.split(rightComponent, TEXT_WIDTH));
 
             cachedSpread = currentSpread;
         }
     }
 
-    protected void renderPageContents(GuiGraphics guiGraphics, List<FormattedCharSequence> lines, int x, int y) {
-        int maxLines = Math.min(TEXT_HEIGHT / font.lineHeight, lines.size());
-        for (int i = 0; i < maxLines; ++i) {
-            FormattedCharSequence text = lines.get(i);
-            guiGraphics.drawString(font, text, x, y + i * font.lineHeight, textColor, false);
-        }
-    }
-
     // --
-
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        if (event.button() == 0) {
-            Style style = this.getClickedComponentStyleAt(event.x(), event.y());
-            if (style != null && this.handleComponentClicked(style)) {
-                return true;
-            }
+        if (event.button() == 0 && handleTextClick(event, isDoubleClick)) {
+            return true;
         }
 
         return super.mouseClicked(event, isDoubleClick);
     }
 
-    public boolean handleComponentClicked(Style style) {
-        if (style == null)
-            return false;
+    protected @NotNull Boolean handleTextClick(MouseButtonEvent event, boolean isDoubleClick) {
+        return getTextSideUnderMouse(event.x(), event.y())
+              .map(side -> {
+                  var clickableStyleFinder = new ActiveTextCollector.ClickableStyleFinder(font, (int) event.x(), (int) event.y());
+                  visitText(clickableStyleFinder, side);
+                  Style style = clickableStyleFinder.result();
+                  return style != null && style.getClickEvent() != null && handleTextClickEvent(style.getClickEvent());
+              })
+              .orElse(false);
+    }
 
-        ClickEvent clickEvent = style.getClickEvent();
-        if (clickEvent == null)
-            return false;
-
-        if (clickEvent instanceof ClickEvent.ChangePage changePage) {
-            int pageIndex = changePage.page();
-            boolean pageChanged = this.setPage(pageIndex);
-            if (pageChanged) {
-                playPageTurnSound();
-            }
-            return pageChanged;
-        } else {
-            boolean handled = super.handleComponentClicked(style);
-            if (handled && clickEvent.action() == ClickEvent.Action.RUN_COMMAND) {
+    protected boolean handleTextClickEvent(@NotNull ClickEvent clickEvent) {
+        LocalPlayer localPlayer = Objects.requireNonNull(minecraft.player, "Player not available");
+        switch (clickEvent) {
+            case ClickEvent.ChangePage(int pageIndex):
+                boolean pageChanged = this.setPage(pageIndex);
+                if (pageChanged) {
+                    playPageTurnSound();
+                }
+                break;
+            case ClickEvent.RunCommand(String command):
                 this.onClose();
-            }
+                clickCommandAction(localPlayer, command, null);
+                break;
+            default:
+                defaultHandleGameClickEvent(clickEvent, minecraft, this);
+        }
 
-            return handled;
+        return true;
+    }
+
+    protected void visitText(ActiveTextCollector collector, Spread.Side side) {
+        updateAndCacheContentsIfNeeded();
+
+        List<FormattedCharSequence> lines = side == Spread.Side.LEFT
+              ? cachedPageComponents.getFirst()
+              : cachedPageComponents.getSecond();
+        int x = leftPos + (side == Spread.Side.LEFT ? TEXT_LEFT_X : TEXT_RIGHT_X);
+        int y = topPos + TEXT_Y;
+
+        int maxLines = Math.min(TEXT_HEIGHT / font.lineHeight, lines.size());
+        for (int i = 0; i < maxLines; i++) {
+            FormattedCharSequence line = lines.get(i);
+            collector.accept(x, y + i * font.lineHeight, line);
         }
     }
 
-    @Nullable
-    public Style getClickedComponentStyleAt(double mouseX, double mouseY) {
-        if (mouseY < topPos + TEXT_Y || mouseY >= topPos + TEXT_Y + TEXT_HEIGHT)
-            return null;
-
-        boolean isOverRightPage;
-        if (mouseX >= leftPos + TEXT_RIGHT_X && mouseX < leftPos + TEXT_RIGHT_X + TEXT_WIDTH) {
-            isOverRightPage = true;
-        } else if (mouseX >= leftPos + TEXT_LEFT_X && mouseX < leftPos + TEXT_LEFT_X + TEXT_WIDTH) {
-            isOverRightPage = false;
-        } else {
-            return null;
-        }
-
-        List<FormattedCharSequence> pageContents = isOverRightPage ? this.cachedPageComponents.getSecond() : this.cachedPageComponents.getFirst();
-
-        if (pageContents.isEmpty()) {
-            return null;
-        }
-
-        int x = (int)mouseX - (leftPos + (isOverRightPage ? TEXT_RIGHT_X : TEXT_LEFT_X));
-        int y = (int)mouseY - (topPos + TEXT_Y);
-
-        int linesCount = Math.min(TEXT_HEIGHT / font.lineHeight, pageContents.size());
-        if (y < font.lineHeight * linesCount + linesCount) {
-            int clickedLine = y / font.lineHeight;
-            if (clickedLine >= 0 && clickedLine < pageContents.size()) {
-                FormattedCharSequence text = pageContents.get(clickedLine);
-                return font.getSplitter().componentStyleAtWidth(text, x);
+    public Optional<Spread.Side> getTextSideUnderMouse(double mouseX, double mouseY) {
+        if (mouseY >= topPos + TEXT_Y && mouseY < topPos + TEXT_Y + TEXT_HEIGHT) {
+            if (mouseX >= leftPos + TEXT_LEFT_X && mouseX < leftPos + TEXT_LEFT_X + TEXT_WIDTH) {
+                return Optional.of(Spread.Side.LEFT);
             }
-
-            return null;
+            if (mouseX >= leftPos + TEXT_RIGHT_X && mouseX < leftPos + TEXT_RIGHT_X + TEXT_WIDTH) {
+                return Optional.of(Spread.Side.RIGHT);
+            }
         }
-
-        return null;
+        return Optional.empty();
     }
 }

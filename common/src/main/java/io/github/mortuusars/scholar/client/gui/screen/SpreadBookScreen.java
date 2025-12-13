@@ -19,14 +19,14 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 public abstract class SpreadBookScreen extends Screen {
-    public static final ResourceLocation TEXTURE = Scholar.resource("textures/gui/book.png");
+    public static final Identifier TEXTURE = Scholar.resource("textures/gui/book.png");
     public static final int BOOK_WIDTH = 295;
     public static final int BOOK_HEIGHT = 180;
     public static final int TEXT_LEFT_X = 22;
@@ -67,6 +67,11 @@ public abstract class SpreadBookScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return Config.Client.SCREEN_PAUSE.get();
+    }
+
+    @Override
+    public boolean isInGameUi() {
+        return true;
     }
 
     protected void init() {

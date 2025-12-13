@@ -10,7 +10,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.Filterable;
 import net.minecraft.server.network.FilteredText;
@@ -36,7 +36,7 @@ import java.util.function.Consumer;
  * Contains logic copied from {@link net.minecraft.server.network.ServerGamePacketListenerImpl}, which is not ideal, but hopefully it'll not cause any issues.
  */
 public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optional<String> title) implements Packet {
-    public static final ResourceLocation ID = Scholar.resource("lectern_edit_book");
+    public static final Identifier ID = Scholar.resource("lectern_edit_book");
     public static final Type<LecternEditBookC2SP> TYPE = new Type<>(ID);
 
     public static final int TITLE_MAX_CHARS = 128;

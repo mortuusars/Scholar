@@ -24,7 +24,7 @@ public class LecternSpreadBookEditMenu extends LecternSpreadMenu {
 
     public static LecternSpreadBookEditMenu fromBuffer(int containerId, Inventory inventory, RegistryFriendlyByteBuf buffer) {
         return new LecternSpreadBookEditMenu(containerId, new SimpleContainer(ItemStack.STREAM_CODEC.decode(buffer)),
-                new SimpleContainerData(1), buffer.readBlockPos());
+              new SimpleContainerData(1), buffer.readBlockPos());
     }
 
     @Override
@@ -76,19 +76,19 @@ public class LecternSpreadBookEditMenu extends LecternSpreadMenu {
         // Their view will be the same as if they'd opened Written Book.
 
         if (player instanceof ServerPlayer serverPlayer
-                && player.level().getBlockEntity(getLecternPos()) instanceof LecternBlockEntity be
-                && be.hasBook()) {
+              && player.level().getBlockEntity(getLecternPos()) instanceof LecternBlockEntity be
+              && be.hasBook()) {
             serverPlayer.level().players().stream()
-                    .filter(pl -> !pl.equals(serverPlayer)
-                            && pl.containerMenu instanceof LecternSpreadMenu lecternMenu
-                            && lecternMenu.getLecternPos().equals(getLecternPos()))
-                    .findFirst()
-                    .ifPresent(pl -> {
-                        pl.closeContainer();
-                        if (be.getBook().getItem() instanceof WritableBookItem) {
-                            Lectern.openBookEditMenu(pl, be, be.getBook());
-                        }
-                    });
+                  .filter(pl -> !pl.equals(serverPlayer)
+                        && pl.containerMenu instanceof LecternSpreadMenu lecternMenu
+                        && lecternMenu.getLecternPos().equals(getLecternPos()))
+                  .findFirst()
+                  .ifPresent(pl -> {
+                      pl.closeContainer();
+                      if (be.getBook().getItem() instanceof WritableBookItem) {
+                          Lectern.openBookEditMenu(pl, be, be.getBook());
+                      }
+                  });
         }
     }
 }

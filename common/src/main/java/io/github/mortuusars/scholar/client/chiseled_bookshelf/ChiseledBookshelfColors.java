@@ -3,11 +3,10 @@ package io.github.mortuusars.scholar.client.chiseled_bookshelf;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.book.BookColor;
 import net.minecraft.client.color.block.BlockColor;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WritableBookItem;
 import net.minecraft.world.item.WrittenBookItem;
@@ -23,8 +22,8 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 public class ChiseledBookshelfColors {
-    public static Map<ResourceLocation, BookshelfDefaultColors> DEFAULT_SLOT_COLORS = Collections.emptyMap();
-    public static Map<ResourceLocation, Integer> ITEM_COLORS = Collections.emptyMap();
+    public static Map<Identifier, BookshelfDefaultColors> DEFAULT_SLOT_COLORS = Collections.emptyMap();
+    public static Map<Identifier, Integer> ITEM_COLORS = Collections.emptyMap();
 
     public static int getSlotTintColor(BlockState state, @Nullable BlockAndTintGetter blockGetter,
                                        @Nullable BlockPos pos, int tintIndex) {
@@ -40,12 +39,12 @@ public class ChiseledBookshelfColors {
             return BookColor.of(stackInSlot);
         }
 
-        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stackInSlot.getItem());
+        Identifier itemId = BuiltInRegistries.ITEM.getKey(stackInSlot.getItem());
         return ITEM_COLORS.getOrDefault(itemId, getDefaultTintColorForSlot(state, tintIndex));
     }
 
     public static int getDefaultTintColorForSlot(BlockState state, int slot) {
-        ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+        Identifier blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
         return DEFAULT_SLOT_COLORS.getOrDefault(blockId, BookshelfDefaultColors.VANILLA).getDefaultTintForSlot(slot);
     }
 

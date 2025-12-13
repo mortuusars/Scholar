@@ -19,8 +19,9 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +29,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public class BookSigningScreen extends Screen {
-    public static final ResourceLocation TEXTURE = Scholar.resource("textures/gui/book_signing.png");
+    public static final Identifier TEXTURE = Scholar.resource("textures/gui/book_signing.png");
 
     public static final WidgetSprites SIGN_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.resource("signing/sign_button"));
     public static final WidgetSprites CANCEL_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.resource("signing/cancel_button"));
@@ -94,7 +95,7 @@ public class BookSigningScreen extends Screen {
               .setSelectionUnfocusedColor(selectionUnfocusedColor)
               .setHorizontalAlignment(HorizontalAlignment.CENTER)
               .setOnTextChanged(this::setTitleText)
-              .setTextValidator(text -> text != null && font.wordWrapHeight(text, 108) <= 9 && !text.contains("\n"));
+              .setTextValidator(text -> text != null && font.wordWrapHeight(FormattedText.of(text), 108) <= 9 && !text.contains("\n"));
         addRenderableWidget(titleTextBox);
 
         // SIGN
@@ -141,9 +142,9 @@ public class BookSigningScreen extends Screen {
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos + 31,
               0, 180, imageWidth, 76, textureWidth, textureHeight);
 
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
-
         renderLabels(guiGraphics);
+
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
     }
 
     @Override

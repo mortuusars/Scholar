@@ -2,6 +2,7 @@ package io.github.mortuusars.scholar.client.gui.screen.view;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.item.ItemStack;
@@ -19,16 +20,16 @@ public interface BookViewAccess {
             return 0;
         }
 
-        public FormattedText getPageRaw(int i) {
-            return FormattedText.EMPTY;
+        public Component getPageRaw(int i) {
+            return CommonComponents.EMPTY;
         }
     };
 
     int getPageCount();
-    FormattedText getPageRaw(int pageIndex);
+    Component getPageRaw(int pageIndex);
 
-    default FormattedText getPage(int pageIndex) {
-        return pageIndex >= 0 && pageIndex < getPageCount() ? getPageRaw(pageIndex) : FormattedText.EMPTY;
+    default Component getPage(int pageIndex) {
+        return pageIndex >= 0 && pageIndex < getPageCount() ? getPageRaw(pageIndex) : CommonComponents.EMPTY;
     }
 
     static BookViewAccess fromItem(ItemStack itemStack) {
@@ -57,8 +58,8 @@ public interface BookViewAccess {
             return 100;
         }
 
-        public FormattedText getPageRaw(int i) {
-            return i >= pages.size() ? FormattedText.EMPTY : FormattedText.of(this.pages.get(i));
+        public Component getPageRaw(int i) {
+            return i < pages.size() ? Component.literal(pages.get(i)) : CommonComponents.EMPTY;
         }
     }
 
@@ -78,8 +79,8 @@ public interface BookViewAccess {
             return this.pages.size();
         }
 
-        public @NotNull FormattedText getPageRaw(int i) {
-            return pages.get(i);
+        public @NotNull Component getPageRaw(int i) {
+            return i < pages.size() ? pages.get(i) : CommonComponents.EMPTY;
         }
     }
 }

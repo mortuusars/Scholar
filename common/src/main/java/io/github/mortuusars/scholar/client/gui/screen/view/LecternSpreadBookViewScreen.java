@@ -17,7 +17,7 @@ import net.minecraft.world.inventory.LecternMenu;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public class LecternSpreadBookViewScreen extends SpreadBookViewScreen implements MenuAccess<LecternSpreadMenu> {
+public class LecternSpreadBookViewScreen extends SpreadBookViewScreen implements MenuAccess<@NotNull LecternSpreadMenu> {
     protected final LecternSpreadMenu menu;
     protected final ContainerListener listener = new ContainerListener() {
         @Override

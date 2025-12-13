@@ -116,3 +116,8 @@ run/
 !gradle-wrapper.jar
 
 /extra-mods*/
+/fabric/fabric_client.launch
+/fabric/fabric_server.launch
+/neoforge/neoforge_client.launch
+/neoforge/neoforge_client2.launch
+/neoforge/neoforge_server.launch

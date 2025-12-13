@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.inventory.MenuType;
 import org.slf4j.Logger;
@@ -15,8 +15,8 @@ public class Scholar {
     public static final String ID = "scholar";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static ResourceLocation resource(String path) {
-        return ResourceLocation.fromNamespaceAndPath(Scholar.ID, path);
+    public static Identifier resource(String path) {
+        return Identifier.fromNamespaceAndPath(Scholar.ID, path);
     }
 
     public static void init() {
@@ -30,6 +30,7 @@ public class Scholar {
         static void init() { }
     }
 
+    @SuppressWarnings("NullableProblems")
     public static class MenuTypes {
         public static final Supplier<MenuType<LecternSpreadMenu>> LECTERN_SPREAD_BOOK_VIEW =
                 Register.menuType("lectern_spread_book_view", LecternSpreadMenu::fromBuffer);

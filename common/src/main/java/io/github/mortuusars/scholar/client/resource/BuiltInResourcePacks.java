@@ -3,7 +3,7 @@ package io.github.mortuusars.scholar.client.resource;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.integration.Mods;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ public class BuiltInResourcePacks {
         return packs;
     }
 
-    public record Pack(ResourceLocation id, Component name, Activation activation) {}
+    public record Pack(Identifier id, Component name, Activation activation) {}
 
     public record Activation(ActivationType fabric, ActivationType neoforge) {
         public Activation(ActivationType type) {

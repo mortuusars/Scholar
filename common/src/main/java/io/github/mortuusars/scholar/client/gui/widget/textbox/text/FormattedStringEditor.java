@@ -3,13 +3,14 @@ package io.github.mortuusars.scholar.client.gui.widget.textbox.text;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Scholar;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.StringSplitter;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -412,7 +413,7 @@ public class FormattedStringEditor {
 
     public interface Validator {
         static Predicate<String> fitInDimensions(Font font, int width, int height) {
-            return string -> string.length() < 1024 && font.wordWrapHeight(string, width) + (string.endsWith("\n") ? font.lineHeight : 0) <= height;
+            return string -> string.length() < 1024 && font.wordWrapHeight(FormattedText.of(string), width) + (string.endsWith("\n") ? font.lineHeight : 0) <= height;
         }
     }
 }
