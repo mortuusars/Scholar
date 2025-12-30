@@ -78,8 +78,8 @@ public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optio
         title.ifPresent(bookPages::add);
         pages().stream().limit(100L).forEach(bookPages::add);
         Consumer<List<FilteredText>> consumer = title.isPresent()
-                ? list -> signBook(serverPlayer, list.get(0), list.subList(1, list.size()), lecternBlockEntity)
-                : list -> updateBookContents(serverPlayer, list, lecternBlockEntity);
+              ? list -> signBook(serverPlayer, list.get(0), list.subList(1, list.size()), lecternBlockEntity)
+              : list -> updateBookContents(serverPlayer, list, lecternBlockEntity);
         this.filterTextPacket(serverPlayer,bookPages).thenAccept(consumer);
 
         return true;

@@ -59,9 +59,11 @@ public class PacketsImpl {
 
     private record ServerHandler(Function<FriendlyByteBuf, IPacket> decodeFunction) implements ServerPlayNetworking.PlayChannelHandler {
         @Override
-        public void receive(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf, PacketSender responseSender) {
+        public void receive(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl handler,
+                            FriendlyByteBuf buf, PacketSender responseSender) {
             IPacket packet = decodeFunction.apply(buf);
-            packet.handle(PacketDirection.TO_SERVER, player);
+            // Execute on main thread
+            server.execute(() -> packet.handle(PacketDirection.TO_SERVER, player));
         }
     }
 }
