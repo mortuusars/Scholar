@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.12 - 2026-01-09
+- Fixed signing screen not checking for title length properly, causing disconnect/crash.
+
 ## 1.1.11 - 1.21.10
 - Port to 1.21.10
 
