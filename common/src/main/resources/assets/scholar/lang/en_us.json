@@ -50,6 +50,7 @@
   "resourcepack.scholar.chiseled_bookshelf_colored_books_lolmcbv_compat.name": "Scholar: MCBV Colored Books compat",
   "resourcepack.scholar.chiseled_bookshelf_colored_books_woodster_compat.name": "Scholar: Woodster Colored Books compat",
   "resourcepack.scholar.colored_books.name": "Scholar: Colored Books",
+  "scholar.book_singing.error_title_too_long": "Title is too long",
   "scholar.configuration.book_edit_screen_show_extra_tools": "Show Extra Editing Tools",
   "scholar.configuration.book_screen_pause": "Book Screen Pauses Game",
   "scholar.configuration.book_screen_show_done_button": "Show Done Button",

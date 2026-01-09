@@ -21,6 +21,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.component.WrittenBookContent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -93,15 +94,13 @@ public class BookSigningScreen extends Screen {
                 .setSelectionUnfocusedColor(selectionUnfocusedColor)
                 .setHorizontalAlignment(HorizontalAlignment.CENTER)
                 .setOnTextChanged(this::setTitleText)
-                .setTextValidator(text -> text != null && font.wordWrapHeight(text, 108) <= 9 && !text.contains("\n"));
+                .setTextValidator(text -> text != null && text.length() <= WrittenBookContent.TITLE_MAX_LENGTH
+                      && font.wordWrapHeight(text, 108) <= 9 && !text.contains("\n"));
         addRenderableWidget(titleTextBox);
 
         // SIGN
         signButton = new ImageButton(leftPos + 46, topPos + 108, 22, 22,
                 SIGN_BUTTON_SPRITES, b -> signAlbum(), Component.translatable("book.finalizeButton"));
-        MutableComponent component = Component.translatable("book.finalizeButton")
-                .append("\n").append(Component.translatable("book.finalizeWarning").withStyle(ChatFormatting.GRAY));
-        signButton.setTooltip(Tooltip.create(component));
         addRenderableWidget(signButton);
 
         // CANCEL
@@ -111,6 +110,7 @@ public class BookSigningScreen extends Screen {
         addRenderableWidget(cancelSigningButton);
 
         setInitialFocus(titleTextBox);
+        updateButtons();
     }
 
     protected void setTitleText(FormattedString text) {
@@ -119,11 +119,24 @@ public class BookSigningScreen extends Screen {
     }
 
     protected void updateButtons() {
-        signButton.active = canSign();
+        boolean canSign = canSign();
+
+        signButton.active = canSign;
+
+        MutableComponent component = Component.translatable("book.finalizeButton")
+              .append(CommonComponents.NEW_LINE)
+              .append(Component.translatable("book.finalizeWarning").withStyle(ChatFormatting.GRAY));
+        if (!canSign && titleText.length() > WrittenBookContent.TITLE_MAX_LENGTH) {
+            component.append(CommonComponents.NEW_LINE);
+            component.append(Component.translatable("scholar.book_singing.error_title_too_long").withStyle(ChatFormatting.RED));
+        }
+
+        signButton.setTooltip(Tooltip.create(component));
     }
 
     protected boolean canSign() {
-        return !titleText.isBlank();
+        String text = titleText.trim();
+        return !text.isBlank() && text.length() <= WrittenBookContent.TITLE_MAX_LENGTH;
     }
 
     @Override

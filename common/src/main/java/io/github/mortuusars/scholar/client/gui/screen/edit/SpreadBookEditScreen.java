@@ -29,6 +29,7 @@ import net.minecraft.server.network.Filterable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.WritableBookContent;
+import net.minecraft.world.item.component.WrittenBookContent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -485,6 +486,11 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             if (!sign) {
                 title = null;
             }
+
+            if (title != null && title.length() > WrittenBookContent.TITLE_MAX_LENGTH) {
+                title = title.substring(WrittenBookContent.TITLE_MAX_LENGTH);
+            }
+
             removeEmptyTrailingPages();
             updateLocalCopy();
 

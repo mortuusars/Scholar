@@ -45,6 +45,7 @@
   "key.scholar.export_book": "Експортувати книгу",
   "key.scholar.import_book": "Імпортувати книгу",
   "key.scholar.toggle_book_tools": "Переключити додаткові інструменти",
+  "scholar.book_singing.error_title_too_long": "Назва надто довга",
   "scholar.configuration.book_edit_screen_show_extra_tools": "Додаткові інструменти редагування",
   "scholar.configuration.book_screen_pause": "Екран книги ставить гру на паузу",
   "scholar.configuration.book_screen_show_done_button": "Кнопка \"Готово\"",

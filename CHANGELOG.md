@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.12 - 2026-01-09
+- Fixed signing screen not checking for title length properly, causing disconnect/crash. 
+
 ## 1.1.11.1 - 2025-12-04
 - Removed unused item translations (from the old book coloring system) (forgot to do that in previous release)
 
