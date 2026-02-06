@@ -3,8 +3,6 @@
 ## 1.1.13 - 2026-02-06
 - Added automatic saving of changes (every 60 seconds).
 - Fixed entered text disappearing from the book when game window is resized.
-
-## 1.1.12 - 2026-01-09
 - Fixed signing screen not checking for title length properly, causing disconnect/crash.
 
 ## 1.1.11 - 1.21.10
