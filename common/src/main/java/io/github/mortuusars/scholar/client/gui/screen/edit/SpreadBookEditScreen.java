@@ -15,6 +15,7 @@ import io.github.mortuusars.scholar.util.Change;
 import io.github.mortuusars.scholar.client.util.FileDialogs;
 import io.github.mortuusars.scholar.util.History;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
@@ -50,6 +51,8 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     public static final WidgetSprites IMPORT_BOOK_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/import_book_button"));
     public static final WidgetSprites EXPORT_BOOK_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/export_book_button"));
 
+    public static final int AUTOMATIC_SAVE_INTERVAL_MS = 60000;
+
     protected final ItemStack bookStack;
     protected final InteractionHand hand;
 
@@ -57,8 +60,8 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     protected final History history = new History();
 
-    protected TextBox rightPageTextBox;
     protected TextBox leftPageTextBox;
+    protected TextBox rightPageTextBox;
 
     protected ImageButton insertEmptyPageLeftButton;
     protected ImageButton removePageLeftButton;
@@ -68,6 +71,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     protected ImageButton importBookButton;
 
     protected boolean bookModified;
+    protected long lastAutomaticSave = -1;
 
     public SpreadBookEditScreen(ItemStack bookStack, InteractionHand hand) {
         super(BookColor.of(bookStack));
@@ -198,6 +202,28 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         exportBookButton.visible = isToolsVisible();
         exportBookButton.active = pages.stream().anyMatch(p -> !p.isEmpty());
         importBookButton.visible = isToolsVisible();
+    }
+
+    @Override
+    public void resize(Minecraft minecraft, int width, int height) {
+        FormattedString leftString = leftPageTextBox.getEditor().getString();
+        FormattedString rightString = rightPageTextBox.getEditor().getString();
+        super.resize(minecraft, width, height);
+        leftPageTextBox.getEditor().setString(leftString);
+        rightPageTextBox.getEditor().setString(rightString);
+    }
+
+    @Override
+    public void tick() {
+        if (!bookModified) {
+            return;
+        }
+
+        long currentTime = Util.getMillis();
+        if (currentTime - lastAutomaticSave > AUTOMATIC_SAVE_INTERVAL_MS) {
+            saveChanges(false, null);
+            lastAutomaticSave = currentTime;
+        }
     }
 
     // -- Render
@@ -488,6 +514,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             updateLocalCopy();
 
             sendChanges(title);
+            bookModified = false;
         }
     }
 
