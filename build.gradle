@@ -228,7 +228,6 @@ publishMods {
         file project(":neoforge")
         modLoaders.add("neoforge")
         displayName = "${mod_name} - NeoForge ${minecraft_version} - ${mod_version}"
-        optional("woodster")
     }
 
     curseforge("curseforgeFabric") {
@@ -246,7 +245,6 @@ publishMods {
         file project(":neoforge")
         modLoaders.add("neoforge")
         displayName = "${mod_name} - ${mod_version}"
-        optional("woodster")
     }
 
     modrinth("modrinthFabric") {
