@@ -7,6 +7,7 @@ import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.*;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -79,9 +80,11 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
             Component leftComponent = ComponentUtils.mergeStyles(getBookAccess().getPage(currentSpread * 2), pageTextStyle);
             Component rightComponent = ComponentUtils.mergeStyles(getBookAccess().getPage(currentSpread * 2 + 1), pageTextStyle);
 
+            // Can't use font#split here, because we need to provide a default style.
+            // Without default style text after '§r' will be displayed as white with shadow.
             cachedPageComponents = Pair.of(
-                  font.split(leftComponent, TEXT_WIDTH),
-                  font.split(rightComponent, TEXT_WIDTH));
+                  Language.getInstance().getVisualOrder(font.getSplitter().splitLines(leftComponent, TEXT_WIDTH, pageTextStyle)),
+                  Language.getInstance().getVisualOrder(font.getSplitter().splitLines(rightComponent, TEXT_WIDTH, pageTextStyle)));
 
             cachedSpread = currentSpread;
         }

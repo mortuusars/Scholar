@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.14 - 2026-03-09
+- Fixed Written Book text after formatted section resetting to default style (white with shadow). 
+
 ## 1.1.13 - 2026-02-06
 - Added automatic saving of changes (every 60 seconds).
 - Fixed entered text disappearing from the book when game window is resized.
