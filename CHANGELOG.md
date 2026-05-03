@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.15 - 2026-05-03
+- Added pt_BR translation.
+
 ## 1.1.14 - 2026-03-09
 - Fixed Written Book text after formatted section resetting to default style (white with shadow). 
 
