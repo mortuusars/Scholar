@@ -95,7 +95,12 @@ public class FormattedStringDisplayCache {
             int firstLineChar = Math.max(selectionStartIndex - firstCharIndex, 0);
             int lastLineChar = Math.min(selectionEndIndex - 1 - firstCharIndex, line.getString().size() - 1);
 
-            int width = line.width(font, firstLineChar, lastLineChar);
+            int width = 0;
+            for (int i = firstLineChar; i <= lastLineChar; i++) {
+                // For some reason selections work better using per char width calculation.
+                // In other places we need to use a whole sequence of chars to properly calculate widths.
+                width += line.string.get(i).getWidth(font, false);
+            }
 
             int height = font.lineHeight;
             int x = line.x + line.widthToIndex(font, firstLineChar);
@@ -176,7 +181,7 @@ public class FormattedStringDisplayCache {
                 Char character = string.get(i);
                 int charWidth = character.getWidth(font, true);
 
-                if (character.character() == ' ') {
+                if (character.codepoint() == ' ') {
                     lastSpaceIndex = i;
                 }
 
@@ -188,10 +193,12 @@ public class FormattedStringDisplayCache {
                     break;
                 }
 
-                lineWidth += charWidth;
+                // Using whole string up to that point for width calculation (instead of just adding char width)
+                // because counting width one char at a time can be off in some cases (happens with bold 🙝 symbol, for example)
+                lineWidth = font.width(string.subString(firstCharIndex, i + 1).toString(true));
                 i++;
 
-                if (character.character() == '\n') {
+                if (character.codepoint() == '\n') {
                     break;
                 }
             }

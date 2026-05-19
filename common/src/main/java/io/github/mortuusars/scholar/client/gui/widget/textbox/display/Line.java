@@ -67,24 +67,12 @@ public class Line {
     }
 
     public boolean endsWithNewLine() {
-        return !getString().isEmpty() && getString().get(getString().size() - 1).character() == '\n';
-    }
-
-    public int width(Font font, int first, int last) {
-        int width = 0;
-        for (int i = first; i <= last; i++) {
-            width += string.get(i).getWidth(font, false);
-        }
-        return width;
+        return !getString().isEmpty() && getString().get(getString().size() - 1).codepoint() == '\n';
     }
 
     public int widthToIndex(Font font, int index) {
-        int width = 0;
         int endIndex = Math.min(index, string.size());
-        for (int i = 0; i < endIndex; i++) {
-            width += string.get(i).getWidth(font, false);
-        }
-        return width;
+        return font.width(string.subString(0, endIndex));
     }
 
     public int indexAtWidth(Font font, int width) {
@@ -102,7 +90,7 @@ public class Line {
             }
         }
 
-        return string.get(string.length() - 1).character() == '\n' ? lastCharIndex() : lastCharIndex() + 1;
+        return string.get(string.length() - 1).codepoint() == '\n' ? lastCharIndex() : lastCharIndex() + 1;
     }
 
     @Override

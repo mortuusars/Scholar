@@ -21,10 +21,6 @@ public class FormattedString extends ArrayList<Char> implements CharSequence, Fo
         return new FormattedString(parseChars(string));
     }
 
-    public static FormattedString parseWithoutFormatting(String string) {
-        return new FormattedString(string.chars().mapToObj(Char::new).toList());
-    }
-
     public static ArrayList<Char> parseChars(String string) {
         ArrayList<Char> chars = new ArrayList<>();
 
@@ -32,21 +28,23 @@ public class FormattedString extends ArrayList<Char> implements CharSequence, Fo
 
         boolean grabbingFormattingChar = false;
 
-        for (int i = 0; i < string.length(); i++) {
-            char c = string.charAt(i);
+        for (int i = 0; i < string.length();) {
+            int codepoint = string.codePointAt(i);
 
-            if (c == Formatting.SECTION_SIGN) {
+            i += Character.charCount(codepoint);
+
+            if (codepoint == Formatting.SECTION_SIGN) {
                 grabbingFormattingChar = true;
                 continue;
             }
 
             if (grabbingFormattingChar) {
-                formatting = formatting.with(c);
+                formatting = formatting.with((char)codepoint);
                 grabbingFormattingChar = false;
                 continue;
             }
 
-            chars.add(new Char(c, formatting));
+            chars.add(new Char(codepoint, formatting));
         }
 
         return chars;
@@ -55,13 +53,6 @@ public class FormattedString extends ArrayList<Char> implements CharSequence, Fo
     public FormattedString subString(int start, int end) {
         return new FormattedString(subList(start, end));
     }
-
-//    public @Nullable Char getCharBefore(int index) {
-//        if (isEmpty()) return null;
-//        if (index < 0) return null;
-//        if (index >= length()) return null;
-//        return
-//    }
 
     // -- CharSequence
 
@@ -72,7 +63,8 @@ public class FormattedString extends ArrayList<Char> implements CharSequence, Fo
 
     @Override
     public char charAt(int index) {
-        return get(index).character();
+        return Character.toChars(get(index).codepoint())[0];
+//        return get(index).codepoint();
     }
 
     @NotNull
@@ -108,7 +100,7 @@ public class FormattedString extends ArrayList<Char> implements CharSequence, Fo
         Char previousChar = Char.EMPTY;
 
         for (Char character : this) {
-            if (skipNewLines && character.character() == '\n') continue;
+            if (skipNewLines && character.codepoint() == '\n') continue;
 
             if (!character.formatting().equals(previousChar.formatting())) {
                 if (previousChar.hasFormatting()) {
@@ -117,7 +109,7 @@ public class FormattedString extends ArrayList<Char> implements CharSequence, Fo
                 character.formatting().append(sb);
             }
 
-            sb.append(character.character());
+            sb.appendCodePoint(character.codepoint());
             previousChar = character;
         }
 
@@ -139,8 +131,8 @@ public class FormattedString extends ArrayList<Char> implements CharSequence, Fo
         StringBuilder sb = new StringBuilder();
 
         for (Char character : this) {
-            if (skipNewLines && character.character() == '\n') continue;
-            sb.append(character.character());
+            if (skipNewLines && character.codepoint() == '\n') continue;
+            sb.appendCodePoint(character.codepoint());
         }
 
         return sb.toString();
