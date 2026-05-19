@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.16 - 2026-05-19
+- Improved handling of complex Unicode symbols. 
+
 ## 1.1.15 - 2026-05-03
 - Added pt_BR translation.
 

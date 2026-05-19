@@ -10,7 +10,6 @@ import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -108,7 +107,7 @@ public class FormattedStringEditor {
         if (!keepSelection && isSelecting()) {
             setCursorPos(direction < 0 ? getSelectionStart() : getSelectionEnd(), false);
         } else {
-            setCursorPos(Util.offsetByCodepoints(getString().toStringWithoutFormatting(), getCursorPos(), direction), keepSelection);
+            setCursorPos(getCursorPos() + direction, keepSelection);
         }
     }
 
@@ -116,8 +115,42 @@ public class FormattedStringEditor {
         if (!keepSelection && isSelecting()) {
             setCursorPos(direction < 0 ? getSelectionStart() : getSelectionEnd(), false);
         } else {
-            setCursorPos(StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), direction, getCursorPos(), true), keepSelection);
+            setCursorPos(getWordPosition(direction, true), keepSelection);
         }
+    }
+
+    public int getWordPosition(int skipCount, boolean includeWhitespace) {
+        int i = getCursorPos();
+
+        boolean backwards = skipCount < 0;
+        int count = Math.abs(skipCount);
+
+        for (int k = 0; k < count; k++) {
+            if (backwards) {
+                while (includeWhitespace && i > 0 && isWhitespace(getString().get(i - 1).codepoint())) {
+                    i--;
+                }
+                while (i > 0 && !isWhitespace(getString().get(i - 1).codepoint())) {
+                    i--;
+                }
+
+            } else {
+                int size = getString().size();
+                while (i < size && !isWhitespace(getString().get(i).codepoint())) {
+                    i++;
+                }
+                while (includeWhitespace && i < size && isWhitespace(getString().get(i).codepoint())) {
+                    i++;
+                }
+            }
+        }
+
+        return i;
+    }
+
+    private static boolean isWhitespace(int cp) {
+        return cp == ' '
+              || cp == '\n';
     }
 
     public Formatting getFormattingAtCursor() {
@@ -165,18 +198,7 @@ public class FormattedStringEditor {
 
     // --
 
-    private boolean suppressNextCharTyped = false;
-
     public boolean keyPressed(KeyEvent event) {
-        if (onKeyPressed(event)) {
-            suppressNextCharTyped = true;
-            return true;
-        }
-        suppressNextCharTyped = false;
-        return false;
-    }
-
-    private boolean onKeyPressed(KeyEvent event) {
         if (event.isSelectAll()) {
             selectAll();
             return true;
@@ -274,7 +296,7 @@ public class FormattedStringEditor {
     public void applyFormatting(Formatting formatting) {
         // Prevents applying bold formatting if the text would overflow available space due to extra width:
         if (formatting.format().contains(Formatting.Format.BOLD)) {
-            FormattedString string = new FormattedString(getString().stream().map(c -> new Char(c.character(), c.formatting().copy())).toList());
+            FormattedString string = new FormattedString(getString().stream().map(c -> new Char(c.codepoint(), c.formatting().copy())).toList());
             List<Char> chars = string.subList(getSelectionStart(), getSelectionEnd());
             chars.replaceAll(c -> c.flipFormatting(formatting));
 
@@ -291,9 +313,7 @@ public class FormattedStringEditor {
     }
 
     public boolean charTyped(CharacterEvent event) {
-        return !suppressNextCharTyped
-              && event.isAllowedChatCharacter()
-              && insertTextAtCursor(event.codepointAsString());
+        return event.isAllowedChatCharacter() && insertTextAtCursor(event.codepointAsString());
     }
 
     public void cut(boolean withFormatting) {
@@ -374,7 +394,7 @@ public class FormattedStringEditor {
                 removeSelectedText();
             } else {
                 int cursor = getCursorPos();
-                int removePos = Util.offsetByCodepoints(string, cursor, direction);
+                int removePos = cursor + direction;
                 int start = Math.min(removePos, cursor);
                 int end = Math.max(removePos, cursor);
 
