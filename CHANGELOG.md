@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.1.10 - 2026-05-19
+- Improved handling of complex Unicode symbols.
+
 ## 1.1.9.1 - 2025-12-30
 - [Fabric] Fixed books on a Lectern not saving changes. 
 
