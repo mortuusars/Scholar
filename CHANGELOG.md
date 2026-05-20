@@ -1,6 +1,8 @@
 # Changelog
 
 ## UNRELEASED
+- Inverted behavior of [Shift] key when copying/pasting text or importing/exporting book.
+  - Formatting is now always kept by default, unless [Shift] key is held.
 - Insert Empty Page and Remove Page keyboard shortcuts can be changed now.
     - Default binds have changed as well.
 

@@ -90,21 +90,21 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     @Override
     protected void createWidgets() {
         leftPageTextBox = new TextBox(font, leftPos + TEXT_LEFT_X, topPos + TEXT_Y, TEXT_WIDTH, TEXT_HEIGHT)
-                .setFontColor(textColor)
-                .setFontUnfocusedColor(textColor)
-                .setSelectionColor(selectionColor)
-                .setSelectionUnfocusedColor(selectionUnfocusedColor)
-                .setText(FormattedString.parse(getPageText(Spread.Side.LEFT)))
-                .setOnTextChanged(text -> setPageText(Spread.Side.LEFT, text.toString()));
+              .setFontColor(textColor)
+              .setFontUnfocusedColor(textColor)
+              .setSelectionColor(selectionColor)
+              .setSelectionUnfocusedColor(selectionUnfocusedColor)
+              .setText(FormattedString.parse(getPageText(Spread.Side.LEFT)))
+              .setOnTextChanged(text -> setPageText(Spread.Side.LEFT, text.toString()));
         addRenderableWidget(leftPageTextBox);
 
         rightPageTextBox = new TextBox(font, leftPos + TEXT_RIGHT_X, topPos + TEXT_Y, TEXT_WIDTH, TEXT_HEIGHT)
-                .setFontColor(textColor)
-                .setFontUnfocusedColor(textColor)
-                .setSelectionColor(selectionColor)
-                .setSelectionUnfocusedColor(selectionUnfocusedColor)
-                .setText(FormattedString.parse(getPageText(Spread.Side.RIGHT)))
-                .setOnTextChanged(text -> setPageText(Spread.Side.RIGHT, text.toString()));
+              .setFontColor(textColor)
+              .setFontUnfocusedColor(textColor)
+              .setSelectionColor(selectionColor)
+              .setSelectionUnfocusedColor(selectionUnfocusedColor)
+              .setText(FormattedString.parse(getPageText(Spread.Side.RIGHT)))
+              .setOnTextChanged(text -> setPageText(Spread.Side.RIGHT, text.toString()));
         addRenderableWidget(rightPageTextBox);
 
         setupPages(bookStack);
@@ -116,6 +116,8 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
         createImportExportButtons();
 
+        ImageButton enterSignModeButton = new ImageButton(leftPos - 24, topPos + 18, 22, 22,
+              ENTER_SIGN_MODE_SPRITES, b -> enterSignMode(), Component.translatable("book.signButton"));
         ImageButton enterSignModeButton = new ImageButton(leftPos - 24, topPos + 18, 22, 22, 321, 0,
                 22, TEXTURE, 512, 512,
                 b -> enterSignMode(), Component.translatable("book.signButton"));
@@ -126,6 +128,8 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     protected void createPageToolButtons() {
+        insertEmptyPageLeftButton = new ImageButton(leftPos + 112, topPos + 154, 13, 13,
+              INSERT_EMPTY_PAGE_SPRITES, b -> insertEmptyPage(Spread.Side.LEFT), Component.translatable("gui.scholar.insert_empty_page"));
         insertEmptyPageLeftButton = new ImageButton(leftPos + 112, topPos + 154, 13, 13, 343, 0,
                 13, TEXTURE, 512, 512,
                 b -> insertEmptyPage(Spread.Side.LEFT), Component.translatable("gui.scholar.insert_empty_page"));
@@ -245,9 +249,9 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         if (mouseX >= x - 3 && mouseX < x + 12 + 3 && mouseY >= y - 3 && mouseY < y + 12) {
             List<Component> tooltip = new ArrayList<>();
             tooltip.add(Component.translatable("gui.scholar.tools.toggle")
-                    .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.toggleBookTools)));
-            tooltip.add(Component.translatable("gui.scholar.tools.tooltip.copy_with_formatting"));
-            tooltip.add(Component.translatable("gui.scholar.tools.tooltip.paste_with_formatting"));
+                  .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.toggleBookTools)));
+            tooltip.add(Component.translatable("gui.scholar.tools.tooltip.copy_without_formatting"));
+            tooltip.add(Component.translatable("gui.scholar.tools.tooltip.paste_without_formatting"));
             tooltip.add(Component.translatable("gui.scholar.tools.tooltip.undo"));
             tooltip.add(Component.translatable("gui.scholar.tools.tooltip.redo"));
             guiGraphics.renderTooltip(font, tooltip, Optional.empty(), mouseX, mouseY + 20);
@@ -260,13 +264,13 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     public boolean keyPressed(int key, int scanCode, int modifiers) {
         if (ScholarClient.KeyMappings.importBook.matches(key, scanCode)) {
             playButtonClickSound();
-            importBook(Screen.hasShiftDown());
+            importBook(!Screen.hasShiftDown());
             return true;
         }
 
         if (ScholarClient.KeyMappings.exportBook.matches(key, scanCode)) {
             playButtonClickSound();
-            exportBook(Screen.hasShiftDown());
+            exportBook(!Screen.hasShiftDown());
             return true;
         }
 
@@ -287,8 +291,8 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         }
 
         if ((!(getFocused() instanceof TextBox textBox) || !textBox.getEditor().isSelecting())
-                && key == InputConstants.KEY_C && Screen.hasControlDown() && !Screen.hasAltDown()) {
-            String bookContents = getBookContents(Screen.hasShiftDown());
+              && key == InputConstants.KEY_C && Screen.hasControlDown() && !Screen.hasAltDown()) {
+            String bookContents = getBookContents(!Screen.hasShiftDown());
             Minecraft.getInstance().keyboardHandler.setClipboard(bookContents);
             return true;
         }
@@ -312,26 +316,6 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             removePage(Spread.Side.RIGHT);
             return true;
         }
-
-//        if (ScholarClient.KeyMappings.insertEmptyPageLeft.consumeClick()) {
-//            insertEmptyPage(Spread.Side.LEFT);
-//            return true;
-//        }
-//
-//        if (ScholarClient.KeyMappings.insertEmptyPageRight.consumeClick()) {
-//            insertEmptyPage(Spread.Side.RIGHT);
-//            return true;
-//        }
-//
-//        if (ScholarClient.KeyMappings.removePageLeft.consumeClick()) {
-//            removePage(Spread.Side.LEFT);
-//            return true;
-//        }
-//
-//        if (ScholarClient.KeyMappings.removePageRight.consumeClick()) {
-//            removePage(Spread.Side.RIGHT);
-//            return true;
-//        }
 
         return super.keyPressed(key, scanCode, modifiers);
     }
@@ -414,7 +398,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     protected void enterSignMode() {
         saveChanges(false, null);
         minecraft.execute(() ->
-            minecraft.setScreen(new BookSigningScreen(this, bookColor, title -> saveChanges(true, title))));
+              minecraft.setScreen(new BookSigningScreen(this, bookColor, title -> saveChanges(true, title))));
     }
 
     // --
@@ -459,7 +443,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     protected void insertEmptyPage(Spread.Side side) {
         if (!canInsertEmptyPage(side)) {
             Objects.requireNonNull(Minecraft.getInstance().player).displayClientMessage(
-                    Component.translatable("gui.scholar.cannot_insert_page"), false);
+                  Component.translatable("gui.scholar.cannot_insert_page"), false);
             return;
         }
 
@@ -522,7 +506,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     protected void sendChanges(@Nullable String title) {
         int slotId = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : 40;
         Objects.requireNonNull(minecraft.getConnection()).send(
-                new ServerboundEditBookPacket(slotId, this.pages, Optional.ofNullable(title)));
+              new ServerboundEditBookPacket(slotId, this.pages, Optional.ofNullable(title)));
     }
 
     protected void removeEmptyTrailingPages() {
@@ -532,17 +516,11 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         }
     }
 
-    protected void updateLocalCopy(boolean sign, @Nullable String title) {
+    protected void updateLocalCopy() {
         ListTag listTag = new ListTag();
         this.pages.stream().map(StringTag::valueOf).forEach(listTag::add);
         if (!this.pages.isEmpty()) {
             this.bookStack.addTagElement("pages", listTag);
-        }
-
-        if (sign) {
-            Preconditions.checkState(!StringUtil.isNullOrEmpty(title), "Title cannot be null or empty when signing a book.");
-            this.bookStack.addTagElement("author", StringTag.valueOf(player.getGameProfile().getName()));
-            this.bookStack.addTagElement("title", StringTag.valueOf(title));
         }
     }
 
@@ -660,13 +638,13 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
                     Minecraft.getInstance().execute(() -> setBookContents(content, withFormatting));
                 } catch (IOException e) {
                     Minecraft.getInstance().execute(() -> player.displayClientMessage(
-                            Component.translatable("gui.scholar.import_book.failure"), false));
+                          Component.translatable("gui.scholar.import_book.failure"), false));
                     Scholar.LOGGER.error("Failed to import book: ", e);
                 }
             });
         }).exceptionally(e -> {
             Minecraft.getInstance().execute(() -> player.displayClientMessage(
-                    Component.translatable("gui.scholar.import_book.failure"), false));
+                  Component.translatable("gui.scholar.import_book.failure"), false));
             Scholar.LOGGER.error("Failed to import book: ", e);
             return null;
         });
@@ -689,20 +667,20 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
                 try {
                     Files.writeString(Path.of(filePath), content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                     MutableComponent filePathComponent = Component.literal(filePath).withStyle(Style.EMPTY
-                            .withUnderlined(true)
-                            .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, filePath)));
+                          .withUnderlined(true)
+                          .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, filePath)));
                     Minecraft.getInstance().execute(() -> player.displayClientMessage(
-                            Component.translatable("gui.scholar.export_book.success")
-                                    .append(filePathComponent), false));
+                          Component.translatable("gui.scholar.export_book.success")
+                                .append(filePathComponent), false));
                 } catch (IOException e) {
                     Minecraft.getInstance().execute(() -> player.displayClientMessage(
-                            Component.translatable("gui.scholar.export_book.failure"), false));
+                          Component.translatable("gui.scholar.export_book.failure"), false));
                     Scholar.LOGGER.error("Failed to export book: ", e);
                 }
             });
         }).exceptionally(e -> {
             Minecraft.getInstance().execute(() -> player.displayClientMessage(
-                    Component.translatable("gui.scholar.export_book.failure"), false));
+                  Component.translatable("gui.scholar.export_book.failure"), false));
             Scholar.LOGGER.error("Failed to export book: ", e);
             return null;
         });
