@@ -2,6 +2,7 @@ package io.github.mortuusars.scholar.client.gui.screen.edit;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
+import io.github.mortuusars.scholar.PlatformHelperClient;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.book.BookColor;
@@ -129,28 +130,28 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
                 13, TEXTURE, 512, 512,
                 b -> insertEmptyPage(Spread.Side.LEFT), Component.translatable("gui.scholar.insert_empty_page"));
         insertEmptyPageLeftButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.insert_empty_page")
-                .append(" ").append(Component.translatable("gui.scholar.insert_empty_page_left.hotkey"))));
+              .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.insertEmptyPageLeft))));
         addRenderableWidget(insertEmptyPageLeftButton);
 
         removePageLeftButton = new ImageButton(leftPos + 126, topPos + 154, 13, 13, 356, 0,
                 13, TEXTURE, 512, 512,
                 b -> removePage(Spread.Side.LEFT), Component.translatable("gui.scholar.remove_page"));
         removePageLeftButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.remove_page")
-                .append(" ").append(Component.translatable("gui.scholar.remove_page_left.hotkey"))));
+              .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.removePageLeft))));
         addRenderableWidget(removePageLeftButton);
 
         insertEmptyPageRightButton = new ImageButton(leftPos + 156, topPos + 154, 13, 13, 343, 0,
                 13, TEXTURE, 512, 512,
                 b -> insertEmptyPage(Spread.Side.RIGHT), Component.translatable("gui.scholar.insert_empty_page"));
         insertEmptyPageRightButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.insert_empty_page")
-                .append(" ").append(Component.translatable("gui.scholar.insert_empty_page_right.hotkey"))));
+              .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.insertEmptyPageRight))));
         addRenderableWidget(insertEmptyPageRightButton);
 
         removePageRightButton = new ImageButton(leftPos + 170, topPos + 154, 13, 13, 356, 0,
                 13, TEXTURE, 512, 512,
                 b -> removePage(Spread.Side.RIGHT), Component.translatable("gui.scholar.remove_page"));
         removePageRightButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.remove_page")
-                .append(" ").append(Component.translatable("gui.scholar.remove_page_right.hotkey"))));
+              .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.removePageRight))));
         addRenderableWidget(removePageRightButton);
     }
 
@@ -292,15 +293,45 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             return true;
         }
 
-        if (Screen.hasControlDown() && Screen.hasShiftDown() && key == InputConstants.KEY_INSERT) {
-            insertEmptyPage(Screen.hasAltDown() ? Spread.Side.RIGHT : Spread.Side.LEFT);
+        if (PlatformHelperClient.matchesWithModifiers(ScholarClient.KeyMappings.insertEmptyPageLeft, key, scanCode, modifiers)) {
+            insertEmptyPage(Spread.Side.LEFT);
             return true;
         }
 
-        if (Screen.hasControlDown() && Screen.hasShiftDown() && key == InputConstants.KEY_DELETE) {
-            removePage(Screen.hasAltDown() ? Spread.Side.RIGHT : Spread.Side.LEFT);
+        if (PlatformHelperClient.matchesWithModifiers(ScholarClient.KeyMappings.insertEmptyPageRight, key, scanCode, modifiers)) {
+            insertEmptyPage(Spread.Side.RIGHT);
             return true;
         }
+
+        if (PlatformHelperClient.matchesWithModifiers(ScholarClient.KeyMappings.removePageLeft, key, scanCode, modifiers)) {
+            removePage(Spread.Side.LEFT);
+            return true;
+        }
+
+        if (PlatformHelperClient.matchesWithModifiers(ScholarClient.KeyMappings.removePageRight, key, scanCode, modifiers)) {
+            removePage(Spread.Side.RIGHT);
+            return true;
+        }
+
+//        if (ScholarClient.KeyMappings.insertEmptyPageLeft.consumeClick()) {
+//            insertEmptyPage(Spread.Side.LEFT);
+//            return true;
+//        }
+//
+//        if (ScholarClient.KeyMappings.insertEmptyPageRight.consumeClick()) {
+//            insertEmptyPage(Spread.Side.RIGHT);
+//            return true;
+//        }
+//
+//        if (ScholarClient.KeyMappings.removePageLeft.consumeClick()) {
+//            removePage(Spread.Side.LEFT);
+//            return true;
+//        }
+//
+//        if (ScholarClient.KeyMappings.removePageRight.consumeClick()) {
+//            removePage(Spread.Side.RIGHT);
+//            return true;
+//        }
 
         return super.keyPressed(key, scanCode, modifiers);
     }

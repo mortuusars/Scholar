@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
