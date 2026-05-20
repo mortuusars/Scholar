@@ -1,6 +1,10 @@
-package io.github.mortuusars.scholar.mixin.chiseled_bookshelf;
+package io.github.mortuusars.scholar.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.sugar.Local;
+import io.github.mortuusars.scholar.mixin.chiseled_bookshelf.ChiseledBookShelfBlockEntityMixin;
+import io.github.mortuusars.scholar.mixin.lectern.LecternBlockEntityMixin;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -12,12 +16,15 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 /**
- * This class is used so child classes {@link ChiseledBookShelfBlockEntityMixin}
+ * This class is used so child classes like {@link ChiseledBookShelfBlockEntityMixin} or {@link LecternBlockEntityMixin}
  * could modify methods in a (hopefully) more compatible with other mods way.
  */
 @Mixin(BlockEntity.class)
-public class BlockEntityParentMixin {
+public abstract class BlockEntityParentMixin {
     @Shadow @Nullable protected Level level;
+
+    @Shadow
+    public abstract CompoundTag saveCustomOnly(HolderLookup.Provider registries);
 
     @ModifyReturnValue(method = "getUpdatePacket", at = @At("RETURN"))
     protected @Nullable Packet<ClientGamePacketListener> onGetUpdatePacket(@Nullable Packet<ClientGamePacketListener> original) {
@@ -25,7 +32,7 @@ public class BlockEntityParentMixin {
     }
 
     @ModifyReturnValue(method = "getUpdateTag", at = @At("RETURN"))
-    protected CompoundTag onGetUpdateTag(CompoundTag original) {
+    protected CompoundTag onGetUpdateTag(CompoundTag original, @Local(argsOnly = true) HolderLookup.Provider registries) {
         return original;
     }
 }

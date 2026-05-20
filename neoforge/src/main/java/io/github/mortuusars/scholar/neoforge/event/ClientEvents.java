@@ -3,6 +3,7 @@ package io.github.mortuusars.scholar.neoforge.event;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.book.BookColor;
+import io.github.mortuusars.scholar.client.InWorldTooltip;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.BookshelfDefaultColorsReloadListener;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.BookshelfItemColorsReloadListener;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.ChiseledBookshelfTooltip;
@@ -102,7 +103,7 @@ public class ClientEvents {
     public static class ForgeBus {
         @SubscribeEvent
         public static void onRenderGuiPost(RenderGuiEvent.Post event) {
-            ChiseledBookshelfTooltip.renderSlotTooltip(event.getGuiGraphics(), event.getPartialTick());
+            InWorldTooltip.render(event.getGuiGraphics(), event.getPartialTick());
         }
     }
 }
