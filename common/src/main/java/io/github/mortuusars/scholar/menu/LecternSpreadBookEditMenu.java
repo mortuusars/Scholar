@@ -86,7 +86,7 @@ public class LecternSpreadBookEditMenu extends LecternSpreadMenu {
                     .ifPresent(pl -> {
                         pl.closeContainer();
                         if (be.getBook().getItem() instanceof WritableBookItem) {
-                            Lectern.openBookEditMenu(pl, be, be.getBook());
+                            LecternMenus.openBookEditMenu(pl, be, be.getBook());
                         }
                     });
         }

@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import org.jetbrains.annotations.NotNull;
 
-public class Lectern {
+public class LecternMenus {
     public static void openBookViewMenu(ServerPlayer player, LecternBlockEntity lecternBlockEntity, ItemStack bookStack) {
         MenuProvider menuProvider = new MenuProvider() {
             @Override

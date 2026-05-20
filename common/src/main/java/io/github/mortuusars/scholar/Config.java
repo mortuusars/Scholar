@@ -15,6 +15,7 @@ public class Config {
         // Misc
         public static final ModConfigSpec.BooleanValue CHISELED_BOOKSHELF_TOOLTIP;
         public static final ModConfigSpec.BooleanValue LECTERN_TOOLTIP;
+        public static final ModConfigSpec.BooleanValue LECTERN_COLORED_BOOK;
         public static final ModConfigSpec.BooleanValue BOOK_ENCHANTMENT_GLINT;
 
         static {
@@ -40,6 +41,9 @@ public class Config {
             LECTERN_TOOLTIP = builder
                   .comment("Hovering over a Lectern will show tooltip of a book that's placed on it. Default: true")
                   .define("lectern_tooltip", true);
+            LECTERN_COLORED_BOOK = builder
+                  .comment("Lectern book rendering reflects the actual book placed on it. Default: true")
+                  .define("lectern_colored_book", true);
             BOOK_ENCHANTMENT_GLINT = builder
                     .comment("Written books will have an enchantment glint on them. Default: false")
                     .define("written_book_enchantment_glint", false);

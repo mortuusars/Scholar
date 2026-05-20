@@ -1,6 +1,7 @@
-package io.github.mortuusars.scholar.client;
+package io.github.mortuusars.scholar.client.gui;
 
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.ChiseledBookshelfTooltip;
+import io.github.mortuusars.scholar.client.lectern.LecternTooltip;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
