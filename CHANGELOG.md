@@ -1,5 +1,9 @@
 # Changelog
 
+## UNRELEASED
+- Insert Empty Page and Remove Page keyboard shortcuts can be changed now.
+  - Default binds have changed as well.
+
 ## 1.1.16 - 2026-05-19
 - Improved handling of complex Unicode symbols.
 
