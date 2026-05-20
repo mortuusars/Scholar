@@ -6,6 +6,7 @@ import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.client.InWorldTooltip;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.ChiseledBookshelfTooltip;
+import io.github.mortuusars.scholar.client.gui.InWorldTooltip;
 import io.github.mortuusars.scholar.client.gui.screen.edit.LecternSpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.screen.view.LecternSpreadBookViewScreen;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.ChiseledBookshelfColors;

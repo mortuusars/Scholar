@@ -1,7 +1,7 @@
 package io.github.mortuusars.scholar.client.chiseled_bookshelf;
 
 import io.github.mortuusars.scholar.Config;
-import io.github.mortuusars.scholar.client.InWorldTooltip;
+import io.github.mortuusars.scholar.client.gui.InWorldTooltip;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
