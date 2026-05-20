@@ -164,7 +164,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     protected void createImportExportButtons() {
         importBookButton = new ImageButton(leftPos + 297, topPos + 16, 18, 18, IMPORT_BOOK_SPRITES,
-              b -> importBook(minecraft.hasShiftDown()), Component.translatable("gui.scholar.import_book"));
+              b -> importBook(!minecraft.hasShiftDown()), Component.translatable("gui.scholar.import_book"));
         importBookButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.import_book")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.importBook))
               .append(CommonComponents.NEW_LINE)
@@ -172,7 +172,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         addRenderableWidget(importBookButton);
 
         exportBookButton = new ImageButton(leftPos + 297, topPos + 41, 18, 18, EXPORT_BOOK_SPRITES,
-              b -> exportBook(minecraft.hasShiftDown()), Component.translatable("gui.scholar.export_book"));
+              b -> exportBook(!minecraft.hasShiftDown()), Component.translatable("gui.scholar.export_book"));
         exportBookButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.export_book")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.exportBook))
               .append(CommonComponents.NEW_LINE)
@@ -269,9 +269,9 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         if (mouseX >= x - 3 && mouseX < x + 12 + 3 && mouseY >= y - 3 && mouseY < y + 12) {
             List<Component> tooltip = new ArrayList<>();
             tooltip.add(Component.translatable("gui.scholar.tools.toggle")
-                  .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.toggleBookTools)));
-            tooltip.add(Component.translatable("gui.scholar.tools.tooltip.copy_with_formatting"));
-            tooltip.add(Component.translatable("gui.scholar.tools.tooltip.paste_with_formatting"));
+                    .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.toggleBookTools)));
+            tooltip.add(Component.translatable("gui.scholar.tools.tooltip.copy_without_formatting"));
+            tooltip.add(Component.translatable("gui.scholar.tools.tooltip.paste_without_formatting"));
             tooltip.add(Component.translatable("gui.scholar.tools.tooltip.undo"));
             tooltip.add(Component.translatable("gui.scholar.tools.tooltip.redo"));
             guiGraphics.setTooltipForNextFrame(font, tooltip, Optional.empty(), mouseX, mouseY + 20);
@@ -284,13 +284,13 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     public boolean keyPressed(KeyEvent event) {
         if (ScholarClient.KeyMappings.importBook.matches(event)) {
             playButtonClickSound();
-            importBook(event.hasShiftDown());
+            importBook(!event.hasShiftDown());
             return true;
         }
 
         if (ScholarClient.KeyMappings.exportBook.matches(event)) {
             playButtonClickSound();
-            exportBook(event.hasShiftDown());
+            exportBook(!event.hasShiftDown());
             return true;
         }
 
@@ -312,7 +312,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
         if ((!(getFocused() instanceof TextBox textBox) || !textBox.getEditor().isSelecting())
               && event.key() == InputConstants.KEY_C && event.hasControlDown() && !event.hasAltDown()) {
-            String bookContents = getBookContents(event.hasShiftDown());
+            String bookContents = getBookContents(!event.hasShiftDown());
             Minecraft.getInstance().keyboardHandler.setClipboard(bookContents);
             return true;
         }
@@ -337,31 +337,11 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
             return true;
         }
 
-//        if (ScholarClient.KeyMappings.insertEmptyPageLeft.consumeClick()) {
-//            insertEmptyPage(Spread.Side.LEFT);
-//            return true;
-//        }
-//
-//        if (ScholarClient.KeyMappings.insertEmptyPageRight.consumeClick()) {
-//            insertEmptyPage(Spread.Side.RIGHT);
-//            return true;
-//        }
-//
-//        if (ScholarClient.KeyMappings.removePageLeft.consumeClick()) {
-//            removePage(Spread.Side.LEFT);
-//            return true;
-//        }
-//
-//        if (ScholarClient.KeyMappings.removePageRight.consumeClick()) {
-//            removePage(Spread.Side.RIGHT);
-//            return true;
-//        }
-
-        return super.keyPressed(event);
+        return super.keyPressed(key, scanCode, modifiers);
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         int x = width - 12;
         int y = 6;
         if (event.x() >= x - 3 && event.x() < x + 12 + 3 && event.y() >= y - 3 && event.y() < y + 12) {

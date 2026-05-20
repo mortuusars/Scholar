@@ -39,7 +39,6 @@ public class PlatformHelperClientImpl {
     }
 
     public static boolean matchesWithModifiers(KeyMapping keyMapping, int keyCode, int scancode, int modifiers) {
-//        return keyMapping.consumeClick();
         return keyMapping.matches(keyCode, scancode) && keyMapping.isConflictContextAndModifierActive();
     }
 }
