@@ -3,6 +3,8 @@ package io.github.mortuusars.scholar.fabric;
 import fuzs.forgeconfigapiport.fabric.api.v5.client.ConfigScreenFactoryRegistry;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
+import io.github.mortuusars.scholar.book.BookColor;
+import io.github.mortuusars.scholar.client.InWorldTooltip;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.ChiseledBookshelfTooltip;
 import io.github.mortuusars.scholar.client.gui.screen.edit.LecternSpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.screen.view.LecternSpreadBookViewScreen;
@@ -48,7 +50,7 @@ public class ScholarFabricClient implements ClientModInitializer {
         MenuScreens.register(Scholar.MenuTypes.LECTERN_SPREAD_BOOK_VIEW.get(), LecternSpreadBookViewScreen::new);
         MenuScreens.register(Scholar.MenuTypes.LECTERN_SPREAD_BOOK_EDIT.get(), LecternSpreadBookEditScreen::new);
 
-        HudRenderCallback.EVENT.register(ChiseledBookshelfTooltip::renderSlotTooltip);
+        HudRenderCallback.EVENT.register(InWorldTooltip::render);
 
         FabricS2CPacketHandler.register();
     }

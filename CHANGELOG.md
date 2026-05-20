@@ -1,6 +1,7 @@
 # Changelog
 
 ## UNRELEASED
+- Added in-world tooltip for books placed on a Lectern.
 - [Scroll Wheel] can be used to change pages now.
 - Holding [Shift] when changing page now jumps to the start/end.
   - It works in steps - first jump is to the first page with content on it, if already on it or past - jump to end.
@@ -8,6 +9,7 @@
   - Formatting is now always kept by default, unless [Shift] key is held.
 - Insert Empty Page and Remove Page keyboard shortcuts can be changed now.
   - Default binds have changed as well.
+- Fixed Chiseled Bookshelf tooltip still displaying when the GUI is hidden.
 
 ## 1.1.16 - 2026-05-19
 - Improved handling of complex Unicode symbols. 
