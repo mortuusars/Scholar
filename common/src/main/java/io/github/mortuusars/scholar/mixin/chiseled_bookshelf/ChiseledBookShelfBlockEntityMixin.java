@@ -1,12 +1,12 @@
 package io.github.mortuusars.scholar.mixin.chiseled_bookshelf;
 
-import io.github.mortuusars.scholar.Config;
+import io.github.mortuusars.scholar.mixin.BlockEntityParentMixin;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import org.jetbrains.annotations.Nullable;
@@ -25,17 +25,11 @@ public abstract class ChiseledBookShelfBlockEntityMixin extends BlockEntityParen
 
     @Override
     protected Packet<ClientGamePacketListener> onGetUpdatePacket(@Nullable Packet<ClientGamePacketListener> packet) {
-        return Config.Common.CHISELED_BOOKSHELF_TOOLTIP.get() || Config.Common.CHISELED_BOOKSHELF_COLORS.get()
-                ? ClientboundBlockEntityDataPacket.create((ChiseledBookShelfBlockEntity) (Object) this)
-                : super.onGetUpdatePacket(packet);
+        return ClientboundBlockEntityDataPacket.create((ChiseledBookShelfBlockEntity) (Object) this);
     }
 
     @Override
-    protected CompoundTag onGetUpdateTag(CompoundTag tag) {
-        if (Config.Common.CHISELED_BOOKSHELF_TOOLTIP.get() || Config.Common.CHISELED_BOOKSHELF_COLORS.get()) {
-            ContainerHelper.saveAllItems(tag, this.items);
-        }
-
-        return tag;
+    protected CompoundTag onGetUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+        return saveCustomOnly(registries);
     }
 }

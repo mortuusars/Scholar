@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.mixin;
+package io.github.mortuusars.scholar.mixin.lectern;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.menu.Lectern;

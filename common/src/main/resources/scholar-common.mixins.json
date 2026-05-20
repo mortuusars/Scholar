@@ -5,15 +5,19 @@
   "compatibilityLevel": "JAVA_17",
   "plugin": "io.github.mortuusars.scholar.mixin.ScholarMixinPlugin",
   "mixins": [
+    "BlockEntityParentMixin",
     "ArmorDyeRecipeMixin",
     "BookCloningRecipeMixin",
+    "IsFoilWrittenBookItemStackMixin",
     "LecternBlockMixin",
     "WritableBookItemMixin",
     "WrittenBookItemMixin",
     "chiseled_bookshelf.BlockEntityParentMixin",
     "chiseled_bookshelf.ChiseledBookShelfBlockEntityMixin",
     "chiseled_bookshelf.ChiseledBookShelfBlockMixin",
-    "jei.JeiKeyConflictContextMixin"
+    "jei.JeiKeyConflictContextMixin",
+    "lectern.LecternBlockEntityMixin",
+    "lectern.LecternBlockMixin"
   ],
   "injectors": {
     "defaultRequire": -1
