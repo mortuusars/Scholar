@@ -6,13 +6,8 @@
   "plugin": "io.github.mortuusars.scholar.mixin.ScholarMixinPlugin",
   "mixins": [
     "BlockEntityParentMixin",
-    "ArmorDyeRecipeMixin",
     "BookCloningRecipeMixin",
     "IsFoilWrittenBookItemStackMixin",
-    "LecternBlockMixin",
-    "WritableBookItemMixin",
-    "WrittenBookItemMixin",
-    "chiseled_bookshelf.BlockEntityParentMixin",
     "chiseled_bookshelf.ChiseledBookShelfBlockEntityMixin",
     "chiseled_bookshelf.ChiseledBookShelfBlockMixin",
     "jei.JeiKeyConflictContextMixin",
@@ -23,7 +18,8 @@
     "defaultRequire": -1
   },
   "client": [
-    "ClientPacketListenerMixin",
-    "LocalPlayerMixin"
+    "HandleOpenBookClientPacketListenerMixin",
+    "OpenWritableBookGuiLocalPlayerMixin",
+    "lectern.LecternRendererMixin"
   ]
 }
