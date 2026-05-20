@@ -204,15 +204,15 @@ public class FormattedStringEditor {
             return true;
         }
         if (key == InputConstants.KEY_C && Screen.hasControlDown() && !Screen.hasAltDown()) {
-            copy(Screen.hasShiftDown());
+            copy(!Screen.hasShiftDown());
             return true;
         }
         if (key == InputConstants.KEY_V && Screen.hasControlDown() && !Screen.hasAltDown()) {
-            paste(Screen.hasShiftDown());
+            paste(!Screen.hasShiftDown());
             return true;
         }
         if (key == InputConstants.KEY_X && Screen.hasControlDown() && !Screen.hasAltDown()) {
-            cut(Screen.hasShiftDown());
+            cut(!Screen.hasShiftDown());
             return true;
         }
         CursorStep cursorStep = Screen.hasControlDown() ? CursorStep.WORD : CursorStep.CHARACTER;
@@ -322,10 +322,10 @@ public class FormattedStringEditor {
         removeSelectedText();
     }
 
-    public void paste(boolean keepFormatting) {
+    public void paste(boolean withFormatting) {
         try {
             String text = Minecraft.getInstance().keyboardHandler.getClipboard();
-            if (!keepFormatting) {
+            if (!withFormatting) {
                 text = ChatFormatting.stripFormatting(text);
             }
             insertTextAtCursor(Objects.requireNonNull(text).replaceAll("\\r", ""));
