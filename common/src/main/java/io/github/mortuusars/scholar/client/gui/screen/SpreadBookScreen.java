@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
+import io.github.mortuusars.scholar.book.Spread;
 import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import net.minecraft.client.GameNarrator;
@@ -21,6 +22,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -90,15 +92,31 @@ public abstract class SpreadBookScreen extends Screen {
     protected void createPrevPageButton() {
         ImageButton prevPageButton = new ImageButton(leftPos + 12, topPos + 156, 13, 15,
               Widgets.PREVIOUS_PAGE_SPRITES,
-              (button) -> pageBack());
-        prevPageButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.previous_page")));
+              (button) -> {
+                  if (Screen.hasShiftDown()) {
+                      pageToStart();
+                  } else {
+                      pageBack();
+                  }
+              });
+        prevPageButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.previous_page")
+              .append(CommonComponents.NEW_LINE)
+              .append(Component.translatable("gui.scholar.shift_jump_to_start"))));
         this.prevPageButton = addRenderableWidget(prevPageButton);
     }
 
     protected void createNextPageButton() {
         ImageButton nextPageButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
-              Widgets.NEXT_PAGE_SPRITES, (button) -> pageForward());
-        nextPageButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.next_page")));
+              Widgets.NEXT_PAGE_SPRITES, (button) -> {
+            if (Screen.hasShiftDown()) {
+                pageToEnd();
+            } else {
+                pageForward();
+            }
+        });
+        nextPageButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.next_page")
+              .append(CommonComponents.NEW_LINE)
+              .append(Component.translatable("gui.scholar.shift_jump_to_end"))));
         this.nextPageButton = addRenderableWidget(nextPageButton);
     }
 
@@ -137,9 +155,26 @@ public abstract class SpreadBookScreen extends Screen {
         return (int) Math.ceil(getPageCount() / 2.0);
     }
 
+    public abstract int getLastPage();
+
+    protected abstract int getFirstPageWithContent();
+
+    protected abstract int getLastPageWithContent();
+
     protected boolean pageBack() {
         if (currentSpread > 0) {
             currentSpread--;
+            playPageTurnSound(0.8f);
+            return true;
+        }
+        return false;
+    }
+
+    protected boolean pageToStart() {
+        if (currentSpread > 0) {
+            int firstPageWithContent = getFirstPageWithContent();
+            int firstSpreadWithContent = firstPageWithContent / 2;
+            setSpread(firstSpreadWithContent < currentSpread ? firstSpreadWithContent : 0);
             playPageTurnSound(0.8f);
             return true;
         }
@@ -153,6 +188,33 @@ public abstract class SpreadBookScreen extends Screen {
             return true;
         }
         return false;
+    }
+
+    protected boolean pageToEnd() {
+        if (currentSpread < getLastPage() / 2) {
+            int lastPageWithContent = getLastPageWithContent();
+            int lastSpreadWithContent = lastPageWithContent / 2;
+            setSpread(lastSpreadWithContent > currentSpread ? lastSpreadWithContent : getLastPage() / 2);
+            playPageTurnSound(1f);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean setPage(int pageIndex) {
+        pageIndex = Mth.clamp(pageIndex, 0, getPageCount() - 1);
+        int spreadIndex = pageIndex / 2;
+        return setSpread(spreadIndex);
+    }
+
+    public boolean setSpread(int spreadIndex) {
+        spreadIndex = Mth.clamp(spreadIndex, 0, getSpreadCount() - 1);
+        if (spreadIndex != this.currentSpread) {
+            this.currentSpread = spreadIndex;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     // -- Render
@@ -202,22 +264,57 @@ public abstract class SpreadBookScreen extends Screen {
                 return true;
             }
 
-            if (event.key() == InputConstants.KEY_LEFT
-                  || event.key() == InputConstants.KEY_PAGEUP
-                  || Minecraft.getInstance().options.keyLeft.matches(event)) {
-                pageBack();
+            if (keyCode == InputConstants.KEY_LEFT
+                  || keyCode == InputConstants.KEY_PAGEUP
+                  || Minecraft.getInstance().options.keyLeft.matches(keyCode, scanCode)) {
+                if (Screen.hasShiftDown()) {
+                    pageToStart();
+                } else {
+                    pageBack();
+                }
                 return true;
             }
 
-            if (event.key() == InputConstants.KEY_RIGHT
-                  || event.key() == InputConstants.KEY_PAGEDOWN
-                  || Minecraft.getInstance().options.keyRight.matches(event)) {
-                pageForward();
+            if (keyCode == InputConstants.KEY_RIGHT
+                  || keyCode == InputConstants.KEY_PAGEDOWN
+                  || Minecraft.getInstance().options.keyRight.matches(keyCode, scanCode)) {
+                if (Screen.hasShiftDown()) {
+                    pageToEnd();
+                } else {
+                    pageForward();
+                }
                 return true;
             }
         }
 
         return super.keyPressed(event);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+            return true;
+        }
+
+        if (scrollY > 0) {
+            if (Screen.hasShiftDown()) {
+                pageToStart();
+            } else {
+                pageBack();
+            }
+            return true;
+        }
+
+        if (scrollY < 0) {
+            if (Screen.hasShiftDown()) {
+                pageToEnd();
+            } else {
+                pageForward();
+            }
+            return true;
+        }
+
+        return false;
     }
 
     // --

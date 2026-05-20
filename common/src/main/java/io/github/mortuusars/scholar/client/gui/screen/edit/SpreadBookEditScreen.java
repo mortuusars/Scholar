@@ -378,6 +378,25 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     @Override
+    protected boolean pageToStart() {
+        int currentSpreadIndex = currentSpread;
+        if (super.pageToStart()) {
+            setTextBoxes();
+
+            getHistory().add(() -> {
+                super.pageToStart();
+                setTextBoxes();
+            }, () -> {
+                super.setSpread(currentSpreadIndex);
+                setTextBoxes();
+            });
+
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     protected boolean pageBack() {
         if (super.pageBack()) {
             setTextBoxes();
@@ -388,6 +407,25 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
                 super.pageForward();
                 setTextBoxes();
             });
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected boolean pageToEnd() {
+        int currentSpreadIndex = currentSpread;
+        if (super.pageToEnd()) {
+            setTextBoxes();
+
+            getHistory().add(() -> {
+                super.pageToEnd();
+                setTextBoxes();
+            }, () -> {
+                super.setSpread(currentSpreadIndex);
+                setTextBoxes();
+            });
+
             return true;
         }
         return false;
@@ -551,7 +589,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     protected boolean canInsertEmptyPage(Spread.Side side) {
         int pageIndex = side.getPageIndexFromSpread(currentSpread);
-        int lastPageWithContent = getLastPageWithContent().orElse(-1);
+        int lastPageWithContent = getLastPageWithContent();
         return lastPageWithContent < 99 && pageIndex <= lastPageWithContent;
     }
 
@@ -559,11 +597,29 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         return containsContentAfter(side.getPageIndexFromSpread(currentSpread));
     }
 
-    protected OptionalInt getLastPageWithContent() {
-        for (int i = pages.size() - 1; i >= 0; i--) {
-            if (!pages.get(i).isEmpty()) return OptionalInt.of(i);
+    @Override
+    public int getLastPage() {
+        return Math.max(pages.size() - 1, 0);
+    }
+
+    @Override
+    protected int getFirstPageWithContent() {
+        for (int i = 0; i < pages.size(); i++) {
+            if (!pages.get(i).isEmpty()) {
+                return i;
+            }
         }
-        return OptionalInt.empty();
+        return 0;
+    }
+
+    @Override
+    protected int getLastPageWithContent() {
+        for (int i = pages.size() - 1; i >= 0; i--) {
+            if (!pages.get(i).isEmpty()) {
+                return i;
+            }
+        }
+        return 0;
     }
 
     protected boolean containsContentAfter(int pageIndex) {
