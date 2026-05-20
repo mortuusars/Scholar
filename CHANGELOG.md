@@ -1,6 +1,9 @@
 # Changelog
 
 ## UNRELEASED
+- [Scroll Wheel] can be used to change pages now.
+- Holding [Shift] when changing page now jumps to the start/end.
+  - It works in steps - first jump is to the first page with content on it, if already on it or past - jump to end.
 - Inverted behavior of [Shift] key when copying/pasting text or importing/exporting book.
   - Formatting is now always kept by default, unless [Shift] key is held.
 - Insert Empty Page and Remove Page keyboard shortcuts can be changed now.

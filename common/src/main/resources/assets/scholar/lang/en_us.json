@@ -41,6 +41,8 @@
   "gui.scholar.tools.tooltip.paste_without_formatting": "§8[§7Ctrl+Shift+V§8] Paste without formatting",
   "gui.scholar.tools.tooltip.redo": "§8[§7Ctrl+Shift+Z§8] Redo",
   "gui.scholar.tools.tooltip.undo": "§8[§7Ctrl+Z§8] Undo",
+  "gui.scholar.shift_jump_to_start": "§8[§7Shift§8] Jump to beginning",
+  "gui.scholar.shift_jump_to_end": "§8[§7Shift§8] Jump to end",
   "key.scholar.categories.scholar": "Scholar",
   "key.scholar.export_book": "Export Book",
   "key.scholar.import_book": "Import Book",

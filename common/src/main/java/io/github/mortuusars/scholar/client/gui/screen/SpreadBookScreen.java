@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
+import io.github.mortuusars.scholar.book.Spread;
 import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
@@ -20,6 +21,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -83,24 +85,40 @@ public abstract class SpreadBookScreen extends Screen {
 
     protected void createPrevPageButton() {
         ImageButton prevPageButton = new ImageButton(leftPos + 12, topPos + 156, 13, 15,
-                Widgets.PREVIOUS_PAGE_SPRITES,
-                (button) -> pageBack());
-        prevPageButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.previous_page")));
+              Widgets.PREVIOUS_PAGE_SPRITES,
+              (button) -> {
+                  if (Screen.hasShiftDown()) {
+                      pageToStart();
+                  } else {
+                      pageBack();
+                  }
+              });
+        prevPageButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.previous_page")
+              .append(CommonComponents.NEW_LINE)
+              .append(Component.translatable("gui.scholar.shift_jump_to_start"))));
         this.prevPageButton = addRenderableWidget(prevPageButton);
     }
 
     protected void createNextPageButton() {
         ImageButton nextPageButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
-                Widgets.NEXT_PAGE_SPRITES, (button) -> pageForward());
-        nextPageButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.next_page")));
+              Widgets.NEXT_PAGE_SPRITES, (button) -> {
+            if (Screen.hasShiftDown()) {
+                pageToEnd();
+            } else {
+                pageForward();
+            }
+        });
+        nextPageButton.setTooltip(Tooltip.create(Component.translatable("spectatorMenu.next_page")
+              .append(CommonComponents.NEW_LINE)
+              .append(Component.translatable("gui.scholar.shift_jump_to_end"))));
         this.nextPageButton = addRenderableWidget(nextPageButton);
     }
 
     protected void createBottomButtons() {
         if (Config.Client.SHOW_DONE_BUTTON.get()) {
             addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, (button) -> onClose())
-                    .bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20)
-                    .build());
+                  .bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20)
+                  .build());
         }
     }
 
@@ -128,12 +146,29 @@ public abstract class SpreadBookScreen extends Screen {
     }
 
     public int getSpreadCount() {
-        return (int)Math.ceil(getPageCount() / 2.0);
+        return (int) Math.ceil(getPageCount() / 2.0);
     }
+
+    public abstract int getLastPage();
+
+    protected abstract int getFirstPageWithContent();
+
+    protected abstract int getLastPageWithContent();
 
     protected boolean pageBack() {
         if (currentSpread > 0) {
             currentSpread--;
+            playPageTurnSound(0.8f);
+            return true;
+        }
+        return false;
+    }
+
+    protected boolean pageToStart() {
+        if (currentSpread > 0) {
+            int firstPageWithContent = getFirstPageWithContent();
+            int firstSpreadWithContent = firstPageWithContent / 2;
+            setSpread(firstSpreadWithContent < currentSpread ? firstSpreadWithContent : 0);
             playPageTurnSound(0.8f);
             return true;
         }
@@ -149,18 +184,45 @@ public abstract class SpreadBookScreen extends Screen {
         return false;
     }
 
+    protected boolean pageToEnd() {
+        if (currentSpread < getLastPage() / 2) {
+            int lastPageWithContent = getLastPageWithContent();
+            int lastSpreadWithContent = lastPageWithContent / 2;
+            setSpread(lastSpreadWithContent > currentSpread ? lastSpreadWithContent : getLastPage() / 2);
+            playPageTurnSound(1f);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean setPage(int pageIndex) {
+        pageIndex = Mth.clamp(pageIndex, 0, getPageCount() - 1);
+        int spreadIndex = pageIndex / 2;
+        return setSpread(spreadIndex);
+    }
+
+    public boolean setSpread(int spreadIndex) {
+        spreadIndex = Mth.clamp(spreadIndex, 0, getSpreadCount() - 1);
+        if (spreadIndex != this.currentSpread) {
+            this.currentSpread = spreadIndex;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     // -- Render
 
     protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         RenderUtil.withColorMultiplied(bookColor, () -> {
             // Cover
             guiGraphics.blit(TEXTURE, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,
-                    0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
+                  0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
         });
 
         // Paper
         guiGraphics.blit(TEXTURE, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,
-                0, BOOK_HEIGHT, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
+              0, BOOK_HEIGHT, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
     }
 
     protected void renderPageNumbers(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread) {
@@ -171,13 +233,13 @@ public abstract class SpreadBookScreen extends Screen {
     protected void renderLeftPageNumber(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
         String leftPageNumber = Integer.toString(currentSpread * 2 + 1);
         guiGraphics.drawString(font, leftPageNumber, leftPos + 69 + (8 - font.width(leftPageNumber) / 2),
-                topPos + 157, color, false);
+              topPos + 157, color, false);
     }
 
     protected void renderRightPageNumber(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
         String rightPageNumber = Integer.toString(currentSpread * 2 + 2);
         guiGraphics.drawString(font, rightPageNumber, leftPos + 208 + (8 - font.width(rightPageNumber) / 2),
-                topPos + 157, color, false);
+              topPos + 157, color, false);
     }
 
     protected void renderTools(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -198,13 +260,25 @@ public abstract class SpreadBookScreen extends Screen {
                 return true;
             }
 
-            if (keyCode == InputConstants.KEY_LEFT || keyCode == InputConstants.KEY_PAGEUP || Minecraft.getInstance().options.keyLeft.matches(keyCode, scanCode)) {
-                pageBack();
+            if (keyCode == InputConstants.KEY_LEFT
+                  || keyCode == InputConstants.KEY_PAGEUP
+                  || Minecraft.getInstance().options.keyLeft.matches(keyCode, scanCode)) {
+                if (Screen.hasShiftDown()) {
+                    pageToStart();
+                } else {
+                    pageBack();
+                }
                 return true;
             }
 
-            if (keyCode == InputConstants.KEY_RIGHT || keyCode == InputConstants.KEY_PAGEDOWN || Minecraft.getInstance().options.keyRight.matches(keyCode, scanCode)) {
-                pageForward();
+            if (keyCode == InputConstants.KEY_RIGHT
+                  || keyCode == InputConstants.KEY_PAGEDOWN
+                  || Minecraft.getInstance().options.keyRight.matches(keyCode, scanCode)) {
+                if (Screen.hasShiftDown()) {
+                    pageToEnd();
+                } else {
+                    pageForward();
+                }
                 return true;
             }
         }
@@ -212,12 +286,39 @@ public abstract class SpreadBookScreen extends Screen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+            return true;
+        }
+
+        if (scrollY > 0) {
+            if (Screen.hasShiftDown()) {
+                pageToStart();
+            } else {
+                pageBack();
+            }
+            return true;
+        }
+
+        if (scrollY < 0) {
+            if (Screen.hasShiftDown()) {
+                pageToEnd();
+            } else {
+                pageForward();
+            }
+            return true;
+        }
+
+        return false;
+    }
+
     // --
 
     protected boolean isHovering(int x, int y, int width, int height, double mouseX, double mouseY) {
         mouseX -= this.leftPos;
         mouseY -= this.topPos;
-        return mouseX >= (double)(x - 1) && mouseX < (double)(x + width + 1) && mouseY >= (double)(y - 1) && mouseY < (double)(y + height + 1);
+        return mouseX >= (double) (x - 1) && mouseX < (double) (x + width + 1) && mouseY >= (double) (y - 1) && mouseY < (double) (y + height + 1);
     }
 
     protected boolean isHoveringOverRightPageNumber(double mouseX, double mouseY) {
@@ -238,17 +339,17 @@ public abstract class SpreadBookScreen extends Screen {
 
     protected void playButtonClickSound(float volume, float pitch) {
         Minecraft.getInstance().getSoundManager().play(
-                SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), pitch, volume));
+              SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), pitch, volume));
     }
 
     protected void playButtonClickSound(float pitch) {
         Minecraft.getInstance().getSoundManager().play(
-                SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), pitch, 0.3f));
+              SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), pitch, 0.3f));
     }
 
     protected void playButtonClickSound() {
         Minecraft.getInstance().getSoundManager().play(
-                SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1, 0.3f));
+              SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1, 0.3f));
     }
 
     protected void playPageTurnSound(float volume, float pitch) {
