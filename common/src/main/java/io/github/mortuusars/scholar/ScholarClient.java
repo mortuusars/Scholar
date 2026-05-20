@@ -25,10 +25,19 @@ public class ScholarClient {
         public static KeyMapping exportBook = new KeyMapping("key.scholar.export_book",
                 InputConstants.KEY_F7, SCHOLAR_CATEGORY);
 
+        public static KeyMapping insertEmptyPageLeft = PlatformHelperClient.createInsertEmptyPageLeftKeyMapping();
+        public static KeyMapping removePageLeft = PlatformHelperClient.createRemovePageLeftKeyMapping();
+        public static KeyMapping insertEmptyPageRight = PlatformHelperClient.createInsertEmptyPageRightKeyMapping();
+        public static KeyMapping removePageRight = PlatformHelperClient.createRemovePageRightKeyMapping();
+
         public static void register(Consumer<KeyMapping> registerFunction) {
             registerFunction.accept(toggleBookTools);
             registerFunction.accept(importBook);
             registerFunction.accept(exportBook);
+            registerFunction.accept(insertEmptyPageLeft);
+            registerFunction.accept(removePageLeft);
+            registerFunction.accept(insertEmptyPageRight);
+            registerFunction.accept(removePageRight);
         }
 
         public static MutableComponent componentForTooltip(KeyMapping keyMapping) {
