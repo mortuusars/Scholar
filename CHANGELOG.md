@@ -2,6 +2,7 @@
 
 ## UNRELEASED
 - Added in-world tooltip for books placed on a Lectern.
+- Lectern model now renders proper book colors.
 - [Scroll Wheel] can be used to change pages now.
 - Holding [Shift] when changing page now jumps to the start/end.
     - It works in steps - first jump is to the first page with content on it, if already on it or past - jump to end.
