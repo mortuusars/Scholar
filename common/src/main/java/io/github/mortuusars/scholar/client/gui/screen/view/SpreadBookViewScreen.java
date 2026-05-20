@@ -41,16 +41,38 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
         return getBookAccess().getPageCount();
     }
 
+    @Override
+    public int getLastPage() {
+        return Math.max(getPageCount() - 1, 0);
+    }
+
+    @Override
+    protected int getFirstPageWithContent() {
+        for (int i = 0; i < getPageCount(); i++) {
+            if (!getBookAccess().getPage(i).getString().isEmpty()) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    protected int getLastPageWithContent() {
+        for (int i = getPageCount() - 1; i >= 0; i--) {
+            if (!getBookAccess().getPage(i).getString().isEmpty()) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    @Override
     public boolean setPage(int pageIndex) {
-        pageIndex = Mth.clamp(pageIndex, 0, getBookAccess().getPageCount() - 1);
-        int spreadIndex = (int)(pageIndex / 2f);
-        if (spreadIndex != this.currentSpread) {
-            this.currentSpread = spreadIndex;
+        if (super.setPage(pageIndex)) {
             this.cachedSpread = -1;
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     @Override

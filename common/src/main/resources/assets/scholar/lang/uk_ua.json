@@ -75,6 +75,8 @@
   "item.scholar.white_written_book": "Біла написана книга",
   "item.scholar.yellow_writable_book": "Жовта книга з пером",
   "item.scholar.yellow_written_book": "Жовта написана книга",
+  "gui.scholar.shift_jump_to_start": "§8[§7Shift§8] На початок",
+  "gui.scholar.shift_jump_to_end": "§8[§7Shift§8] У кінець",
   "key.scholar.categories.scholar": "Scholar",
   "key.scholar.export_book": "Експортувати книгу",
   "key.scholar.import_book": "Імпортувати книгу",

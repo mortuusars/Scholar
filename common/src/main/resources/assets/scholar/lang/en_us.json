@@ -75,6 +75,8 @@
   "item.scholar.white_written_book": "White Written Book",
   "item.scholar.yellow_writable_book": "Yellow Book and Quill",
   "item.scholar.yellow_written_book": "Yellow Written Book",
+  "gui.scholar.shift_jump_to_start": "§8[§7Shift§8] Jump to beginning",
+  "gui.scholar.shift_jump_to_end": "§8[§7Shift§8] Jump to end",
   "key.scholar.categories.scholar": "Scholar",
   "key.scholar.export_book": "Export Book",
   "key.scholar.import_book": "Import Book",
