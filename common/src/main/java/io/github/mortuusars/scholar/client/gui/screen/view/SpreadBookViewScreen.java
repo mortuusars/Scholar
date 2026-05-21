@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-public class SpreadBookViewScreen extends SpreadBookScreen {
+public abstract class SpreadBookViewScreen extends SpreadBookScreen {
     protected BookViewAccess bookAccess;
     protected Pair<List<FormattedCharSequence>, List<FormattedCharSequence>> cachedPageComponents;
     protected int cachedSpread;
@@ -77,7 +77,7 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        updateButtonVisibility();
+        updateButtons();
 
         renderTransparentBackground(guiGraphics);
         renderBook(guiGraphics, mouseX, mouseY, partialTick);

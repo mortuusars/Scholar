@@ -4,8 +4,11 @@ import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.inventory.MenuType;
 import org.slf4j.Logger;
 
@@ -20,13 +23,16 @@ public class Scholar {
     }
 
     public static void init() {
-        Items.init();
+        DataComponents.init();
         MenuTypes.init();
         RecipeSerializers.init();
         SoundEvents.init();
     }
 
-    public static class Items {
+    public static class DataComponents {
+        public static final DataComponentType<Integer> BOOKMARK = Register.dataComponentType("bookmark",
+              b -> b.persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.INT));
+
         static void init() { }
     }
 

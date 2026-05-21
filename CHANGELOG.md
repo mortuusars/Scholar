@@ -1,6 +1,7 @@
 # Changelog
 
 ## UNRELEASED
+- Added bookmark - opens the book at the set page.
 - Added in-world tooltip for books placed on a Lectern.
 - Lectern model now renders proper book colors.
 - [Scroll Wheel] can be used to change pages now.

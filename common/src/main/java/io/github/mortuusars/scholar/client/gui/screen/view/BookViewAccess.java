@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar.client.gui.screen.view;
 
 import com.google.common.collect.ImmutableList;
+import io.github.mortuusars.scholar.Scholar;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -13,6 +14,7 @@ import net.minecraft.world.item.WrittenBookItem;
 import net.minecraft.world.item.component.WritableBookContent;
 import net.minecraft.world.item.component.WrittenBookContent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -32,6 +34,10 @@ public interface BookViewAccess {
 
     int getPageCount();
     FormattedText getPageRaw(int pageIndex);
+    default int getBookmarkedPage() {
+        return 0;
+    }
+    default void setBookmarkedPage(@Nullable Integer page) {}
 
     default FormattedText getPage(int pageIndex) {
         return pageIndex >= 0 && pageIndex < getPageCount() ? getPageRaw(pageIndex) : FormattedText.EMPTY;
@@ -75,9 +81,11 @@ public interface BookViewAccess {
 
     class WritableBookAccess implements BookViewAccess {
         private final List<String> pages;
+        private final ItemStack bookStack;
 
         public WritableBookAccess(ItemStack itemStack) {
             this.pages = readPages(itemStack);
+            this.bookStack = itemStack;
         }
 
         private static List<String> readPages(ItemStack itemStack) {
@@ -92,13 +100,25 @@ public interface BookViewAccess {
         public FormattedText getPageRaw(int i) {
             return i >= pages.size() ? FormattedText.EMPTY : FormattedText.of(this.pages.get(i));
         }
+
+        @Override
+        public int getBookmarkedPage() {
+            return bookStack.getOrDefault(Scholar.DataComponents.BOOKMARK, 0);
+        }
+
+        @Override
+        public void setBookmarkedPage(@Nullable Integer page) {
+            bookStack.set(Scholar.DataComponents.BOOKMARK, page);
+        }
     }
 
     class WrittenBookAccess implements BookViewAccess {
         private final List<Component> pages;
+        private final ItemStack bookStack;
 
-        public WrittenBookAccess(ItemStack itemStack) {
-            this.pages = readPages(itemStack);
+        public WrittenBookAccess(ItemStack bookStack) {
+            this.pages = readPages(bookStack);
+            this.bookStack = bookStack;
         }
 
         private static List<Component> readPages(ItemStack itemStack) {
@@ -112,6 +132,16 @@ public interface BookViewAccess {
 
         public @NotNull FormattedText getPageRaw(int i) {
             return pages.get(i);
+        }
+
+        @Override
+        public int getBookmarkedPage() {
+            return bookStack.getOrDefault(Scholar.DataComponents.BOOKMARK, 0);
+        }
+
+        @Override
+        public void setBookmarkedPage(@Nullable Integer page) {
+            bookStack.set(Scholar.DataComponents.BOOKMARK, page);
         }
     }
 }
