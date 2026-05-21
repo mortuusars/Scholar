@@ -30,6 +30,7 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.*;
 import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.server.network.Filterable;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,9 +44,8 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
-public class SpreadBookEditScreen extends SpreadBookScreen {
+public abstract class SpreadBookEditScreen extends SpreadBookScreen {
     protected final ItemStack bookStack;
-    protected final InteractionHand hand;
 
     protected final List<String> pages = new ArrayList<>();
 
@@ -63,10 +63,9 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     protected boolean bookModified;
 
-    public SpreadBookEditScreen(ItemStack bookStack, InteractionHand hand) {
+    public SpreadBookEditScreen(ItemStack bookStack) {
         super(BookColor.of(bookStack));
         this.bookStack = bookStack;
-        this.hand = hand;
     }
 
     public History getHistory() {
@@ -109,12 +108,8 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
         setupPages(bookStack);
 
-        createPageToolButtons();
-
         createPrevPageButton();
         createNextPageButton();
-
-        createImportExportButtons();
 
         ImageButton enterSignModeButton = new ImageButton(leftPos - 24, topPos + 18, 22, 22,
               ENTER_SIGN_MODE_SPRITES, b -> enterSignMode(), Component.translatable("book.signButton"));
@@ -124,36 +119,38 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         enterSignModeButton.setTooltip(Tooltip.create(Component.translatable("book.signButton")));
         addRenderableWidget(enterSignModeButton);
 
+        createExtraToolsButtons();
+
         createBottomButtons();
     }
 
-    protected void createPageToolButtons() {
+    protected void createExtraToolsButtons() {
         insertEmptyPageLeftButton = new ImageButton(leftPos + 112, topPos + 154, 13, 13,
               INSERT_EMPTY_PAGE_SPRITES, b -> insertEmptyPage(Spread.Side.LEFT), Component.translatable("gui.scholar.insert_empty_page"));
         insertEmptyPageLeftButton = new ImageButton(leftPos + 112, topPos + 154, 13, 13, 343, 0,
-                13, TEXTURE, 512, 512,
-                b -> insertEmptyPage(Spread.Side.LEFT), Component.translatable("gui.scholar.insert_empty_page"));
+              13, TEXTURE, 512, 512,
+              b -> insertEmptyPage(Spread.Side.LEFT), Component.translatable("gui.scholar.insert_empty_page"));
         insertEmptyPageLeftButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.insert_empty_page")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.insertEmptyPageLeft))));
         addRenderableWidget(insertEmptyPageLeftButton);
 
         removePageLeftButton = new ImageButton(leftPos + 126, topPos + 154, 13, 13, 356, 0,
-                13, TEXTURE, 512, 512,
-                b -> removePage(Spread.Side.LEFT), Component.translatable("gui.scholar.remove_page"));
+              13, TEXTURE, 512, 512,
+              b -> removePage(Spread.Side.LEFT), Component.translatable("gui.scholar.remove_page"));
         removePageLeftButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.remove_page")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.removePageLeft))));
         addRenderableWidget(removePageLeftButton);
 
         insertEmptyPageRightButton = new ImageButton(leftPos + 156, topPos + 154, 13, 13, 343, 0,
-                13, TEXTURE, 512, 512,
-                b -> insertEmptyPage(Spread.Side.RIGHT), Component.translatable("gui.scholar.insert_empty_page"));
+              13, TEXTURE, 512, 512,
+              b -> insertEmptyPage(Spread.Side.RIGHT), Component.translatable("gui.scholar.insert_empty_page"));
         insertEmptyPageRightButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.insert_empty_page")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.insertEmptyPageRight))));
         addRenderableWidget(insertEmptyPageRightButton);
 
         removePageRightButton = new ImageButton(leftPos + 170, topPos + 154, 13, 13, 356, 0,
-                13, TEXTURE, 512, 512,
-                b -> removePage(Spread.Side.RIGHT), Component.translatable("gui.scholar.remove_page"));
+              13, TEXTURE, 512, 512,
+              b -> removePage(Spread.Side.RIGHT), Component.translatable("gui.scholar.remove_page"));
         removePageRightButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.remove_page")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.removePageRight))));
         addRenderableWidget(removePageRightButton);
@@ -162,7 +159,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     protected void createImportExportButtons() {
         importBookButton = new ImageButton(leftPos + 297, topPos + 16, 18, 18, 387, 0,
                 18, TEXTURE, 512, 512,
-                b -> importBook(Screen.hasShiftDown()), Component.translatable("gui.scholar.import_book"));
+                b -> importBook(!Screen.hasShiftDown()), Component.translatable("gui.scholar.import_book"));
         importBookButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.import_book")
                 .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.importBook))
                 .append(CommonComponents.NEW_LINE)
@@ -186,8 +183,8 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     @Override
-    protected void updateButtonVisibility() {
-        super.updateButtonVisibility();
+    protected void updateButtons() {
+        super.updateButtons();
 
         insertEmptyPageLeftButton.visible = isToolsVisible();
         insertEmptyPageLeftButton.active = canInsertEmptyPage(Spread.Side.LEFT);
@@ -208,7 +205,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        updateButtonVisibility();
+        updateButtons();
 
         renderBackground(guiGraphics);
         renderBook(guiGraphics, mouseX, mouseY, partialTick);
@@ -541,11 +538,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         }
     }
 
-    protected void sendChanges(@Nullable String title) {
-        int slotId = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : 40;
-        Objects.requireNonNull(minecraft.getConnection()).send(
-              new ServerboundEditBookPacket(slotId, this.pages, Optional.ofNullable(title)));
-    }
+    protected abstract void sendChanges(@Nullable String title);
 
     protected void removeEmptyTrailingPages() {
         ListIterator<String> iterator = this.pages.listIterator(this.pages.size());

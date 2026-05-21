@@ -122,7 +122,7 @@ public abstract class SpreadBookScreen extends Screen {
         }
     }
 
-    protected void updateButtonVisibility() {
+    protected void updateButtons() {
         prevPageButton.visible = currentSpread > 0;
         nextPageButton.visible = currentSpread < getSpreadCount() - 1;
     }

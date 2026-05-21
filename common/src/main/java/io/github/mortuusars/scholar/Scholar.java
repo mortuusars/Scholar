@@ -7,8 +7,11 @@ import io.github.mortuusars.scholar.item.ColoredWrittenBookItem;
 import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
 import io.github.mortuusars.scholar.recipe.NbtTransferringRecipe;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -34,25 +37,7 @@ public class Scholar {
         SoundEvents.init();
     }
 
-    @SuppressWarnings("removal")
     public static class Items {
-        public static final Map<DyeColor, Supplier<ColoredWritableBookItem>> COLORED_WRITABLE_BOOKS;
-        public static final Map<DyeColor, Supplier<ColoredWrittenBookItem>> COLORED_WRITTEN_BOOKS;
-
-        static {
-            COLORED_WRITABLE_BOOKS = new HashMap<>();
-            for (DyeColor color : DyeColor.values()) {
-                COLORED_WRITABLE_BOOKS.put(color, Register.item(color.getSerializedName() + "_writable_book",
-                        () -> new ColoredWritableBookItem(color, new Item.Properties().stacksTo(1))));
-            }
-
-            COLORED_WRITTEN_BOOKS = new HashMap<>();
-            for (DyeColor color : DyeColor.values()) {
-                COLORED_WRITTEN_BOOKS.put(color, Register.item(color.getSerializedName() + "_written_book",
-                        () -> new ColoredWrittenBookItem(color, new Item.Properties().stacksTo(16))));
-            }
-        }
-
         static void init() { }
     }
 
