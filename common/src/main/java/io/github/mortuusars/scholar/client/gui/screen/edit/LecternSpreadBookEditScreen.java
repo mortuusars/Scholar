@@ -14,7 +14,6 @@ import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +40,7 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
     };
 
     public LecternSpreadBookEditScreen(LecternSpreadBookEditMenu lecternSpreadMenu, Inventory inventory, Component component) {
-        super(lecternSpreadMenu.getBook(), InteractionHand.MAIN_HAND);
+        super(lecternSpreadMenu.getBook());
         this.menu = lecternSpreadMenu;
     }
 
@@ -77,7 +76,9 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
     protected boolean pageBack() {
         this.sendButtonClick(LecternMenu.BUTTON_PREV_PAGE);
 
-        getHistory().add(() -> this.sendButtonClick(LecternMenu.BUTTON_PREV_PAGE), () -> this.sendButtonClick(LecternMenu.BUTTON_NEXT_PAGE)
+        getHistory().add(
+              () -> this.sendButtonClick(LecternMenu.BUTTON_PREV_PAGE),
+              () -> this.sendButtonClick(LecternMenu.BUTTON_NEXT_PAGE)
         );
 
         return true;
@@ -87,7 +88,9 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
     protected boolean pageForward() {
         this.sendButtonClick(LecternMenu.BUTTON_NEXT_PAGE);
 
-        getHistory().add(() -> this.sendButtonClick(LecternMenu.BUTTON_NEXT_PAGE), () -> this.sendButtonClick(LecternMenu.BUTTON_PREV_PAGE)
+        getHistory().add(
+              () -> this.sendButtonClick(LecternMenu.BUTTON_NEXT_PAGE),
+              () -> this.sendButtonClick(LecternMenu.BUTTON_PREV_PAGE)
         );
 
         return true;
@@ -109,7 +112,7 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
             }
 
             setTextBoxes();
-            updateButtonVisibility();
+            updateButtons();
         }
         saveChanges(false, null);
     }
@@ -119,11 +122,6 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
         removeEmptyTrailingPages();
         // Copying 'pages' list to not cause ConcurrentModificationException when packet is encoded:
         Packets.sendToServer(new LecternEditBookC2SP(getMenu().getLecternPos(), new ArrayList<>(pages), Optional.ofNullable(title)));
-    }
-
-    @Override
-    protected void updateLocalCopy() {
-        super.updateLocalCopy();
     }
 
     // --
@@ -172,7 +170,6 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
     }
 
     // --
-
 
     @Override
     public void setFocused(@Nullable GuiEventListener focused) {

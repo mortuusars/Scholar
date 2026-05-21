@@ -2,6 +2,7 @@ package io.github.mortuusars.scholar.mixin;
 
 import com.mojang.authlib.GameProfile;
 import io.github.mortuusars.scholar.Config;
+import io.github.mortuusars.scholar.client.gui.screen.edit.InHandSpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.screen.edit.SpreadBookEditScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -27,7 +28,7 @@ public abstract class OpenWritableBookGuiLocalPlayerMixin extends Player {
         if (!stack.is(Items.WRITABLE_BOOK)) return;
         if (Config.Common.SNEAK_OPENS_VANILLA_BOOK_SCREEN.get() && isSecondaryUseActive()) return;
 
-        Minecraft.getInstance().setScreen(new SpreadBookEditScreen(stack, hand));
+        Minecraft.getInstance().setScreen(new InHandSpreadBookEditScreen(stack, hand));
         ci.cancel();
     }
 }

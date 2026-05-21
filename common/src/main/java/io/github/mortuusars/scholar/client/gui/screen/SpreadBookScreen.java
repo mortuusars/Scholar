@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
-import io.github.mortuusars.scholar.book.Spread;
 import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import net.minecraft.client.GameNarrator;
@@ -128,7 +127,7 @@ public abstract class SpreadBookScreen extends Screen {
         }
     }
 
-    protected void updateButtonVisibility() {
+    protected void updateButtons() {
         prevPageButton.visible = currentSpread > 0;
         nextPageButton.visible = currentSpread < getSpreadCount() - 1;
     }

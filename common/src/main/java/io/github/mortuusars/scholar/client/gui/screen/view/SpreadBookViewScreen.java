@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class SpreadBookViewScreen extends SpreadBookScreen {
+public abstract class SpreadBookViewScreen extends SpreadBookScreen {
     protected BookViewAccess bookAccess;
     protected Style pageTextStyle;
     protected Pair<List<FormattedCharSequence>, List<FormattedCharSequence>> cachedPageComponents;
@@ -83,7 +83,7 @@ public class SpreadBookViewScreen extends SpreadBookScreen {
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        updateButtonVisibility();
+        updateButtons();
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         visitText(guiGraphics.textRenderer(GuiGraphics.HoveredTextEffects.TOOLTIP_AND_CURSOR), Spread.Side.LEFT);
         visitText(guiGraphics.textRenderer(GuiGraphics.HoveredTextEffects.TOOLTIP_AND_CURSOR), Spread.Side.RIGHT);

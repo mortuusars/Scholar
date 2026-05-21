@@ -26,7 +26,6 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.*;
-import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
 import net.minecraft.server.network.Filterable;
 import net.minecraft.util.Util;
 import net.minecraft.world.InteractionHand;
@@ -45,7 +44,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
-public class SpreadBookEditScreen extends SpreadBookScreen {
+public abstract class SpreadBookEditScreen extends SpreadBookScreen {
     public static final WidgetSprites ENTER_SIGN_MODE_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/sign_button"));
     public static final WidgetSprites INSERT_EMPTY_PAGE_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/insert_empty_page_button"));
     public static final WidgetSprites REMOVE_PAGE_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/remove_page_button"));
@@ -55,7 +54,6 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     public static final int AUTOMATIC_SAVE_INTERVAL_MS = 60000;
 
     protected final ItemStack bookStack;
-    protected final InteractionHand hand;
 
     protected final List<String> pages = new ArrayList<>();
 
@@ -74,10 +72,9 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     protected boolean bookModified;
     protected long lastAutomaticSave = -1;
 
-    public SpreadBookEditScreen(ItemStack bookStack, InteractionHand hand) {
+    public SpreadBookEditScreen(ItemStack bookStack) {
         super(BookColor.of(bookStack));
         this.bookStack = bookStack;
-        this.hand = hand;
     }
 
     public History getHistory() {
@@ -121,22 +118,20 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
         setupPages(bookStack);
 
-        createPageToolButtons();
-
         createPrevPageButton();
         createNextPageButton();
-
-        createImportExportButtons();
 
         ImageButton enterSignModeButton = new ImageButton(leftPos - 24, topPos + 18, 22, 22,
               ENTER_SIGN_MODE_SPRITES, b -> enterSignMode(), Component.translatable("book.signButton"));
         enterSignModeButton.setTooltip(Tooltip.create(Component.translatable("book.signButton")));
         addRenderableWidget(enterSignModeButton);
 
+        createExtraToolsButtons();
+
         createBottomButtons();
     }
 
-    protected void createPageToolButtons() {
+    protected void createExtraToolsButtons() {
         insertEmptyPageLeftButton = new ImageButton(leftPos + 112, topPos + 154, 13, 13,
               INSERT_EMPTY_PAGE_SPRITES, b -> insertEmptyPage(Spread.Side.LEFT), Component.translatable("gui.scholar.insert_empty_page"));
         insertEmptyPageLeftButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.insert_empty_page")
@@ -160,9 +155,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         removePageRightButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.remove_page")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.removePageRight))));
         addRenderableWidget(removePageRightButton);
-    }
 
-    protected void createImportExportButtons() {
         importBookButton = new ImageButton(leftPos + 297, topPos + 16, 18, 18, IMPORT_BOOK_SPRITES,
               b -> importBook(!minecraft.hasShiftDown()), Component.translatable("gui.scholar.import_book"));
         importBookButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.import_book")
@@ -187,8 +180,8 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     @Override
-    protected void updateButtonVisibility() {
-        super.updateButtonVisibility();
+    protected void updateButtons() {
+        super.updateButtons();
 
         insertEmptyPageLeftButton.visible = isToolsVisible();
         insertEmptyPageLeftButton.active = canInsertEmptyPage(Spread.Side.LEFT);
@@ -231,7 +224,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        updateButtonVisibility();
+        updateButtons();
 
         renderTransparentBackground(guiGraphics);
         renderBook(guiGraphics, mouseX, mouseY, partialTick);
@@ -567,11 +560,7 @@ public class SpreadBookEditScreen extends SpreadBookScreen {
         }
     }
 
-    protected void sendChanges(@Nullable String title) {
-        int slotId = hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : 40;
-        Objects.requireNonNull(minecraft.getConnection()).send(
-              new ServerboundEditBookPacket(slotId, this.pages, Optional.ofNullable(title)));
-    }
+    protected abstract void sendChanges(@Nullable String title);
 
     protected void removeEmptyTrailingPages() {
         ListIterator<String> iterator = this.pages.listIterator(this.pages.size());
