@@ -51,7 +51,9 @@ public class Scholar {
     }
 
     public static class SoundEvents {
-        public static final Supplier<SoundEvent> BOOK_SIGNED = register("book", "signed");
+        public static final Supplier<SoundEvent> BOOK_SIGNED = register("ui", "book_signed");
+        public static final Supplier<SoundEvent> SCRIBBLE = register("ui", "scribble");
+        public static final Supplier<SoundEvent> INK = register("ui", "ink");
 
         @SuppressWarnings("SameParameterValue")
         private static Supplier<SoundEvent> register(String category, String key) {

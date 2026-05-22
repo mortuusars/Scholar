@@ -208,7 +208,15 @@ public class FormattingToolbar {
                 if (formattingButton.isHovering((int) (event.x() - x), (int) (event.y() - y))) {
                     getTextBox().getEditor().applyFormatting(Formatting.of(formattingButton.formatting()));
                     Minecraft.getInstance().getSoundManager().play(
-                            SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1, 0.3f));
+                            SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1, 0.1f));
+
+                    if (getTextBox().getEditor().applyFormatting(Formatting.of(formattingButton.formatting()))) {
+                        SoundEvent sound = formattingButton.formatting().isColor()
+                              ? Scholar.SoundEvents.INK.get()
+                              : Scholar.SoundEvents.SCRIBBLE.get();
+                        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(sound, 1, 0.3f));
+                    }
+
                     return true;
                 }
             }

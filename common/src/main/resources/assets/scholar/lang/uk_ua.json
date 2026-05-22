@@ -74,5 +74,7 @@
   "scholar.configuration.text_color": "Колір тексту",
   "scholar.configuration.ui": "Інтерфейс",
   "scholar.configuration.written_book_enchantment_glint": "Блиск написаної книги",
-  "subtitle.scholar.book.signed": "Книга підписана"
+  "subtitles.scholar.ui.book_signed": "Книга підписана",
+  "subtitles.scholar.ui.scribble": "Перо шкрябає",
+  "subtitles.scholar.ui.ink": "Чорнило капає"
 }

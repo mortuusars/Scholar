@@ -9,6 +9,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
@@ -247,7 +250,12 @@ public class FormattedStringEditor {
 
         @Nullable Formatting formatting = handleFormattingKeys(event);
         if (formatting != null) {
-            applyFormatting(formatting);
+            if (applyFormatting(formatting)) {
+                SoundEvent sound = formatting.color() != null
+                      ? Scholar.SoundEvents.INK.get()
+                      : Scholar.SoundEvents.SCRIBBLE.get();
+                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(sound, 1, 0.3f));
+            }
             return true;
         }
 
@@ -293,7 +301,7 @@ public class FormattedStringEditor {
         return null;
     }
 
-    public void applyFormatting(Formatting formatting) {
+    public boolean applyFormatting(Formatting formatting) {
         // Prevents applying bold formatting if the text would overflow available space due to extra width:
         if (formatting.format().contains(Formatting.Format.BOLD)) {
             FormattedString string = new FormattedString(getString().stream().map(c -> new Char(c.codepoint(), c.formatting().copy())).toList());
@@ -301,15 +309,19 @@ public class FormattedStringEditor {
             chars.replaceAll(c -> c.flipFormatting(formatting));
 
             if (!validator.test(string.toString())) {
-                return;
+                return false;
             }
         }
 
         if (isSelecting()) {
             getSelectedSpan().replaceAll(c -> c.flipFormatting(formatting));
-        } else if (formatting == Formatting.EMPTY) {
+        } else if (formatting.isEmpty()) {
             getString().replaceAll(c -> c.withFormatting(Formatting.EMPTY));
+        } else {
+            return false; // Nothing to format
         }
+
+        return true;
     }
 
     public boolean charTyped(CharacterEvent event) {

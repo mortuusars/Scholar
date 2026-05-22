@@ -1,15 +1,28 @@
 {
-  "book.formatting_click": {
-    "sounds": [
-      "minecraft:random/click"
-    ]
-  },
-  "book.signed": {
+  "ui.book_signed": {
     "sounds": [
       "minecraft:ui/cartography_table/drawmap1",
       "minecraft:ui/cartography_table/drawmap2",
       "minecraft:ui/cartography_table/drawmap3"
     ],
-    "subtitle": "subtitle.scholar.book.signed"
+    "subtitle": "subtitles.scholar.ui.book_signed"
+  },
+  "ui.scribble": {
+    "sounds": [
+      "scholar:ui/scribble_1",
+      "scholar:ui/scribble_2",
+      "scholar:ui/scribble_3",
+      "scholar:ui/scribble_4",
+      "scholar:ui/scribble_5"
+    ],
+    "subtitle": "subtitles.scholar.ui.scribble"
+  },
+  "ui.ink": {
+    "sounds": [
+      "scholar:ui/ink_1",
+      "scholar:ui/ink_2",
+      "scholar:ui/ink_3"
+    ],
+    "subtitle": "subtitles.scholar.ui.ink"
   }
 }
