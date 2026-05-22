@@ -5,7 +5,6 @@ import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.text.Formatting;
 import io.github.mortuusars.scholar.client.util.Pos2i;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
@@ -13,6 +12,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.Nullable;
 
@@ -208,9 +208,16 @@ public class FormattingToolbar {
         if (isVisible() && shouldShow() && button == InputConstants.MOUSE_BUTTON_LEFT) {
             for (FormattingButton formattingButton : buttons) {
                 if (formattingButton.isHovering((int) (mouseX - x), (int) (mouseY - y))) {
-                    getTextBox().getEditor().applyFormatting(Formatting.of(formattingButton.formatting()));
                     Minecraft.getInstance().getSoundManager().play(
-                            SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1, 0.3f));
+                            SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1, 0.1f));
+
+                    if (getTextBox().getEditor().applyFormatting(Formatting.of(formattingButton.formatting()))) {
+                        SoundEvent sound = formattingButton.formatting().isColor()
+                              ? Scholar.SoundEvents.INK.get()
+                              : Scholar.SoundEvents.SCRIBBLE.get();
+                        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(sound, 1, 0.3f));
+                    }
+
                     return true;
                 }
             }
