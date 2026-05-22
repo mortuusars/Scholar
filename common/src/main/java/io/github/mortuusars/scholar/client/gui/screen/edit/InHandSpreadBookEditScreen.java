@@ -3,6 +3,7 @@ package io.github.mortuusars.scholar.client.gui.screen.edit;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.BookmarkButton;
+import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.network.Packets;
 import io.github.mortuusars.scholar.network.packet.server.SetBookmarkC2SP;
 import net.minecraft.client.gui.components.Button;
@@ -47,8 +48,14 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
         if (bookmarkButton.visible) {
             boolean isAtBookmarkedSpread = bookmarkedSpread == currentSpread;
             bookmarkButton.setExpanded(isAtBookmarkedSpread);
-            bookmarkButton.setTooltip(Tooltip.create(
+
+            if (getFocused() instanceof TextBox textBox && textBox.getFormattingToolbar().shouldShow()) {
+                // Crude fix to prevent two tooltips rendering at the same time.
+                bookmarkButton.setTooltip(Tooltip.create(Component.empty()));
+            } else {
+                bookmarkButton.setTooltip(Tooltip.create(
                   Component.translatable("gui.scholar.bookmark." + (isAtBookmarkedSpread ? "remove" : "set"))));
+            }
         }
     }
 

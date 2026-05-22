@@ -79,5 +79,7 @@
   "scholar.configuration.text_color": "Text Color",
   "scholar.configuration.ui": "UI",
   "scholar.configuration.written_book_enchantment_glint": "Written Book Enchantment Glint",
-  "subtitle.scholar.book.signed": "Book signing scribbles"
+  "subtitles.scholar.ui.book_signed": "Book signing scribbles",
+  "subtitles.scholar.ui.scribble": "Pen scribbles",
+  "subtitles.scholar.ui.ink": "Ink splashes"
 }
