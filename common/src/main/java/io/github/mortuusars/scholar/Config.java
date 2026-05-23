@@ -96,6 +96,8 @@ public class Config {
         public static final ModConfigSpec.ConfigValue<String> SELECTION_COLOR;
         public static final ModConfigSpec.ConfigValue<String> SELECTION_UNFOCUSED_COLOR;
 
+        public static final ModConfigSpec.BooleanValue TUTORIAL_EXTRA_TOOLS;
+
         static {
             ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
@@ -138,6 +140,17 @@ public class Config {
             }
 
             builder.pop();
+
+            {
+                builder
+                      .comment("Settings in this category are automatically updated by the mod itself. " +
+                            "You don't need to change them, unless the desire is irresistible.")
+                      .push("tutorial");
+                TUTORIAL_EXTRA_TOOLS = builder
+                      .comment("Extra tools button is flashing red to grab attention until the player toggles it.")
+                      .define("extra_tools", true);
+                builder.pop();
+            }
 
             SPEC = builder.build();
         }
