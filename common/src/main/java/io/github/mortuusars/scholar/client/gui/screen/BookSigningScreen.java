@@ -3,6 +3,7 @@ package io.github.mortuusars.scholar.client.gui.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.book.BookSignature;
 import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.display.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedString;
@@ -25,6 +26,7 @@ import net.minecraft.world.item.component.WrittenBookContent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class BookSigningScreen extends Screen {
@@ -40,7 +42,7 @@ public class BookSigningScreen extends Screen {
 
     protected final Screen parentScreen;
     protected final int bookColor;
-    protected final Consumer<String> onSign;
+    protected final Consumer<BookSignature> onSign;
 
     protected int textColor;
     protected int selectionColor;
@@ -51,12 +53,14 @@ public class BookSigningScreen extends Screen {
     protected int imageWidth, imageHeight, leftPos, topPos, textureWidth, textureHeight;
 
     protected TextBox titleTextBox;
+    protected TextBox authorTextBox;
     protected ImageButton signButton;
     protected ImageButton cancelSigningButton;
 
     protected String titleText = "";
+    protected String authorText = Objects.requireNonNull(Minecraft.getInstance().player).getScoreboardName();
 
-    public BookSigningScreen(Screen parentScreen, int bookColor, Consumer<String> onSign) {
+    public BookSigningScreen(Screen parentScreen, int bookColor, Consumer<BookSignature> onSign) {
         super(Component.empty());
         this.parentScreen = parentScreen;
         this.bookColor = bookColor;
@@ -88,24 +92,37 @@ public class BookSigningScreen extends Screen {
 
         // TITLE
         titleTextBox = new TextBox(font, leftPos + 21, topPos + 71, 108, 9)
-                .setFontColor(textColor)
-                .setFontUnfocusedColor(textColor)
-                .setSelectionColor(selectionColor)
-                .setSelectionUnfocusedColor(selectionUnfocusedColor)
-                .setHorizontalAlignment(HorizontalAlignment.CENTER)
-                .setOnTextChanged(this::setTitleText)
-                .setTextValidator(text -> text != null && text.length() <= WrittenBookContent.TITLE_MAX_LENGTH
-                      && font.wordWrapHeight(text, 108) <= 9 && !text.contains("\n"));
+              .setFontColor(textColor)
+              .setFontUnfocusedColor(textColor)
+              .setSelectionColor(selectionColor)
+              .setSelectionUnfocusedColor(selectionUnfocusedColor)
+              .setHorizontalAlignment(HorizontalAlignment.CENTER)
+              .setOnTextChanged(this::setTitleText)
+              .setTextValidator(text -> text != null && text.length() <= WrittenBookContent.TITLE_MAX_LENGTH
+                    && font.wordWrapHeight(text, 108) <= 9 && !text.contains("\n"));
         addRenderableWidget(titleTextBox);
+
+        authorTextBox = new TextBox(font, leftPos + 33, topPos + 81, 100, 9)
+              .setText(FormattedString.parse(authorText))
+              .setFontColor(byAuthorFontColor)
+              .setFontUnfocusedColor(byAuthorFontColor)
+              .setSelectionColor(0xFF9271dc)
+              .setSelectionUnfocusedColor(0xFFc6b2f2)
+              .setHorizontalAlignment(HorizontalAlignment.CENTER)
+              .setOnTextChanged(this::setAuthorText)
+              .setTextValidator(text -> text != null && text.length() <= WrittenBookContent.TITLE_MAX_LENGTH
+                    && font.wordWrapHeight(text, 100) <= 9 && !text.contains("\n"));
+        authorTextBox.getEditor().setCursorToEnd(false);
+        addRenderableWidget(authorTextBox);
 
         // SIGN
         signButton = new ImageButton(leftPos + 46, topPos + 108, 22, 22,
-                SIGN_BUTTON_SPRITES, b -> signAlbum(), Component.translatable("book.finalizeButton"));
+              SIGN_BUTTON_SPRITES, b -> sign(), Component.translatable("book.finalizeButton"));
         addRenderableWidget(signButton);
 
         // CANCEL
         cancelSigningButton = new ImageButton(leftPos + 83, topPos + 108, 22, 22,
-                CANCEL_BUTTON_SPRITES, b -> cancelSigning(), CommonComponents.GUI_CANCEL);
+              CANCEL_BUTTON_SPRITES, b -> cancelSigning(), CommonComponents.GUI_CANCEL);
         cancelSigningButton.setTooltip(Tooltip.create(CommonComponents.GUI_CANCEL));
         addRenderableWidget(cancelSigningButton);
 
@@ -118,7 +135,15 @@ public class BookSigningScreen extends Screen {
         updateButtons();
     }
 
+    protected void setAuthorText(FormattedString text) {
+        authorText = text.toString();
+        updateButtons();
+    }
+
     protected void updateButtons() {
+        authorTextBox.visible = Config.Common.BOOK_CHANGEABLE_AUTHOR.get();
+        authorTextBox.active = Config.Common.BOOK_CHANGEABLE_AUTHOR.get();
+
         boolean canSign = canSign();
 
         signButton.active = canSign;
@@ -147,11 +172,11 @@ public class BookSigningScreen extends Screen {
 
         RenderUtil.withColorMultiplied(bookColor, () -> {
             guiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, 0,
-                    imageWidth, imageHeight, textureWidth, textureHeight);
+                  imageWidth, imageHeight, textureWidth, textureHeight);
         });
 
         guiGraphics.blit(TEXTURE, leftPos, topPos + 31, 0, 0, 180,
-                imageWidth, 76, textureWidth, textureHeight);
+              imageWidth, 76, textureWidth, textureHeight);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
@@ -165,19 +190,33 @@ public class BookSigningScreen extends Screen {
 
     protected void renderLabels(GuiGraphics guiGraphics) {
         MutableComponent component = Component.translatable("book.editTitle");
-        guiGraphics.drawString(font, component,  leftPos + 149 / 2 - font.width(component) / 2, topPos + 51,
-                enterBookTitleFontColor, false);
+        guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 51,
+              enterBookTitleFontColor, false);
 
-        component = Component.translatable("book.byAuthor", player.getName());
-        guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 81,
-                byAuthorFontColor, false);
+        if (!Config.Common.BOOK_CHANGEABLE_AUTHOR.get()) {
+            component = Component.translatable("book.byAuthor", player.getName());
+            guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 81,
+                  byAuthorFontColor, false);
+        } else {
+            component = Component.empty()
+                  .append(authorText.equals(Objects.requireNonNull(minecraft.player).getScoreboardName()) ? "✎ " : "")
+                  .append(Component.translatable("book.byAuthor", ""));
+            int width = font.width(component);
+            int authorWidth = font.width(authorTextBox.getEditor().getString().toString());
+            int x = (authorTextBox.getX() + authorTextBox.getWidth() / 2) - (authorWidth / 2) - width;
+            guiGraphics.drawString(font, component, x, topPos + 81,
+                  byAuthorFontColor, false);
+        }
     }
 
-    protected void signAlbum() {
+    protected void sign() {
         if (canSign()) {
-            onSign.accept(titleText.trim());
+            Optional<String> author = Optional.of(authorText)
+                  .filter(a -> Config.Common.BOOK_CHANGEABLE_AUTHOR.get()
+                        && !a.equals(Objects.requireNonNull(minecraft.player).getScoreboardName()));
+            onSign.accept(new BookSignature(titleText.trim(), author));
             minecraft.getSoundManager().play(
-                    SimpleSoundInstance.forUI(Scholar.SoundEvents.BOOK_SIGNED.get(), 1f, 0.8f));
+                  SimpleSoundInstance.forUI(Scholar.SoundEvents.BOOK_SIGNED.get(), 1f, 0.8f));
             onClose();
         }
     }

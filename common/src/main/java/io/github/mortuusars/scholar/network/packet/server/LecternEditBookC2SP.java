@@ -1,5 +1,6 @@
 package io.github.mortuusars.scholar.network.packet.server;
 
+import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.network.packet.Packet;
 import net.minecraft.core.BlockPos;
@@ -101,6 +102,19 @@ public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optio
         writtenBookStack.set(DataComponents.WRITTEN_BOOK_CONTENT,
                 new WrittenBookContent(this.filterableFromOutgoing(player, title), player.getName().getString(), 0, list, true));
         lecternBlockEntity.setBook(writtenBookStack, player);
+
+        if (Config.Common.LECTERN_TOOLTIP.get()) {
+            // Wanna hear about how frustrating minecraft is sometimes?
+            // Without this sh*t block entity just refuses to update no matter what I try.
+            // blockEntity.setChanged, level.sendBlockUpdated, level.setBlock - nothing works.
+            // And because of that the old book is still showing in the tooltip.
+            // 40 minutes of my life has been broadcasted down the drain.
+            List<ServerPlayer> players = player.serverLevel().players();
+            net.minecraft.network.protocol.Packet<?> packet = lecternBlockEntity.getUpdatePacket();
+            if (packet != null) {
+                players.forEach(serverPlayer -> serverPlayer.connection.send(packet));
+            }
+        }
     }
 
     private Filterable<String> filterableFromOutgoing(ServerPlayer player, FilteredText filteredText) {

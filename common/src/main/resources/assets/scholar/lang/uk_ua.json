@@ -73,6 +73,7 @@
   "scholar.configuration.sneaking_opens_vanilla_book_screen": "Присідання відкриває старий екран книги",
   "scholar.configuration.text_color": "Колір тексту",
   "scholar.configuration.ui": "Інтерфейс",
+  "scholar.configuration.book_changeable_author": "Зміна автора",
   "scholar.configuration.written_book_enchantment_glint": "Блиск написаної книги",
   "subtitles.scholar.ui.book_signed": "Книга підписана",
   "subtitles.scholar.ui.scribble": "Перо шкрябає",
