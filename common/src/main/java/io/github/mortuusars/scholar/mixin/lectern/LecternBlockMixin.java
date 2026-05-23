@@ -28,7 +28,7 @@ public abstract class LecternBlockMixin {
         if (!(player instanceof ServerPlayer serverPlayer)) return;
         if (!(level.getBlockEntity(pos) instanceof LecternBlockEntity lecternBlockEntity)) return;
         if (!Config.Common.LECTERN_TWO_PAGE_BOOK_SCREEN.get()) return;
-        if (Config.Common.SNEAK_OPENS_VANILLA_BOOK_SCREEN.get() && player.isSecondaryUseActive()) return;
+        if (Config.Common.SNEAKING_OPENS_VANILLA_BOOK_SCREEN.get() && player.isSecondaryUseActive()) return;
 
         ItemStack bookStack = lecternBlockEntity.getBook();
 

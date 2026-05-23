@@ -29,6 +29,10 @@ public class ChiseledBookshelfTooltip {
             return false;
         }
 
+        if (Config.Common.TOOLTIP_REQUIRES_SNEAK.get() && !minecraft.player.isSecondaryUseActive()) {
+            return false;
+        }
+
         BlockPos hitPos = blockHitResult.getBlockPos();
         BlockState blockState = minecraft.level.getBlockState(hitPos);
 

@@ -13,6 +13,8 @@
   - Formatting is now always kept by default, unless [Shift] key is held.
 - Insert Empty Page and Remove Page keyboard shortcuts can be changed now.
   - Default binds have changed as well.
+- Added "requires_sneaking" config option for showing in-world tooltips. 
+- Restructured config. Moved some config options from client to common for convenience.
 - Fixed Chiseled Bookshelf tooltip still displaying when the GUI is hidden.
 
 ## 1.1.16 - 2026-05-19
