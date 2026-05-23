@@ -75,7 +75,7 @@ public class BookSigningScreen extends Screen {
 
     @Override
     public boolean isPauseScreen() {
-        return Config.Client.SCREEN_PAUSE.get();
+        return Config.Common.BOOK_SCREEN_PAUSE.get();
     }
 
     @Override

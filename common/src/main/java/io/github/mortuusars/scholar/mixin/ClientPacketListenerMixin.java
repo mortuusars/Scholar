@@ -23,7 +23,7 @@ public abstract class ClientPacketListenerMixin {
     private void handleOpenBook(ClientboundOpenBookPacket packet, CallbackInfo ci) {
         if (Minecraft.getInstance().player == null) return;
         if (!Config.Common.IN_HAND_TWO_PAGE_BOOK_SCREEN.get()) return;
-        if (Config.Common.SNEAK_OPENS_VANILLA_BOOK_SCREEN.get() && Minecraft.getInstance().player.isSecondaryUseActive()) return;
+        if (Config.Common.SNEAKING_OPENS_VANILLA_BOOK_SCREEN.get() && Minecraft.getInstance().player.isSecondaryUseActive()) return;
 
         InteractionHand hand = packet.getHand();
         ItemStack stack = Minecraft.getInstance().player.getItemInHand(hand);

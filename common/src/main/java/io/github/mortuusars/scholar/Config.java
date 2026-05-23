@@ -7,50 +7,78 @@ public class Config {
     public static class Common {
         public static final ModConfigSpec SPEC;
 
-        // UI
+        // Book
+        public static final ModConfigSpec.BooleanValue BOOK_CHANGEABLE_AUTHOR;
+
+        // Screen
         public static final ModConfigSpec.BooleanValue IN_HAND_TWO_PAGE_BOOK_SCREEN;
         public static final ModConfigSpec.BooleanValue LECTERN_TWO_PAGE_BOOK_SCREEN;
-        public static final ModConfigSpec.BooleanValue SNEAK_OPENS_VANILLA_BOOK_SCREEN;
+        public static final ModConfigSpec.BooleanValue SNEAKING_OPENS_VANILLA_BOOK_SCREEN;
+        public static final ModConfigSpec.BooleanValue BOOK_SCREEN_PAUSE;
+        public static final ModConfigSpec.BooleanValue BOOK_SCREEN_SHOW_DONE_BUTTON;
+        public static final ModConfigSpec.BooleanValue EDIT_SCREEN_SHOW_EXTRA_TOOLS;
 
-        // Misc
+        // Tooltip
         public static final ModConfigSpec.BooleanValue CHISELED_BOOKSHELF_TOOLTIP;
         public static final ModConfigSpec.BooleanValue LECTERN_TOOLTIP;
-        public static final ModConfigSpec.BooleanValue LECTERN_COLORED_BOOK;
+        public static final ModConfigSpec.BooleanValue TOOLTIP_REQUIRES_SNEAK;
+
+        // Visuals
+        public static final ModConfigSpec.BooleanValue LECTERN_COLORED_BOOK_MODEL;
         public static final ModConfigSpec.BooleanValue BOOK_ENCHANTMENT_GLINT;
-        public static final ModConfigSpec.BooleanValue BOOK_CHANGEABLE_AUTHOR;
 
         static {
             ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
-            builder.push("ui");
-            IN_HAND_TWO_PAGE_BOOK_SCREEN = builder
-                    .comment("Vanilla book view/edit screens will be replaced with Scholar's two-paged view/edit screens. Default: true")
-                    .define("in_hand_two_page_book_screens", true);
-            LECTERN_TWO_PAGE_BOOK_SCREEN = builder
-                    .comment("Vanilla lectern book view screen will be replaced with Scholar's two-paged view/edit screens.",
-                            "Can be disabled if you want to use different screen for lectern (such as from Amendments (but Scholar now has lectern editing, so...)). Default: true")
-                    .define("lectern_two_page_book_screens", true);
-            SNEAK_OPENS_VANILLA_BOOK_SCREEN = builder
-                    .comment("Holding sneak while opening a book screen will show vanilla screen. Default: false")
-                    .define("sneaking_opens_vanilla_book_screen", false);
+            builder.push("book");
+            BOOK_CHANGEABLE_AUTHOR = builder
+                  .comment("Author can be changed when signing a book. Default: true")
+                  .define("changeable_author", true);
+            {
+                builder.push("ui");
+                IN_HAND_TWO_PAGE_BOOK_SCREEN = builder
+                      .comment("Scholar two-paged in-hand book view/edit screens will replace vanilla screens. Default: true")
+                      .define("replace_screens_in_hand", true);
+                LECTERN_TWO_PAGE_BOOK_SCREEN = builder
+                      .comment("Scholar two-paged lectern book view/edit screens will replace vanilla screens. Default: true")
+                      .define("replace_screens_on_lectern", true);
+                SNEAKING_OPENS_VANILLA_BOOK_SCREEN = builder
+                      .comment("Holding sneak while opening a book screen will show vanilla screen. Default: false")
+                      .define("sneaking_opens_vanilla_screen", false);
+                BOOK_SCREEN_PAUSE = builder
+                      .comment("Singleplayer game will be paused when book edit/view screen is open.",
+                            "Default: false, Vanilla: true")
+                      .define("pause_game", false);
+                BOOK_SCREEN_SHOW_DONE_BUTTON = builder
+                      .comment("Show 'Done' button in the Scholar book screens. Default: false")
+                      .define("show_done_button", false);
+                EDIT_SCREEN_SHOW_EXTRA_TOOLS = builder
+                      .comment("Additional tool buttons will be shown in book edit screen.",
+                            "This setting can be toggled in-game by pressing F1 button (by default) or clicking on question mark in top right corner. Initial value: false")
+                      .define("show_extra_tools", false);
+                builder.pop();
+            }
             builder.pop();
 
-            builder.push("misc");
+            builder.push("tooltip");
             CHISELED_BOOKSHELF_TOOLTIP = builder
-                    .comment("Hovering over a slot in a Chiseled Bookshelf will show tooltip of a book that's stored in that slot. Default: true")
-                    .define("chiseled_bookshelf_tooltip", true);
+                  .comment("Hovering over a slot in a Chiseled Bookshelf will show tooltip of a book that's stored in that slot. Default: true")
+                  .define("chiseled_bookshelf_tooltip", true);
             LECTERN_TOOLTIP = builder
                   .comment("Hovering over a Lectern will show tooltip of a book that's placed on it. Default: true")
                   .define("lectern_tooltip", true);
-            LECTERN_COLORED_BOOK = builder
+            TOOLTIP_REQUIRES_SNEAK = builder
+                  .comment("Sneaking is required for tooltip to show. Default: false")
+                  .define("requires_sneak", false);
+            builder.pop();
+
+            builder.push("visuals");
+            LECTERN_COLORED_BOOK_MODEL = builder
                   .comment("Lectern book rendering reflects the actual book placed on it. Default: true")
                   .define("lectern_colored_book", true);
-            BOOK_CHANGEABLE_AUTHOR = builder
-                  .comment("Author can be changed when signing a book. Default: true")
-                  .define("book_changeable_author", true);
             BOOK_ENCHANTMENT_GLINT = builder
-                    .comment("Written books will have an enchantment glint on them. Default: false")
-                    .define("written_book_enchantment_glint", false);
+                  .comment("Written books have an enchantment glint. Default: false, Vanilla: true")
+                  .define("written_book_enchantment_glint", false);
             builder.pop();
 
             SPEC = builder.build();
@@ -59,11 +87,6 @@ public class Config {
 
     public static class Client {
         public static final ModConfigSpec SPEC;
-
-        // UI
-        public static final ModConfigSpec.BooleanValue SCREEN_PAUSE;
-        public static final ModConfigSpec.BooleanValue SHOW_DONE_BUTTON;
-        public static final ModConfigSpec.BooleanValue EDIT_SCREEN_SHOW_EXTRA_TOOLS;
 
         // Colors
         public static final ModConfigSpec.ConfigValue<String> TEXT_COLOR;
@@ -76,61 +99,45 @@ public class Config {
         static {
             ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
+            builder.push("ui");
+
             {
-                builder.push("ui");
+                builder.push("colors");
 
-                SCREEN_PAUSE = builder
-                        .comment("Singleplayer game will be paused when book edit/view screen is open.",
-                                "Default: false, Vanilla: true")
-                        .define("book_screen_pause", false);
+                String defaultMainFontColor = "FF7B593D";
+                TEXT_COLOR = builder
+                      .comment("Color of the book text. Default: " + defaultMainFontColor)
+                      .define("text_color", defaultMainFontColor);
 
-                SHOW_DONE_BUTTON = builder
-                        .comment("Show 'Done' button in the Scholar book screens. Default: false")
-                        .define("book_screen_show_done_button", false);
+                String pageNumberFontColor = "FFEFE4CA";
+                PAGE_NUMBERS_COLOR = builder
+                      .comment("Color of the page numbers. Default: " + pageNumberFontColor)
+                      .define("page_numbers_color", pageNumberFontColor);
 
-                EDIT_SCREEN_SHOW_EXTRA_TOOLS = builder
-                        .comment("Additional tool buttons will be shown in book edit screen.",
-                                "This setting can be toggled in-game by pressing F1 button (by default) or clicking on question mark in top right corner. Initial value: false")
-                        .define("book_edit_screen_show_extra_tools", false);
+                String defaultEnterTitleFontColor = "FFF5EBD0";
+                ENTER_TITLE_COLOR = builder
+                      .comment("Color of the 'Enter Book Title' text in the signing screen. Default: " + defaultEnterTitleFontColor)
+                      .define("enter_title_color", defaultEnterTitleFontColor);
 
-                {
-                    builder.push("colors");
+                String defaultByAuthorFontColor = "FFC7B496";
+                BY_AUTHOR_COLOR = builder
+                      .comment("Color of the 'by <author>' text in the signing screen. Default: " + defaultByAuthorFontColor)
+                      .define("by_author_color", defaultByAuthorFontColor);
 
-                    String defaultMainFontColor = "FF7B593D";
-                    TEXT_COLOR = builder
-                            .comment("Color of the book text. Default: " + defaultMainFontColor)
-                            .define("text_color", defaultMainFontColor);
+                String selectionColor = "FF664488";
+                SELECTION_COLOR = builder
+                      .comment("Color of the selection. Default: " + selectionColor)
+                      .define("selection_color", selectionColor);
 
-                    String pageNumberFontColor = "FFEFE4CA";
-                    PAGE_NUMBERS_COLOR = builder
-                            .comment("Color of the page numbers. Default: " + pageNumberFontColor)
-                            .define("page_numbers_color", pageNumberFontColor);
-
-                    String defaultEnterTitleFontColor = "FFF5EBD0";
-                    ENTER_TITLE_COLOR = builder
-                            .comment("Color of the 'Enter Book Title' text in the signing screen. Default: " + defaultEnterTitleFontColor)
-                            .define("enter_title_color", defaultEnterTitleFontColor);
-
-                    String defaultByAuthorFontColor = "FFC7B496";
-                    BY_AUTHOR_COLOR = builder
-                            .comment("Color of the 'by <author>' text in the signing screen. Default: " + defaultByAuthorFontColor)
-                            .define("by_author_color", defaultByAuthorFontColor);
-
-                    String selectionColor = "FF664488";
-                    SELECTION_COLOR = builder
-                            .comment("Color of the selection. Default: " + selectionColor)
-                            .define("selection_color", selectionColor);
-
-                    String selectionUnfocusedColor = "FF827B88";
-                    SELECTION_UNFOCUSED_COLOR = builder
-                            .comment("Color of the selection when text box is not focused. Default: " + selectionUnfocusedColor)
-                            .define("selection_unfocused_color", selectionUnfocusedColor);
-
-                    builder.pop();
-                }
+                String selectionUnfocusedColor = "FF827B88";
+                SELECTION_UNFOCUSED_COLOR = builder
+                      .comment("Color of the selection when text box is not focused. Default: " + selectionUnfocusedColor)
+                      .define("selection_unfocused_color", selectionUnfocusedColor);
 
                 builder.pop();
             }
+
+            builder.pop();
 
             SPEC = builder.build();
         }
@@ -141,13 +148,12 @@ public class Config {
                 // Can't parse straight to int because of how integers are interpreted
                 // 0xFFFFFFFF will throw for example
                 long longValue = Long.parseLong(hexString, 16);
-                return (int)longValue;
-            }
-            catch (Exception e) {
+                return (int) longValue;
+            } catch (Exception e) {
                 String configValuePath = String.join(".", configValue.getPath());
                 LogUtils.getLogger().error("Value '{}' is not valid for {}. Default value will be used.\n{}",
-                        hexString, configValuePath, e.getMessage());
-                return (int)Long.parseLong(configValue.getDefault(), 16); // Default shouldn't fail
+                      hexString, configValuePath, e.getMessage());
+                return (int) Long.parseLong(configValue.getDefault(), 16); // Default shouldn't fail
             }
         }
     }
