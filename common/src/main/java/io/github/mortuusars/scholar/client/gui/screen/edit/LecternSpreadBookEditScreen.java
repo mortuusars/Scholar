@@ -2,10 +2,12 @@ package io.github.mortuusars.scholar.client.gui.screen.edit;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.book.BookColor;
+import io.github.mortuusars.scholar.book.BookSignature;
 import io.github.mortuusars.scholar.client.gui.screen.SpreadBookScreen;
 import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import io.github.mortuusars.scholar.network.Packets;
 import io.github.mortuusars.scholar.network.packet.server.LecternEditBookC2SP;
+import io.github.mortuusars.scholar.network.packet.server.SetCustomAuthorOnLecternC2SP;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -122,6 +124,13 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
         removeEmptyTrailingPages();
         // Copying 'pages' list to not cause ConcurrentModificationException when packet is encoded:
         Packets.sendToServer(new LecternEditBookC2SP(getMenu().getLecternPos(), new ArrayList<>(pages), Optional.ofNullable(title)));
+    }
+
+    @Override
+    protected void signBook(BookSignature signature) {
+        saveChanges(true, signature.title());
+        signature.customAuthor().ifPresent(customAuthor ->
+              Packets.sendToServer(new SetCustomAuthorOnLecternC2SP(getMenu().getLecternPos(), customAuthor)));
     }
 
     // --

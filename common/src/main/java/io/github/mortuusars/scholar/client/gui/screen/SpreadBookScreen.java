@@ -201,13 +201,13 @@ public abstract class SpreadBookScreen extends Screen {
     }
 
     public boolean setPage(int pageIndex) {
-        pageIndex = Mth.clamp(pageIndex, 0, getPageCount() - 1);
+        pageIndex = Mth.clamp(pageIndex, 0, Math.max(0, getPageCount() - 1));
         int spreadIndex = pageIndex / 2;
         return setSpread(spreadIndex);
     }
 
     public boolean setSpread(int spreadIndex) {
-        spreadIndex = Mth.clamp(spreadIndex, 0, getSpreadCount() - 1);
+        spreadIndex = Mth.clamp(spreadIndex, 0, Math.max(0, getSpreadCount() - 1));
         if (spreadIndex != this.currentSpread) {
             this.currentSpread = spreadIndex;
             return true;

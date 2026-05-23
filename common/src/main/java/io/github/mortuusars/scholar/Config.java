@@ -17,6 +17,7 @@ public class Config {
         public static final ModConfigSpec.BooleanValue LECTERN_TOOLTIP;
         public static final ModConfigSpec.BooleanValue LECTERN_COLORED_BOOK;
         public static final ModConfigSpec.BooleanValue BOOK_ENCHANTMENT_GLINT;
+        public static final ModConfigSpec.BooleanValue BOOK_CHANGEABLE_AUTHOR;
 
         static {
             ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -44,6 +45,9 @@ public class Config {
             LECTERN_COLORED_BOOK = builder
                   .comment("Lectern book rendering reflects the actual book placed on it. Default: true")
                   .define("lectern_colored_book", true);
+            BOOK_CHANGEABLE_AUTHOR = builder
+                  .comment("Author can be changed when signing a book. Default: true")
+                  .define("book_changeable_author", true);
             BOOK_ENCHANTMENT_GLINT = builder
                     .comment("Written books will have an enchantment glint on them. Default: false")
                     .define("written_book_enchantment_glint", false);

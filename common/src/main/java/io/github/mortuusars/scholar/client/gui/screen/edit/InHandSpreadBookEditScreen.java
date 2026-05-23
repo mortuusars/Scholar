@@ -1,11 +1,13 @@
 package io.github.mortuusars.scholar.client.gui.screen.edit;
 
 import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.book.BookSignature;
 import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.BookmarkButton;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.network.Packets;
 import io.github.mortuusars.scholar.network.packet.server.SetBookmarkC2SP;
+import io.github.mortuusars.scholar.network.packet.server.SetCustomAuthorInHandC2SP;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
@@ -28,6 +30,10 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
         this.hand = hand;
         int bookmarkedPage = bookStack.getOrDefault(Scholar.DataComponents.BOOKMARK, 0);
         setPage(bookmarkedPage);
+    }
+
+    protected int getBookSlot() {
+        return hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : Inventory.SLOT_OFFHAND;
     }
 
     @Override
@@ -79,14 +85,21 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
             bookStack.set(Scholar.DataComponents.BOOKMARK, newBookmarkedPage);
         }
 
-        int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : Inventory.SLOT_OFFHAND;
+        int slot = getBookSlot();
         Packets.sendToServer(new SetBookmarkC2SP(slot, newBookmarkedPage));
     }
 
     @Override
     protected void sendChanges(@Nullable String title) {
-        int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : Inventory.SLOT_OFFHAND;
+        int slot = getBookSlot();
         Objects.requireNonNull(minecraft.getConnection()).send(
               new ServerboundEditBookPacket(slot, this.pages, Optional.ofNullable(title)));
+    }
+
+    @Override
+    protected void signBook(BookSignature signature) {
+        saveChanges(true, signature.title());
+        signature.customAuthor().ifPresent(customAuthor ->
+              Packets.sendToServer(new SetCustomAuthorInHandC2SP(getBookSlot(), customAuthor)));
     }
 }
