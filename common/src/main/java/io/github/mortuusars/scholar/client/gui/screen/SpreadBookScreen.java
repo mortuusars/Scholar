@@ -136,6 +136,8 @@ public abstract class SpreadBookScreen extends Screen {
         boolean currentValue = Config.Common.EDIT_SCREEN_SHOW_EXTRA_TOOLS.get();
         Config.Common.EDIT_SCREEN_SHOW_EXTRA_TOOLS.set(!currentValue);
         Config.Common.EDIT_SCREEN_SHOW_EXTRA_TOOLS.save();
+        Config.Client.TUTORIAL_EXTRA_TOOLS.set(false);
+        Config.Client.TUTORIAL_EXTRA_TOOLS.save();
         // Implemented in base screen in case some extra functionality would be added in the future.
         // Does nothing in this class currently. Should be implemented in child classes.
     }
@@ -252,11 +254,6 @@ public abstract class SpreadBookScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        if (ScholarClient.KeyMappings.toggleBookTools.matches(event)) {
-            toggleBookTools();
-            return true;
-        }
-
         if (!(getFocused() instanceof TextBox)) {
             if (Minecraft.getInstance().options.keyInventory.matches(event)) {
                 this.onClose();

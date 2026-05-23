@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar.client.gui.screen.edit;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.PlatformHelperClient;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
@@ -258,9 +259,14 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
     protected void renderTools(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         int x = width - 12;
         int y = 6;
-        guiGraphics.drawString(font, "?", x, y, 0xFFAAAAAA);
+        boolean isHovering = mouseX >= x - 3 && mouseX < x + 12 + 3 && mouseY >= y - 3 && mouseY < y + 12;
 
-        if (mouseX >= x - 3 && mouseX < x + 12 + 3 && mouseY >= y - 3 && mouseY < y + 12) {
+        int color = isHovering
+              ? 0xFFFFFFFF
+              : Config.Client.TUTORIAL_EXTRA_TOOLS.get() && Util.getMillis() % 750 > 300 ? 0xFFff625e : 0xFFAAAAAA;
+        guiGraphics.drawString(font, "✎", x, y, color);
+
+        if (isHovering) {
             List<Component> tooltip = new ArrayList<>();
             tooltip.add(Component.translatable("gui.scholar.tools.toggle")
                     .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.toggleBookTools)));
@@ -276,6 +282,11 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
+        if (ScholarClient.KeyMappings.toggleBookTools.matches(event)) {
+            toggleBookTools();
+            return true;
+        }
+
         if (ScholarClient.KeyMappings.importBook.matches(event)) {
             playButtonClickSound();
             importBook(!event.hasShiftDown());

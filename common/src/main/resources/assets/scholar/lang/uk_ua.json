@@ -71,7 +71,7 @@
   "scholar.configuration.selection_color": "Колір виділення",
   "scholar.configuration.selection_unfocused_color": "Колір виділення не у фокусі",
   "scholar.configuration.show_done_button": "Кнопка \"Готово\"",
-  "scholar.configuration.show_extra_tools": "Show Extra Editing Tools",
+  "scholar.configuration.show_extra_tools": "Показувати додаткові інструменти",
   "scholar.configuration.sneaking_opens_vanilla_screen": "Присідання відкриває старий екран",
   "scholar.configuration.text_color": "Колір тексту",
   "scholar.configuration.tooltip": "Підказки",
@@ -80,5 +80,7 @@
   "scholar.configuration.written_book_enchantment_glint": "Блиск написаної книги",
   "subtitles.scholar.ui.book_signed": "Книга підписана",
   "subtitles.scholar.ui.ink": "Чорнило капає",
-  "subtitles.scholar.ui.scribble": "Перо шкрябає"
+  "subtitles.scholar.ui.scribble": "Перо шкрябає",
+  "scholar.configuration.tutorial": "Ознайомлення",
+  "scholar.configuration.extra_tools": "Додаткові інструменти"
 }
