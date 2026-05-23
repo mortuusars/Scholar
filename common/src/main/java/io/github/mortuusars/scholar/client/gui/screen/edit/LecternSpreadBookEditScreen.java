@@ -60,7 +60,7 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
     @Override
     protected void createBottomButtons() {
         if (player.mayBuild()) {
-            if (Config.Client.SHOW_DONE_BUTTON.get()) {
+            if (Config.Common.BOOK_SCREEN_SHOW_DONE_BUTTON.get()) {
                 this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE,
                         button -> this.onClose()).bounds(this.width / 2 - 100, topPos + SpreadBookScreen.BOOK_HEIGHT + 12, 98, 20).build());
                 this.addRenderableWidget(Button.builder(Component.translatable("lectern.take_book"),

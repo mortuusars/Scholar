@@ -23,6 +23,10 @@ public class LecternTooltip {
             return false;
         }
 
+        if (Config.Common.TOOLTIP_REQUIRES_SNEAK.get() && !minecraft.player.isSecondaryUseActive()) {
+            return false;
+        }
+
         ItemStack bookStack = lecternBlockEntity.getBook();
         if (bookStack.isEmpty()) {
             return false;

@@ -25,7 +25,7 @@ public class LecternRendererMixin {
           cancellable = true)
     private void onRender(LecternBlockEntity blockEntity, float partialTick, PoseStack poseStack,
                           MultiBufferSource bufferSource, int packedLight, int packedOverlay, CallbackInfo ci) {
-        if (Config.Common.LECTERN_COLORED_BOOK.get()) {
+        if (Config.Common.LECTERN_COLORED_BOOK_MODEL.get()) {
             LecternBookRendering.render(blockEntity.getBlockState(), blockEntity, partialTick, poseStack, bufferSource, packedLight, packedOverlay, bookModel);
             ci.cancel();
         }

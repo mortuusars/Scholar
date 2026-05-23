@@ -67,7 +67,7 @@ public abstract class SpreadBookScreen extends Screen {
 
     @Override
     public boolean isPauseScreen() {
-        return Config.Client.SCREEN_PAUSE.get();
+        return Config.Common.BOOK_SCREEN_PAUSE.get();
     }
 
     @Override
@@ -120,7 +120,7 @@ public abstract class SpreadBookScreen extends Screen {
     }
 
     protected void createBottomButtons() {
-        if (Config.Client.SHOW_DONE_BUTTON.get()) {
+        if (Config.Common.BOOK_SCREEN_SHOW_DONE_BUTTON.get()) {
             addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, (button) -> onClose())
                   .bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20)
                   .build());
@@ -133,15 +133,15 @@ public abstract class SpreadBookScreen extends Screen {
     }
 
     protected void toggleBookTools() {
-        boolean currentValue = Config.Client.EDIT_SCREEN_SHOW_EXTRA_TOOLS.get();
-        Config.Client.EDIT_SCREEN_SHOW_EXTRA_TOOLS.set(!currentValue);
-        Config.Client.EDIT_SCREEN_SHOW_EXTRA_TOOLS.save();
+        boolean currentValue = Config.Common.EDIT_SCREEN_SHOW_EXTRA_TOOLS.get();
+        Config.Common.EDIT_SCREEN_SHOW_EXTRA_TOOLS.set(!currentValue);
+        Config.Common.EDIT_SCREEN_SHOW_EXTRA_TOOLS.save();
         // Implemented in base screen in case some extra functionality would be added in the future.
         // Does nothing in this class currently. Should be implemented in child classes.
     }
 
     public boolean isToolsVisible() {
-        return Config.Client.EDIT_SCREEN_SHOW_EXTRA_TOOLS.get();
+        return Config.Common.EDIT_SCREEN_SHOW_EXTRA_TOOLS.get();
     }
 
     // -- Book
