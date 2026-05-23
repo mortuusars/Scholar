@@ -6,6 +6,7 @@ import io.github.mortuusars.scholar.PlatformHelperClient;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.book.BookColor;
+import io.github.mortuusars.scholar.book.BookSignature;
 import io.github.mortuusars.scholar.book.Spread;
 import io.github.mortuusars.scholar.client.gui.screen.BookSigningScreen;
 import io.github.mortuusars.scholar.client.gui.screen.SpreadBookScreen;
@@ -432,9 +433,10 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
 
     protected void enterSignMode() {
         saveChanges(false, null);
-        minecraft.execute(() ->
-              minecraft.setScreen(new BookSigningScreen(this, bookColor, title -> saveChanges(true, title))));
+        minecraft.execute(() -> minecraft.setScreen(new BookSigningScreen(this, bookColor, this::signBook)));
     }
+
+    protected abstract void signBook(BookSignature signature);
 
     // --
 

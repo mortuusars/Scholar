@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar.network.packet.server;
 
 import com.google.common.collect.Lists;
+import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.network.PacketDirection;
 import io.github.mortuusars.scholar.network.packet.IPacket;
@@ -112,6 +113,19 @@ public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optio
         this.updateBookPages(player, pages, string -> Component.Serializer.toJson(Component.literal(string)), writtenBookStack, lecternBlockEntity);
 
         lecternBlockEntity.setBook(writtenBookStack, player);
+
+        if (Config.Common.LECTERN_TOOLTIP.get()) {
+            // Wanna hear about how frustrating minecraft is sometimes?
+            // Without this sh*t block entity just refuses to update no matter what I try.
+            // blockEntity.setChanged, level.sendBlockUpdated, level.setBlock - nothing works.
+            // And because of that the old book is still showing in the tooltip.
+            // 40 minutes of my life has been broadcasted down the drain.
+            List<ServerPlayer> players = player.serverLevel().players();
+            net.minecraft.network.protocol.Packet<?> packet = lecternBlockEntity.getUpdatePacket();
+            if (packet != null) {
+                players.forEach(serverPlayer -> serverPlayer.connection.send(packet));
+            }
+        }
     }
 
     private void updateBookPages(ServerPlayer player, List<FilteredText> pages, UnaryOperator<String> updater, ItemStack book, LecternBlockEntity lecternBlockEntity) {
