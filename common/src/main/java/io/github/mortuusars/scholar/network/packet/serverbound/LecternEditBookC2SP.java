@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.network.packet.server;
+package io.github.mortuusars.scholar.network.packet.serverbound;
 
 import com.google.common.collect.Lists;
 import io.github.mortuusars.scholar.Config;

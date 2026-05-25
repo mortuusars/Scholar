@@ -9,9 +9,11 @@ import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
 import io.github.mortuusars.scholar.recipe.NbtTransferringRecipe;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.ExtraCodecs;
+import net.minecraft.util.Unit;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -37,7 +39,12 @@ public class Scholar {
         SoundEvents.init();
     }
 
-    public static class Items {
+    public static class DataComponents {
+        public static final DataComponentType<Integer> BOOKMARK = Register.dataComponentType("bookmark",
+              b -> b.persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.INT));
+        public static final DataComponentType<Unit> BOOK_OPEN = Register.dataComponentType("book_open",
+              b -> b.persistent(Unit.CODEC).networkSynchronized(StreamCodec.unit(Unit.INSTANCE)));
+
         static void init() { }
     }
 
