@@ -28,7 +28,7 @@ public class ScholarFabricClient implements ClientModInitializer {
         ChiseledBookshelfColors.registerBookshelfBlockColors(ColorProviderRegistry.BLOCK::register);
 
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new BookshelfDefaultColorsReloadListenerFabric());
-        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new BookshelfItemColorsReloadListenerFabric());
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new BookItemColorsReloadListenerFabric());
 
         FabricLoader.getInstance().getModContainer(Scholar.ID).ifPresent(container -> {
             for (BuiltInResourcePacks.Pack pack : BuiltInResourcePacks.get()) {

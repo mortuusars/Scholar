@@ -2,13 +2,13 @@
 
 ## UNRELEASED
 - Added book reading animations
-  - Animation will start when a player opens Book and Quill or Written Book, and stops when the book is closed.
-  - This is controlled by `scholar:book_open` component. 
-  - Some humanoid mobs will have this animation as well, if they have opened book in hand.
-  - First-person book model reflects the "opened" book state as well.
+    - Animation will start when a player opens Book and Quill or Written Book, and stops when the book is closed.
+    - This is controlled by `scholar:book_open` component.
+    - Some humanoid mobs will have this animation as well, if they have opened book in hand.
+    - First-person book model reflects the "opened" book state as well.
 - Added sound to book opening.
 - Added literacy:
-  - Zombies and Skeletons will have a chance to spawn with a book and will be reading it from time to time. 
+    - Zombies and Skeletons will have a chance to spawn with a book and will be reading it from time to time.
 - Author of the book can be changed now.
 - Added bookmark - opens the book at the set page.
 - Added in-world tooltip for books placed on a Lectern.
@@ -23,6 +23,7 @@
     - Default binds have changed as well.
 - Toggle Extra Tools button now has a pencil icon instead of a question mark.
     - It will also flash red until the player toggles it tools for the first time - to help new players discover the feature.
+- Moved definition of book item colors from Chiseled Bookshelf `chiseled_bookshelf/item_colors` built-in resourcepack to Colored Books `book/item_colors` built-in resourcepack.
 - Added "requires_sneaking" config option for showing in-world tooltips.
 - Restructured config. Moved some config options from client to common for convenience.
 - Fixed Chiseled Bookshelf tooltip still displaying when the GUI is hidden.
