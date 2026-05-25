@@ -5,7 +5,7 @@ import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.client.gui.InWorldTooltip;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.BookshelfDefaultColorsReloadListener;
-import io.github.mortuusars.scholar.client.chiseled_bookshelf.BookshelfItemColorsReloadListener;
+import io.github.mortuusars.scholar.book.BookItemColorsReloadListener;
 import io.github.mortuusars.scholar.client.gui.screen.edit.LecternSpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.screen.view.LecternSpreadBookViewScreen;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.ChiseledBookshelfColors;
@@ -50,7 +50,7 @@ public class NeoForgeClientEvents {
         @SubscribeEvent
         public static void registerClientReloadListeners(AddClientReloadListenersEvent event) {
             event.addListener(BookshelfDefaultColorsReloadListener.ID, new BookshelfDefaultColorsReloadListener());
-            event.addListener(BookshelfItemColorsReloadListener.ID, new BookshelfItemColorsReloadListener());
+            event.addListener(BookItemColorsReloadListener.ID, new BookItemColorsReloadListener());
         }
 
         @SubscribeEvent

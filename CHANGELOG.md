@@ -23,6 +23,7 @@
   - Default binds have changed as well.
 - Toggle Extra Tools button now has a pencil icon instead of a question mark. 
   - It will also flash red until the player toggles it tools for the first time - to help new players discover the feature.
+- Moved definition of book item colors from Chiseled Bookshelf `chiseled_bookshelf/item_colors` built-in resourcepack to Colored Books `book/item_colors` built-in resourcepack. 
 - Added "requires_sneaking" config option for showing in-world tooltips. 
 - Restructured config. Moved some config options from client to common for convenience.
 - Fixed Chiseled Bookshelf tooltip still displaying when the GUI is hidden.
