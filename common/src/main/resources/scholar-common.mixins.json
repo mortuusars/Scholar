@@ -12,7 +12,8 @@
     "chiseled_bookshelf.ChiseledBookShelfBlockMixin",
     "jei.JeiKeyConflictContextMixin",
     "lectern.LecternBlockEntityMixin",
-    "lectern.LecternBlockMixin"
+    "lectern.LecternBlockMixin",
+    "reading.PlayerMixin"
   ],
   "injectors": {
     "defaultRequire": -1
@@ -20,6 +21,13 @@
   "client": [
     "HandleOpenBookClientPacketListenerMixin",
     "OpenWritableBookGuiLocalPlayerMixin",
-    "lectern.LecternRendererMixin"
+    "lectern.LecternRendererMixin",
+    "reading.AbstractZombieModelMixin",
+    "reading.HumanoidModelMixin",
+    "reading.IllagerModelMixin",
+    "reading.ItemInHandLayerMixin",
+    "reading.ItemInHandRendererMixin",
+    "reading.PiglinModelMixin",
+    "reading.ZombieVillagerModelMixin"
   ]
 }

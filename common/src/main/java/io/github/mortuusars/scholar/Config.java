@@ -10,6 +10,10 @@ public class Config {
         // Book
         public static final ModConfigSpec.BooleanValue BOOK_CHANGEABLE_AUTHOR;
 
+        // Reading
+        public static final ModConfigSpec.BooleanValue BOOK_READING_ANIMATION;
+        public static final ModConfigSpec.BooleanValue BOOK_READING_HIDE_OFFHAND_ITEM;
+
         // Screen
         public static final ModConfigSpec.BooleanValue IN_HAND_TWO_PAGE_BOOK_SCREEN;
         public static final ModConfigSpec.BooleanValue LECTERN_TWO_PAGE_BOOK_SCREEN;
@@ -25,7 +29,7 @@ public class Config {
 
         // Visuals
         public static final ModConfigSpec.BooleanValue LECTERN_COLORED_BOOK_MODEL;
-        public static final ModConfigSpec.BooleanValue BOOK_ENCHANTMENT_GLINT;
+        public static final ModConfigSpec.BooleanValue WRITTEN_BOOK_ENCHANTMENT_GLINT;
 
         static {
             ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -35,7 +39,7 @@ public class Config {
                   .comment("Author can be changed when signing a book. Default: true")
                   .define("changeable_author", true);
             {
-                builder.push("ui");
+                builder.push("screen");
                 IN_HAND_TWO_PAGE_BOOK_SCREEN = builder
                       .comment("Scholar two-paged in-hand book view/edit screens will replace vanilla screens. Default: true")
                       .define("replace_screens_in_hand", true);
@@ -54,10 +58,33 @@ public class Config {
                       .define("show_done_button", false);
                 EDIT_SCREEN_SHOW_EXTRA_TOOLS = builder
                       .comment("Additional tool buttons will be shown in book edit screen.",
-                            "This setting can be toggled in-game by pressing F1 button (by default) or clicking on question mark in top right corner. Initial value: false")
+                            "This setting can be toggled in-game by pressing F1 button (by default) or clicking on the button in top right corner. Initial value: false")
                       .define("show_extra_tools", false);
                 builder.pop();
             }
+
+            {
+                builder.push("reading");
+                BOOK_READING_ANIMATION = builder
+                      .comment("Holding a book with 'scholar:book_open' component will render the full book model and show a reading animation. Default: true")
+                      .define("animation", true);
+                BOOK_READING_HIDE_OFFHAND_ITEM = builder
+                      .comment("Item in the opposite hand will be hidden when the reading pose is active. Default: true")
+                      .define("hide_offhand_item", true);
+                builder.pop();
+            }
+
+            {
+                builder.push("visuals");
+                LECTERN_COLORED_BOOK_MODEL = builder
+                      .comment("Lectern book rendering reflects the actual book placed on it. Default: true")
+                      .define("lectern_colored_book", true);
+                WRITTEN_BOOK_ENCHANTMENT_GLINT = builder
+                      .comment("Written books have an enchantment glint. Default: false, Vanilla: true")
+                      .define("written_book_enchantment_glint", false);
+                builder.pop();
+            }
+
             builder.pop();
 
             builder.push("tooltip");
@@ -70,15 +97,6 @@ public class Config {
             TOOLTIP_REQUIRES_SNEAK = builder
                   .comment("Sneaking is required for tooltip to show. Default: false")
                   .define("requires_sneak", false);
-            builder.pop();
-
-            builder.push("visuals");
-            LECTERN_COLORED_BOOK_MODEL = builder
-                  .comment("Lectern book rendering reflects the actual book placed on it. Default: true")
-                  .define("lectern_colored_book", true);
-            BOOK_ENCHANTMENT_GLINT = builder
-                  .comment("Written books have an enchantment glint. Default: false, Vanilla: true")
-                  .define("written_book_enchantment_glint", false);
             builder.pop();
 
             SPEC = builder.build();

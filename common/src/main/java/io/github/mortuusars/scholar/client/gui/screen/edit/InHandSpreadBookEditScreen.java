@@ -6,12 +6,17 @@ import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.BookmarkButton;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.network.Packets;
-import io.github.mortuusars.scholar.network.packet.server.SetBookmarkC2SP;
-import io.github.mortuusars.scholar.network.packet.server.SetCustomAuthorInHandC2SP;
+import io.github.mortuusars.scholar.network.packet.serverbound.SetBookmarkC2SP;
+import io.github.mortuusars.scholar.network.packet.serverbound.SetCustomAuthorInHandC2SP;
+import io.github.mortuusars.scholar.network.packet.serverbound.StartedReadingInHandC2SP;
+import io.github.mortuusars.scholar.network.packet.serverbound.StoppedReadingInHandC2SP;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -30,6 +35,8 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
         this.hand = hand;
         int bookmarkedPage = bookStack.getOrDefault(Scholar.DataComponents.BOOKMARK, 0);
         setPage(bookmarkedPage);
+        Packets.sendToServer(new StartedReadingInHandC2SP(getBookSlot()));
+        Minecraft.getInstance().level.playSound(player, player, SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1, 1);
     }
 
     protected int getBookSlot() {
@@ -101,5 +108,11 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
         saveChanges(true, signature.title());
         signature.customAuthor().ifPresent(customAuthor ->
               Packets.sendToServer(new SetCustomAuthorInHandC2SP(getBookSlot(), customAuthor)));
+    }
+
+    @Override
+    public void onClose() {
+        super.onClose();
+        Packets.sendToServer(new StoppedReadingInHandC2SP(getBookSlot()));
     }
 }
