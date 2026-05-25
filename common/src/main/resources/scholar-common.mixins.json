@@ -13,6 +13,10 @@
     "jei.JeiKeyConflictContextMixin",
     "lectern.LecternBlockEntityMixin",
     "lectern.LecternBlockMixin",
+    "literate_mobs.EntityMixin",
+    "literate_mobs.GiveBookMixin",
+    "literate_mobs.MobMixin",
+    "literate_mobs.RandomStrollGoalMixin",
     "reading.PlayerMixin"
   ],
   "injectors": {

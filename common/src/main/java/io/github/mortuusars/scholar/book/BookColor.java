@@ -8,7 +8,14 @@ public class BookColor {
     public static final int DEFAULT = 0xFF99452E;
 
     public static int of(ItemStack stack) {
-        return DyedItemColor.getOrDefault(stack, DEFAULT);
+        return DyedItemColor.getOrDefault(stack, getDefaultColor(stack));
+    }
+
+    public static int getDefaultColor(ItemStack stack) {
+        if (stack.is(Items.BOOK)) {
+            return 0xFF9C763E;
+        }
+        return DEFAULT;
     }
 
     public static int getItemTintColor(ItemStack stack, int tintIndex) {

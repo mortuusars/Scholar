@@ -7,6 +7,8 @@
   - Some humanoid mobs will have this animation as well, if they have opened book in hand.
   - First-person book model reflects the "opened" book state as well.
 - Added sound to book opening.
+- Added literacy:
+  - Zombies and Skeletons will have a chance to spawn with a book and will be reading it from time to time. 
 - Author of the book can be changed now.
 - Added bookmark - opens the book at the set page.
 - Added in-world tooltip for books placed on a Lectern.

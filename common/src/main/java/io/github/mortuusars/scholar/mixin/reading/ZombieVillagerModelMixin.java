@@ -25,6 +25,6 @@ public abstract class ZombieVillagerModelMixin<T extends Zombie> extends Humanoi
             return; // Stop zombie arms animation, so it wouldn't override ours.
         }
 
-        original.call(leftArm, rightArm, isAggressive, ageInTicks, ageInTicks);
+        original.call(leftArm, rightArm, isAggressive, attackTime, ageInTicks);
     }
 }
