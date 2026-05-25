@@ -24,6 +24,6 @@ public abstract class AbstractZombieModelMixin <T extends Monster> extends Human
             return; // Stop zombie arms animation, so it wouldn't override ours.
         }
 
-        original.call(leftArm, rightArm, isAggressive, ageInTicks, ageInTicks);
+        original.call(leftArm, rightArm, isAggressive, attackTime, ageInTicks);
     }
 }

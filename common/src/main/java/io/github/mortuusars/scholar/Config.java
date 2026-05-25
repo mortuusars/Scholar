@@ -13,6 +13,8 @@ public class Config {
         // Reading
         public static final ModConfigSpec.BooleanValue BOOK_READING_ANIMATION;
         public static final ModConfigSpec.BooleanValue BOOK_READING_HIDE_OFFHAND_ITEM;
+        public static final ModConfigSpec.DoubleValue LITERATE_MOBS_BOOK_SPAWN_CHANCE;
+        public static final ModConfigSpec.DoubleValue LITERATE_MOBS_BOOK_DROP_CHANCE;
 
         // Screen
         public static final ModConfigSpec.BooleanValue IN_HAND_TWO_PAGE_BOOK_SCREEN;
@@ -85,6 +87,15 @@ public class Config {
                 builder.pop();
             }
 
+            builder.pop();
+
+            builder.push("literate_mobs");
+            LITERATE_MOBS_BOOK_SPAWN_CHANCE = builder
+                  .comment("Chance of the mob spawning with a book in hand. Default: 0.05")
+                  .defineInRange("book_spawn_chance", 0.05, 0, 1);
+            LITERATE_MOBS_BOOK_DROP_CHANCE = builder
+                  .comment("Chance of the book dropping from the mob spawned with a book in hand. Default: 0.5")
+                  .defineInRange("book_drop_chance", 0.5, 0, 1);
             builder.pop();
 
             builder.push("tooltip");
