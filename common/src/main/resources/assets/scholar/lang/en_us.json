@@ -89,6 +89,9 @@
   "scholar.configuration.ui": "UI",
   "scholar.configuration.visuals": "Visuals",
   "scholar.configuration.written_book_enchantment_glint": "Written Book Enchantment Glint",
+  "scholar.configuration.literate_mobs": "Literate Mobs",
+  "scholar.configuration.book_spawn_chance": "Book Spawn Chance",
+  "scholar.configuration.book_drop_chance": "Book Drop Chance",
   "subtitles.scholar.ui.book_signed": "Book signing scribbles",
   "subtitles.scholar.ui.ink": "Ink splashes",
   "subtitles.scholar.ui.scribble": "Pen scribbles"

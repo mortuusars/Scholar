@@ -68,6 +68,13 @@ public class BookColor {
         return DEFAULT.getValue();
     }
 
+    public static int getDefaultColor(ItemStack stack) {
+        if (stack.is(Items.BOOK)) {
+            return 0xFF9C763E;
+        }
+        return DEFAULT.getValue();
+    }
+
     public static int getItemTintColor(ItemStack stack, int tintIndex) {
         if (tintIndex == 1) {
             return of(stack);

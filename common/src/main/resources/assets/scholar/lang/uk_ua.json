@@ -89,6 +89,9 @@
   "scholar.configuration.ui": "Інтерфейс",
   "scholar.configuration.visuals": "Візуал",
   "scholar.configuration.written_book_enchantment_glint": "Блиск написаної книги",
+  "scholar.configuration.literate_mobs": "Грамотні моби",
+  "scholar.configuration.book_spawn_chance": "Шанс спавну з книгою",
+  "scholar.configuration.book_drop_chance": "Шанс випадання книги",
   "subtitles.scholar.ui.book_signed": "Книга підписана",
   "subtitles.scholar.ui.ink": "Чорнило капає",
   "subtitles.scholar.ui.scribble": "Перо шкрябає"

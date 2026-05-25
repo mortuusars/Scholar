@@ -8,12 +8,15 @@ import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
 import io.github.mortuusars.scholar.recipe.NbtTransferringRecipe;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Unit;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
@@ -76,6 +79,12 @@ public class Scholar {
             return Register.soundEvent(path, () -> SoundEvent.createVariableRangeEvent(Scholar.resource(path)));
         }
 
-        static void init() { }
+        static void init() {}
+    }
+
+    public static class Tags {
+        public static class EntityTypes {
+            public static final TagKey<EntityType<?>> LITERATE = TagKey.create(Registries.ENTITY_TYPE, resource("literate"));
+        }
     }
 }
