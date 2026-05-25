@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.network.packet.server;
+package io.github.mortuusars.scholar.network.packet.serverbound;
 
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.network.packet.Packet;

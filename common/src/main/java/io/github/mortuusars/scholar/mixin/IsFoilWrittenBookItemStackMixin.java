@@ -17,7 +17,7 @@ public abstract class IsFoilWrittenBookItemStackMixin {
 
     @Inject(method = "hasFoil", at = @At("HEAD"), cancellable = true)
     private void onHasFoil(CallbackInfoReturnable<Boolean> cir) {
-        if (is(Items.WRITTEN_BOOK) && Config.Common.BOOK_ENCHANTMENT_GLINT.isFalse()) {
+        if (is(Items.WRITTEN_BOOK) && Config.Common.WRITTEN_BOOK_ENCHANTMENT_GLINT.isFalse()) {
             cir.setReturnValue(getItem().isFoil((ItemStack)(Object)this));
         }
     }

@@ -2,7 +2,7 @@ package io.github.mortuusars.scholar.mixin.lectern;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.scholar.Config;
-import io.github.mortuusars.scholar.client.lectern.LecternBookRendering;
+import io.github.mortuusars.scholar.book.ColoredBookModel;
 import net.minecraft.client.model.BookModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.LecternRenderer;
@@ -26,7 +26,7 @@ public class LecternRendererMixin {
     private void onRender(LecternBlockEntity blockEntity, float partialTick, PoseStack poseStack,
                           MultiBufferSource bufferSource, int packedLight, int packedOverlay, CallbackInfo ci) {
         if (Config.Common.LECTERN_COLORED_BOOK_MODEL.get()) {
-            LecternBookRendering.render(blockEntity.getBlockState(), blockEntity, partialTick, poseStack, bufferSource, packedLight, packedOverlay, bookModel);
+            ColoredBookModel.renderOnLectern(blockEntity.getBlockState(), blockEntity, partialTick, poseStack, bufferSource, packedLight, packedOverlay, bookModel);
             ci.cancel();
         }
     }

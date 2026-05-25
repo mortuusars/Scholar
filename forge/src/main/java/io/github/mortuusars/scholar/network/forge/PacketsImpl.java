@@ -3,7 +3,7 @@ package io.github.mortuusars.scholar.network.neoforge;
 
 import io.github.mortuusars.scholar.network.PacketDirection;
 import io.github.mortuusars.scholar.network.packet.IPacket;
-import io.github.mortuusars.scholar.network.packet.server.LecternEditBookC2SP;
+import io.github.mortuusars.scholar.network.packet.serverbound.LecternEditBookC2SP;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;

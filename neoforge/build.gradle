@@ -53,6 +53,8 @@ dependencies {
     modRuntimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}") { transitive = false }
     modRuntimeOnly("curse.maven:jade-324717:${jade_neoforge_id}") { transitive = false }
     modRuntimeOnly("curse.maven:embeddium-908741:6118392")
+    modRuntimeOnly("maven.modrinth:cloth-config:15.0.140+neoforge")
+    modRuntimeOnly("maven.modrinth:freecam:ROfcbxxe")
 
     modImplementation("curse.maven:woodster-869951:6425772")
     modCompileOnly("curse.maven:blueprint-382216:6505319")
