@@ -1,4 +1,4 @@
-package io.github.mortuusars.scholar.client.chiseled_bookshelf;
+package io.github.mortuusars.scholar.book;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -16,13 +16,13 @@ import org.slf4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BookshelfItemColorsReloadListener extends SimpleJsonResourceReloadListener {
+public class BookItemColorsReloadListener extends SimpleJsonResourceReloadListener {
     private static final Logger LOGGER = LogUtils.getLogger();
 
     public static final Codec<Map<ResourceLocation, Integer>> CODEC = Codec.unboundedMap(ResourceLocation.CODEC, HexColor.CODEC);
 
-    public BookshelfItemColorsReloadListener() {
-        super(new Gson(), "chiseled_bookshelf/item_colors");
+    public BookItemColorsReloadListener() {
+        super(new Gson(), "book/item_colors");
     }
 
     @Override
@@ -32,7 +32,7 @@ public class BookshelfItemColorsReloadListener extends SimpleJsonResourceReloadL
         for (Map.Entry<ResourceLocation, JsonElement> entry : map.entrySet()) {
             ResourceLocation location = entry.getKey();
             if (!location.getNamespace().equals("scholar")) {
-                LOGGER.info("Ignoring chiseled bookshelf item color definition '{}' because it's not in Scholar namespace.", location);
+                LOGGER.info("Ignoring book item color definition '{}' because it's not in Scholar namespace.", location);
                 continue;
             }
 
@@ -41,6 +41,6 @@ public class BookshelfItemColorsReloadListener extends SimpleJsonResourceReloadL
                   .ifSuccess(data -> itemColors.putAll(data.getFirst()));
         }
 
-        ChiseledBookshelfColors.ITEM_COLORS = ImmutableMap.copyOf(itemColors);
+        BookColor.ITEM_COLORS = ImmutableMap.copyOf(itemColors);
     }
 }

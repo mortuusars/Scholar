@@ -8,8 +8,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.WritableBookItem;
-import net.minecraft.world.item.WrittenBookItem;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChiseledBookShelfBlock;
@@ -23,7 +21,6 @@ import java.util.function.BiConsumer;
 
 public class ChiseledBookshelfColors {
     public static Map<ResourceLocation, BookshelfDefaultColors> DEFAULT_SLOT_COLORS = Collections.emptyMap();
-    public static Map<ResourceLocation, Integer> ITEM_COLORS = Collections.emptyMap();
 
     public static int getSlotTintColor(BlockState state, @Nullable BlockAndTintGetter blockGetter,
                                        @Nullable BlockPos pos, int tintIndex) {
@@ -35,12 +32,7 @@ public class ChiseledBookshelfColors {
         ItemStack stackInSlot = blockEntity.getItem(tintIndex);
         if (stackInSlot.isEmpty()) return -1;
 
-        if (stackInSlot.getItem() instanceof WrittenBookItem || stackInSlot.getItem() instanceof WritableBookItem) {
-            return BookColor.of(stackInSlot);
-        }
-
-        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stackInSlot.getItem());
-        return ITEM_COLORS.getOrDefault(itemId, getDefaultTintColorForSlot(state, tintIndex));
+        return BookColor.of(stackInSlot, getDefaultTintColorForSlot(state, tintIndex));
     }
 
     public static int getDefaultTintColorForSlot(BlockState state, int slot) {

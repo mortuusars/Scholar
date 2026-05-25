@@ -32,7 +32,7 @@ public class ScholarFabricClient implements ClientModInitializer {
         ConfigScreenFactoryRegistry.INSTANCE.register(Scholar.ID, ConfigurationScreen::new);
 
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new BookshelfDefaultColorsReloadListenerFabric());
-        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new BookshelfItemColorsReloadListenerFabric());
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new BookItemColorsReloadListenerFabric());
 
         FabricLoader.getInstance().getModContainer(Scholar.ID).ifPresent(container -> {
             for (BuiltInResourcePacks.Pack pack : BuiltInResourcePacks.get()) {

@@ -5,7 +5,7 @@ import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.client.gui.InWorldTooltip;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.BookshelfDefaultColorsReloadListener;
-import io.github.mortuusars.scholar.client.chiseled_bookshelf.BookshelfItemColorsReloadListener;
+import io.github.mortuusars.scholar.book.BookItemColorsReloadListener;
 import io.github.mortuusars.scholar.client.gui.screen.edit.LecternSpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.screen.view.LecternSpreadBookViewScreen;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.ChiseledBookshelfColors;
@@ -53,7 +53,7 @@ public class ClientEvents {
         @SubscribeEvent
         public static void registerClientReloadListeners(RegisterClientReloadListenersEvent event) {
             event.registerReloadListener(new BookshelfDefaultColorsReloadListener());
-            event.registerReloadListener(new BookshelfItemColorsReloadListener());
+            event.registerReloadListener(new BookItemColorsReloadListener());
         }
 
         @SubscribeEvent
