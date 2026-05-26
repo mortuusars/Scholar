@@ -78,7 +78,8 @@ public class ColoredBookModel {
 
             poseStack.pushPose();
             entityModel.translateToHand(mainArm, poseStack);
-            poseStack.translate((float)(isLeftArm ? -1 : 1) / 16.0F - 0.05, 0.4F, -0.25F);
+            poseStack.translate((float)(isLeftArm ? -1 : 1) / 16.0F - 0.05, 0.5F,
+                  entityModel instanceof SkeletonModel<?> ? -0.15F : -0.22F);
             poseStack.mulPose(Axis.XP.rotationDegrees(150.0F));
             poseStack.mulPose(Axis.ZP.rotationDegrees(40.0F));
             poseStack.mulPose(Axis.YP.rotationDegrees(-90));
