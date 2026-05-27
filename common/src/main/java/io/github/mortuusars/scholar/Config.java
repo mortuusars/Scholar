@@ -13,8 +13,11 @@ public class Config {
         // Reading
         public static final ModConfigSpec.BooleanValue BOOK_READING_ANIMATION;
         public static final ModConfigSpec.BooleanValue BOOK_READING_HIDE_OFFHAND_ITEM;
+
+        // Literate Mobs
         public static final ModConfigSpec.DoubleValue LITERATE_MOBS_BOOK_SPAWN_CHANCE;
         public static final ModConfigSpec.DoubleValue LITERATE_MOBS_BOOK_DROP_CHANCE;
+        public static final ModConfigSpec.DoubleValue LITERATE_MOBS_BOOK_READING_CHANCE;
 
         // Screen
         public static final ModConfigSpec.BooleanValue IN_HAND_TWO_PAGE_BOOK_SCREEN;
@@ -40,6 +43,7 @@ public class Config {
             BOOK_CHANGEABLE_AUTHOR = builder
                   .comment("Author can be changed when signing a book. Default: true")
                   .define("changeable_author", true);
+
             {
                 builder.push("screen");
                 IN_HAND_TWO_PAGE_BOOK_SCREEN = builder
@@ -65,37 +69,36 @@ public class Config {
                 builder.pop();
             }
 
-            {
-                builder.push("reading");
-                BOOK_READING_ANIMATION = builder
-                      .comment("Holding a book with 'scholar:book_open' component will render the full book model and show a reading animation. Default: true")
-                      .define("animation", true);
-                BOOK_READING_HIDE_OFFHAND_ITEM = builder
-                      .comment("Item in the opposite hand will be hidden when the reading pose is active. Default: true")
-                      .define("hide_offhand_item", true);
-                builder.pop();
-            }
+            builder.pop();
 
-            {
-                builder.push("visuals");
-                LECTERN_COLORED_BOOK_MODEL = builder
-                      .comment("Lectern book rendering reflects the actual book placed on it. Default: true")
-                      .define("lectern_colored_book", true);
-                WRITTEN_BOOK_ENCHANTMENT_GLINT = builder
-                      .comment("Written books have an enchantment glint. Default: false, Vanilla: true")
-                      .define("written_book_enchantment_glint", false);
-                builder.pop();
-            }
-
+            builder.push("reading");
+            BOOK_READING_ANIMATION = builder
+                  .comment("Holding a book with 'scholar:book_open' component will render the full book model and show a reading animation. Default: true")
+                  .define("animation", true);
+            BOOK_READING_HIDE_OFFHAND_ITEM = builder
+                  .comment("Item in the opposite hand will be hidden when the reading pose is active. Default: true")
+                  .define("hide_offhand_item", true);
             builder.pop();
 
             builder.push("literate_mobs");
             LITERATE_MOBS_BOOK_SPAWN_CHANCE = builder
-                  .comment("Chance of the mob spawning with a book in hand. Default: 0.05")
+                  .comment("Chance of the mob spawning with a book in hand.")
                   .defineInRange("book_spawn_chance", 0.05, 0, 1);
             LITERATE_MOBS_BOOK_DROP_CHANCE = builder
-                  .comment("Chance of the book dropping from the mob spawned with a book in hand. Default: 0.5")
+                  .comment("Chance of the book dropping from the mob spawned with a book in hand.")
                   .defineInRange("book_drop_chance", 0.5, 0, 1);
+            LITERATE_MOBS_BOOK_READING_CHANCE = builder
+                  .comment("Chance of the mob reading the book it's holding. Lower value = more time between reads.")
+                  .defineInRange("book_reading_chance", 0.005, 0, 1);
+            builder.pop();
+
+            builder.push("visuals");
+            LECTERN_COLORED_BOOK_MODEL = builder
+                  .comment("Lectern book rendering reflects the actual book placed on it. Default: true")
+                  .define("lectern_colored_book", true);
+            WRITTEN_BOOK_ENCHANTMENT_GLINT = builder
+                  .comment("Written books have an enchantment glint. Default: false, Vanilla: true")
+                  .define("written_book_enchantment_glint", false);
             builder.pop();
 
             builder.push("tooltip");

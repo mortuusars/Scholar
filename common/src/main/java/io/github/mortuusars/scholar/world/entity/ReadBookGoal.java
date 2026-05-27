@@ -1,7 +1,8 @@
 package io.github.mortuusars.scholar.world.entity;
 
+import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.client.animation.ReadingPose;
+import io.github.mortuusars.scholar.client.animation.ReadingAnimation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionHand;
@@ -26,18 +27,19 @@ public class ReadBookGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (ReadingPose.getOpenedBookHand(mob) != null) {
+        if (ReadingAnimation.getOpenedBookHand(mob) != null) {
             stop(); // Closes the book properly after world reload or something.
         }
-        return canRead() && mob.getRandom().nextFloat() < 0.003f;
+        return canRead() && mob.getRandom().nextFloat() < Config.Common.LITERATE_MOBS_BOOK_READING_CHANCE.get();
     }
 
     public boolean canRead() {
         return mob.getType().is(Scholar.Tags.EntityTypes.LITERATE)
               && mob.getTarget() == null
               && !mob.isInWaterOrRain()
-              && isReadableBook(mob.getMainHandItem())
-              && !mob.getNavigation().isInProgress();
+              && !mob.getNavigation().isInProgress()
+              && !mob.isOnFire()
+              && isReadableBook(mob.getMainHandItem());
     }
 
     @Override

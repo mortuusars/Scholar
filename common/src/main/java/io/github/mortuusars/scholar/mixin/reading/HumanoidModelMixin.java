@@ -1,6 +1,6 @@
 package io.github.mortuusars.scholar.mixin.reading;
 
-import io.github.mortuusars.scholar.client.animation.ReadingPose;
+import io.github.mortuusars.scholar.client.animation.ReadingAnimation;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.AgeableListModel;
@@ -41,7 +41,7 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
             return;
         }
 
-        @Nullable InteractionHand openedBookHand = ReadingPose.getOpenedBookHand(entity);
+        @Nullable InteractionHand openedBookHand = ReadingAnimation.getOpenedBookHand(entity);
         if (openedBookHand == null) {
             return;
         }
@@ -50,7 +50,7 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
               ? entity.getMainArm()
               : entity.getMainArm().getOpposite();
         boolean isHoldingArm = openedBookArm == HumanoidArm.LEFT;
-        ReadingPose.poseLeftArm(entity, leftArm, isHoldingArm);
+        ReadingAnimation.poseLeftArm(entity, leftArm, isHoldingArm);
         ci.cancel();
     }
 
@@ -61,7 +61,7 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
             return;
         }
 
-        @Nullable InteractionHand openedBookHand = ReadingPose.getOpenedBookHand(entity);
+        @Nullable InteractionHand openedBookHand = ReadingAnimation.getOpenedBookHand(entity);
         if (openedBookHand == null) {
             return;
         }
@@ -70,17 +70,17 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
               ? entity.getMainArm()
               : entity.getMainArm().getOpposite();
         boolean isHoldingArm = openedBookArm == HumanoidArm.RIGHT;
-        ReadingPose.poseRightArm(entity, rightArm, isHoldingArm);
+        ReadingAnimation.poseRightArm(entity, rightArm, isHoldingArm);
         ci.cancel();
     }
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/HumanoidModel;setupAttackAnimation(Lnet/minecraft/world/entity/LivingEntity;F)V"))
     void onSetupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
-        @Nullable InteractionHand openedBookHand = ReadingPose.getOpenedBookHand(entity);
+        @Nullable InteractionHand openedBookHand = ReadingAnimation.getOpenedBookHand(entity);
         if (openedBookHand == null) {
             return;
         }
 
-        ReadingPose.poseHead(entity, ageInTicks, headPitch, openedBookHand, body, head);
+        ReadingAnimation.poseHead(entity, ageInTicks, headPitch, openedBookHand, body, head);
     }
 }
