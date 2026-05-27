@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.client.animation.ReadingPose;
+import io.github.mortuusars.scholar.client.animation.ReadingAnimation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.*;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -64,7 +64,7 @@ public class ColoredBookModel {
         poseStack.mulPose(Axis.YP.rotationDegrees(-90));
         poseStack.mulPose(Axis.ZP.rotationDegrees(-90));
 
-        ReadingPose.poseBook(entity, stack, arm, entityModel, bookModel);
+        ReadingAnimation.poseBook(entity, stack, arm, entityModel, bookModel);
 
         VertexConsumer coverVertexConsumer = ColoredBookModel.BOOK_COVER_LOCATION.buffer(buffer, RenderType::entityCutout);
         bookModel.render(poseStack, coverVertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, BookColor.of(stack));

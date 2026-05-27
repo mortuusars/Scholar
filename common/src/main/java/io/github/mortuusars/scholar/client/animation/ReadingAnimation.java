@@ -15,7 +15,7 @@ import net.minecraft.world.item.WritableBookItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ReadingPose {
+public class ReadingAnimation {
     public static @Nullable InteractionHand getOpenedBookHand(LivingEntity entity) {
         if (!Config.Common.BOOK_READING_ANIMATION.get()) return null;
         if (entity instanceof EnderMan) return null; // They cannot hold items as other mobs do.
@@ -107,29 +107,31 @@ public class ReadingPose {
 
     public static <T extends LivingEntity> void poseHead(T entity, float ageInTicks, float headPitch,
                                                          @NotNull InteractionHand openedBookHand, ModelPart body, ModelPart head) {
-        int perEntityOffset = 42 * entity.getId();
-        ageInTicks += perEntityOffset; // Animations should be unique per entity. Age would be similar after world load.
-
-        int lineDuration = getLineDuration(entity);
-        int lines = getLinesPerPage();
         float amplitude = 0.25f; // How much head turns when reading the line
         float forwardToReturnRatio = getForwardToReturnRatio();
         float turnOffset = 0.05f; // Slight head rotation towards the current book side
         float pitchPerLine = 0.1f;
 
-        // Yaw
-        int pageScanningDuration = lineDuration * lines;
-        boolean isOnTheRightPage = ageInTicks % (pageScanningDuration * 2) > pageScanningDuration;
-        boolean isOnTheLastLine = ageInTicks % (lineDuration * lines) > lineDuration * (lines - 1);
-        float scanningForwardDuration = lineDuration * forwardToReturnRatio;
-        float scanningReturnDuration = lineDuration - scanningForwardDuration;
-        float time = ageInTicks % lineDuration;
+        int lineDuration = getLineDuration(entity);
+        int lines = getLinesPerPage();
+        int pageDuration = lineDuration * lines;
+        int spreadDuration = pageDuration * 2;
 
-        boolean isReturning = time >= scanningForwardDuration;
+        double age = ageInTicks + entity.getId() * 42.0; // Animations should be unique per entity. Age would be similar after world load.
+        float spreadTime = (float) (age % spreadDuration);
+        float pageTime = spreadTime % pageDuration;
+        float lineTime = pageTime % lineDuration;
+        float forwardDuration = lineDuration * forwardToReturnRatio;
+        float returnDuration = lineDuration - forwardDuration;
+
+        // Yaw
+        boolean isOnTheRightPage = spreadTime >= pageDuration;
+        boolean isOnTheLastLine = pageTime >= pageDuration - lineDuration;
+        boolean isReturning = lineTime >= forwardDuration;
 
         float scanningAnim = isReturning
-              ? 1f - ((time - scanningForwardDuration) / scanningReturnDuration)
-              : time / scanningForwardDuration;
+              ? 1f - ((lineTime - forwardDuration) / returnDuration)
+              : lineTime / forwardDuration;
 
         if (!isOnTheRightPage) {
             scanningAnim = 1 - scanningAnim;
@@ -159,23 +161,23 @@ public class ReadingPose {
         float min = 0.5f;
         float transitionPart = 1 - forwardToReturnRatio;
 
-        time = ageInTicks / lineDuration;
+        float linesPassed = pageTime / lineDuration;
 
-        int current = (int) time % lines;
+        int current = (int) linesPassed % lines;
         int next = (current + 1) % lines;
 
-        float local = time - (int) time;
+        float lineProgress = linesPassed - (int) linesPassed;
 
-        float a = min + current * pitchPerLine;
-        float b = min + next * pitchPerLine;
+        float currentPitch = min + current * pitchPerLine;
+        float nextPitch = min + next * pitchPerLine;
 
         float pitch;
 
-        if (local < 1f - transitionPart) {
-            pitch = a;
+        if (lineProgress < 1.0 - transitionPart) {
+            pitch = currentPitch;
         } else {
-            float t = easeInOutSine((local - (1f - transitionPart)) / transitionPart);
-            pitch = Mth.lerp(t, a, b);
+            float t = easeInOutSine((lineProgress - (1f - transitionPart)) / transitionPart);
+            pitch = Mth.lerp(t, currentPitch, nextPitch);
         }
 
         if (entity.attackAnim > 0) {
