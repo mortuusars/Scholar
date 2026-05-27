@@ -11,6 +11,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
@@ -18,6 +19,7 @@ import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -36,7 +38,6 @@ public class Scholar {
     }
 
     public static void init() {
-        Items.init();
         MenuTypes.init();
         RecipeSerializers.init();
         SoundEvents.init();
@@ -86,5 +87,9 @@ public class Scholar {
         public static class EntityTypes {
             public static final TagKey<EntityType<?>> LITERATE = TagKey.create(Registries.ENTITY_TYPE, resource("literate"));
         }
+    }
+
+    public static class LootTables {
+        public static final ResourceKey<LootTable> LITERATE_MOB_BOOK = ResourceKey.create(Registries.LOOT_TABLE, resource("entities/literate_mob_book"));
     }
 }
