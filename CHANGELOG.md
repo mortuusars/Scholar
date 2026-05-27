@@ -1,5 +1,8 @@
 # Changelog
 
+## UNRELEASED
+- Literate Mobs book is now controlled by a loot table.
+
 ## 1.2.0 Snapshot 1 - 2026-05-27
 - Added book reading animations
   - Animation will start when a player opens Book and Quill or Written Book, and stops when the book is closed.
