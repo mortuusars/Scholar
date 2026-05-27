@@ -1,6 +1,6 @@
 package io.github.mortuusars.scholar.mixin.reading;
 
-import io.github.mortuusars.scholar.client.animation.ReadingPose;
+import io.github.mortuusars.scholar.client.animation.ReadingAnimation;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.HeadedModel;
 import net.minecraft.client.model.HierarchicalModel;
@@ -36,14 +36,14 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/monster/AbstractIllager;FFFFF)V", at = @At("RETURN"))
     private void onSetupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
-        InteractionHand hand = ReadingPose.getOpenedBookHand(entity);
+        InteractionHand hand = ReadingAnimation.getOpenedBookHand(entity);
         if (hand != null && entity.getArmPose() != AbstractIllager.IllagerArmPose.CROSSED) {
             HumanoidArm openedBookArm = hand == InteractionHand.MAIN_HAND
                   ? entity.getMainArm()
                   : entity.getMainArm().getOpposite();
-            ReadingPose.poseLeftArm(entity, leftArm, openedBookArm == HumanoidArm.LEFT);
-            ReadingPose.poseRightArm(entity, rightArm, openedBookArm == HumanoidArm.LEFT);
-            ReadingPose.poseHead(entity, ageInTicks, headPitch, hand, root, head);
+            ReadingAnimation.poseLeftArm(entity, leftArm, openedBookArm == HumanoidArm.LEFT);
+            ReadingAnimation.poseRightArm(entity, rightArm, openedBookArm == HumanoidArm.LEFT);
+            ReadingAnimation.poseHead(entity, ageInTicks, headPitch, hand, root, head);
         }
     }
 }

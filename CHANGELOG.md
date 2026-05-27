@@ -1,6 +1,6 @@
 # Changelog
 
-## UNRELEASED
+## 1.2.0 Snapshot 1 - 2026-05-27
 - Added book reading animations
     - Animation will start when a player opens Book and Quill or Written Book, and stops when the book is closed.
     - This is controlled by `scholar:book_open` component.
@@ -8,7 +8,7 @@
     - First-person book model reflects the "opened" book state as well.
 - Added sound to book opening.
 - Added literacy:
-    - Zombies and Skeletons will have a chance to spawn with a book and will be reading it from time to time.
+    - Zombies, Husks and Skeletons will have a 5% chance to spawn with a book and will be reading it from time to time.
 - Author of the book can be changed now.
 - Added bookmark - opens the book at the set page.
 - Added in-world tooltip for books placed on a Lectern.
