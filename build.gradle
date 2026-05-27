@@ -223,7 +223,6 @@ publishMods {
         file project(":forge")
         modLoaders.add("forge")
         displayName = "${mod_name} - Forge ${minecraft_version} - ${mod_version}"
-        optional("woodworks")
     }
 
     curseforge("curseforgeFabric") {
@@ -234,7 +233,6 @@ publishMods {
         displayName = "${mod_name} - Fabric ${minecraft_version} - ${mod_version}"
         requires("fabric-api")
         requires("forge-config-api-port")
-        optional("more-chiseled-bookshelf-variants")
     }
 
     modrinth("modrinthForge") {
@@ -242,7 +240,6 @@ publishMods {
         file project(":forge")
         modLoaders.add("forge")
         displayName = "${mod_name} - ${mod_version}"
-        optional("woodworks")
     }
 
     modrinth("modrinthFabric") {
@@ -253,6 +250,5 @@ publishMods {
         displayName = "${mod_name} - ${mod_version}"
         requires("fabric-api")
         requires("forge-config-api-port")
-        optional("more-chiseled-bookshelf-variants")
     }
 }
