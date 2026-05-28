@@ -29,6 +29,7 @@
 - Moved definition of book item colors from Chiseled Bookshelf `chiseled_bookshelf/item_colors` built-in resourcepack to Colored Books `book/item_colors` built-in resourcepack. 
 - Added "requires_sneaking" config option for showing in-world tooltips. 
 - Restructured config. Moved some config options from client to common for convenience.
+- Fixed page numbers not being centered properly.
 - Fixed Chiseled Bookshelf tooltip still displaying when the GUI is hidden.
 
 ## 1.1.16 - 2026-05-19
