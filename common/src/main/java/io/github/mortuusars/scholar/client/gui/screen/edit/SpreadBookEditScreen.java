@@ -179,12 +179,6 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     @Override
-    protected void toggleBookTools() {
-        super.toggleBookTools();
-        playButtonClickSound();
-    }
-
-    @Override
     protected void updateButtons() {
         super.updateButtons();
 
@@ -266,11 +260,6 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
 
     @Override
     public boolean keyPressed(int key, int scanCode, int modifiers) {
-        if (ScholarClient.KeyMappings.toggleBookTools.matches(key, scanCode)) {
-            toggleBookTools();
-            return true;
-        }
-
         if (ScholarClient.KeyMappings.importBook.matches(key, scanCode)) {
             playButtonClickSound();
             importBook(!Screen.hasShiftDown());
