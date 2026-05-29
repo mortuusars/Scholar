@@ -20,6 +20,9 @@
     ],
     "client": [
       "io.github.mortuusars.scholar.fabric.ScholarFabricClient"
+    ],
+    "jei_mod_plugin": [
+      "io.github.mortuusars.scholar.integration.jei.ScholarJeiPlugin"
     ]
   },
   "mixins": [
