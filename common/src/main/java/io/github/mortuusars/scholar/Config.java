@@ -36,6 +36,10 @@ public class Config {
         public static final ModConfigSpec.BooleanValue LECTERN_COLORED_BOOK_MODEL;
         public static final ModConfigSpec.BooleanValue WRITTEN_BOOK_ENCHANTMENT_GLINT;
 
+        // Integration
+        public static final ModConfigSpec.BooleanValue JEI_DYEING_RECIPES;
+        public static final ModConfigSpec.BooleanValue JEI_DYEING_RECIPES_ONLY_BOOKS;
+
         static {
             ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
@@ -111,6 +115,19 @@ public class Config {
             TOOLTIP_REQUIRES_SNEAK = builder
                   .comment("Sneaking is required for tooltip to show. Default: false")
                   .define("requires_sneak", false);
+            builder.pop();
+
+            builder.push("integration");
+            {
+                builder.push("jei");
+                JEI_DYEING_RECIPES = builder
+                      .comment("Item dyeing recipes for 'minecraft:dyeable' items will be added to JEI. Default: true")
+                      .define("jei_dyeing_recipes", true);
+                JEI_DYEING_RECIPES_ONLY_BOOKS = builder
+                      .comment("Item dyeing recipes added to JEI will shown only books, ignoring other dyeable items. Default: false")
+                      .define("jei_dyeing_recipes_only_books", false);
+                builder.pop();
+            }
             builder.pop();
 
             SPEC = builder.build();
