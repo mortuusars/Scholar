@@ -1,6 +1,8 @@
 # Changelog
 
 ## UNRELEASED
+- Added exporting of signed books.
+  - Exported to the same **.txt** format that Book and Quills can import. 
 - Added item dyeing recipes to JEI.
 - Literate Mobs book is now controlled by a loot table.
 - Fixed page numbers not being centered properly.
