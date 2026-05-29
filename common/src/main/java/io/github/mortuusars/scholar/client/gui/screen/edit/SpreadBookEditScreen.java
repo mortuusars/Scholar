@@ -176,12 +176,6 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     @Override
-    protected void toggleBookTools() {
-        super.toggleBookTools();
-        playButtonClickSound();
-    }
-
-    @Override
     protected void updateButtons() {
         super.updateButtons();
 
