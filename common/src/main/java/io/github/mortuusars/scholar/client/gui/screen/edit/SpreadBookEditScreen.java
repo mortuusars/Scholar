@@ -11,14 +11,16 @@ import io.github.mortuusars.scholar.book.BookSignature;
 import io.github.mortuusars.scholar.book.Spread;
 import io.github.mortuusars.scholar.client.gui.screen.BookSigningScreen;
 import io.github.mortuusars.scholar.client.gui.screen.SpreadBookScreen;
+import io.github.mortuusars.scholar.client.gui.widget.ToggleImageButton;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedString;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedStringEditor;
+import io.github.mortuusars.scholar.client.util.Minecrft;
 import io.github.mortuusars.scholar.util.Change;
 import io.github.mortuusars.scholar.client.util.FileDialogs;
 import io.github.mortuusars.scholar.util.History;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
-import io.netty.util.internal.StringUtil;
+import io.github.mortuusars.scholar.util.supporter.Supporters;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -33,6 +35,7 @@ import net.minecraft.network.chat.*;
 import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.server.network.Filterable;
+import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,6 +50,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public abstract class SpreadBookEditScreen extends SpreadBookScreen {
+    public static final WidgetSprites SKIN_REGULAR_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/skin_regular_button"));
+    public static final WidgetSprites SKIN_GOLD_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/skin_gold_button"));
+
     protected final ItemStack bookStack;
 
     protected final List<String> pages = new ArrayList<>();
@@ -63,12 +69,31 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
     protected ImageButton exportBookButton;
     protected ImageButton importBookButton;
 
+    protected @Nullable ToggleImageButton toggleGoldenSkinButton;
+
     protected boolean bookModified;
 
     public SpreadBookEditScreen(ItemStack bookStack) {
         super(BookColor.of(bookStack));
         this.bookStack = bookStack;
     }
+
+    @Override
+    public boolean isGolden() {
+        return bookStack.has(Scholar.DataComponents.BOOK_GOLDEN);
+    }
+
+    public boolean canToggleGolden() {
+        return Supporters.hasAccessToGoldenSkin(Minecrft.player().getUUID());
+    }
+
+    protected void toggleGoldenSkin(boolean golden) {
+        bookStack.set(Scholar.DataComponents.BOOK_GOLDEN, golden ? Unit.INSTANCE : null);
+        bookColor = BookColor.of(bookStack);
+        sendGoldenSkinChange(golden);
+    }
+
+    protected abstract void sendGoldenSkinChange(boolean golden);
 
     public History getHistory() {
         return history;
@@ -176,6 +201,14 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
                 .append(CommonComponents.NEW_LINE)
                 .append(Component.translatable("gui.scholar.export_book.tooltip"))));
         addRenderableWidget(exportBookButton);
+
+        if (canToggleGolden()) {
+            toggleGoldenSkinButton = new ToggleImageButton(leftPos - 20, topPos + 46, 18, 18,
+                  SKIN_GOLD_BUTTON_SPRITES, SKIN_REGULAR_BUTTON_SPRITES, this::toggleGoldenSkin);
+            toggleGoldenSkinButton.setState(isGolden());
+            toggleGoldenSkinButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.golden.change_skin")));
+            addRenderableWidget(toggleGoldenSkinButton);
+        }
     }
 
     @Override
@@ -195,6 +228,11 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
         exportBookButton.visible = isToolsVisible();
         exportBookButton.active = pages.stream().anyMatch(p -> !p.isEmpty());
         importBookButton.visible = isToolsVisible();
+
+        if (toggleGoldenSkinButton != null) {
+            toggleGoldenSkinButton.visible = isToolsVisible();
+            toggleGoldenSkinButton.active = canToggleGolden();
+        }
     }
 
     // -- Render
@@ -212,21 +250,44 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
 
     @Override
     protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        RenderUtil.withColorMultiplied(bookColor, () -> {
+        if (isGolden()) {
             if (isToolsVisible()) {
                 // Import/Export buttons BG
-                guiGraphics.blit(TEXTURE, leftPos + 295, topPos + 14, 0, 388,
-                        23, 48, 512, 512);
+                guiGraphics.blit(TEXTURE_GOLDEN, leftPos + 295, topPos + 14, 0, 388,
+                      23, 48, 512, 512);
             }
 
             // Cover
-            guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
-                    0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
+            guiGraphics.blit(TEXTURE_GOLDEN, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
+                  0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
 
             // Enter Sign Mode button BG
-            guiGraphics.blit(TEXTURE, leftPos - 29, topPos + 14, 0, 360,
-                    29, 28, 512, 512);
-        });
+            guiGraphics.blit(TEXTURE_GOLDEN, leftPos - 29, topPos + 14, 0, 360, 29, 28, 512, 512);
+
+            if (toggleGoldenSkinButton != null && toggleGoldenSkinButton.visible) {
+                guiGraphics.blit(TEXTURE_GOLDEN, leftPos - 23, topPos + 44, 0, 436, 23, 23, 512, 512);
+            }
+        } else {
+            RenderUtil.withColorMultiplied(bookColor, () -> {
+                if (isToolsVisible()) {
+                    // Import/Export buttons BG
+                    guiGraphics.blit(TEXTURE, leftPos + 295, topPos + 14, 0, 388,
+                          23, 48, 512, 512);
+                }
+
+                // Cover
+                guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
+                      0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
+
+                // Enter Sign Mode button BG
+                guiGraphics.blit(TEXTURE, leftPos - 29, topPos + 14, 0, 360,
+                      29, 28, 512, 512);
+
+                if (toggleGoldenSkinButton != null && toggleGoldenSkinButton.visible) {
+                    guiGraphics.blit(TEXTURE, leftPos - 23, topPos + 44, 0, 436, 23, 23, 512, 512);
+                }
+            });
+        }
 
         // Paper
         guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,

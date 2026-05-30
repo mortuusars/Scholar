@@ -30,8 +30,14 @@ public interface BookViewAccess {
         public FormattedText getPageRaw(int i) {
             return FormattedText.EMPTY;
         }
+
+        @Override
+        public boolean isGolden() {
+            return false;
+        }
     };
 
+    boolean isGolden();
     int getPageCount();
     FormattedText getPageRaw(int pageIndex);
     default int getBookmarkedPage() {
@@ -88,6 +94,11 @@ public interface BookViewAccess {
             this.bookStack = itemStack;
         }
 
+        @Override
+        public boolean isGolden() {
+            return bookStack.has(Scholar.DataComponents.BOOK_GOLDEN);
+        }
+
         private static List<String> readPages(ItemStack itemStack) {
             WritableBookContent content = itemStack.getOrDefault(DataComponents.WRITABLE_BOOK_CONTENT, WritableBookContent.EMPTY);
             return content.getPages(Minecraft.getInstance().isTextFilteringEnabled()).toList();
@@ -119,6 +130,11 @@ public interface BookViewAccess {
         public WrittenBookAccess(ItemStack bookStack) {
             this.pages = readPages(bookStack);
             this.bookStack = bookStack;
+        }
+
+        @Override
+        public boolean isGolden() {
+            return bookStack.has(Scholar.DataComponents.BOOK_GOLDEN);
         }
 
         private static List<Component> readPages(ItemStack itemStack) {

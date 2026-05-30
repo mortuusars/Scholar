@@ -10,6 +10,7 @@
     "IsFoilWrittenBookItemStackMixin",
     "chiseled_bookshelf.ChiseledBookShelfBlockEntityMixin",
     "chiseled_bookshelf.ChiseledBookShelfBlockMixin",
+    "golden.ItemStackMixin",
     "jei.JeiKeyConflictContextMixin",
     "lectern.LecternBlockEntityMixin",
     "lectern.LecternBlockMixin",

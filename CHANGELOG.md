@@ -4,8 +4,10 @@
 - Added exporting of signed books.
   - Exported to the same **.txt** format that Book and Quills can import. 
 - Added item dyeing recipes to JEI.
+- Added Golden book skin for patreon supporters. 
 - Literate Mobs book is now controlled by a loot table.
 - Fixed page numbers not being centered properly.
+- Fixed signing screen buttons being slightly misaligned.
 
 ## 1.2.0 Snapshot 1 - 2026-05-27
 - Added book reading animations
