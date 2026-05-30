@@ -27,6 +27,7 @@ import java.util.Objects;
 
 public abstract class SpreadBookScreen extends Screen {
     public static final ResourceLocation TEXTURE = Scholar.resource("textures/gui/book.png");
+    public static final ResourceLocation TEXTURE_GOLDEN = Scholar.resource("textures/gui/book_golden.png");
     public static final int BOOK_WIDTH = 295;
     public static final int BOOK_HEIGHT = 180;
     public static final int TEXT_LEFT_X = 22;
@@ -63,6 +64,8 @@ public abstract class SpreadBookScreen extends Screen {
         this.selectionColor = Config.Client.getColor(Config.Client.SELECTION_COLOR);
         this.selectionUnfocusedColor = Config.Client.getColor(Config.Client.SELECTION_UNFOCUSED_COLOR);
     }
+
+    public abstract boolean isGolden();
 
     @Override
     public boolean isPauseScreen() {
@@ -216,11 +219,17 @@ public abstract class SpreadBookScreen extends Screen {
     // -- Render
 
     protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        RenderUtil.withColorMultiplied(bookColor, () -> {
+        if (isGolden()) {
             // Cover
-            guiGraphics.blit(TEXTURE, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,
+            guiGraphics.blit(TEXTURE_GOLDEN, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,
                   0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
-        });
+        } else {
+            RenderUtil.withColorMultiplied(bookColor, () -> {
+                // Cover
+                guiGraphics.blit(TEXTURE, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,
+                      0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
+            });
+        }
 
         // Paper
         guiGraphics.blit(TEXTURE, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,

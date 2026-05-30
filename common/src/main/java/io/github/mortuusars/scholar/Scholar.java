@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
+import io.github.mortuusars.scholar.util.supporter.Supporters;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -34,12 +35,17 @@ public class Scholar {
         MenuTypes.init();
         RecipeSerializers.init();
         SoundEvents.init();
+
+        // Query supporters early, so it will be available right away when needed
+        Supporters.query();
     }
 
     public static class DataComponents {
         public static final DataComponentType<Integer> BOOKMARK = Register.dataComponentType("bookmark",
               b -> b.persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.INT));
         public static final DataComponentType<Unit> BOOK_OPEN = Register.dataComponentType("book_open",
+              b -> b.persistent(Unit.CODEC).networkSynchronized(StreamCodec.unit(Unit.INSTANCE)));
+        public static final DataComponentType<Unit> BOOK_GOLDEN = Register.dataComponentType("book_golden",
               b -> b.persistent(Unit.CODEC).networkSynchronized(StreamCodec.unit(Unit.INSTANCE)));
 
         static void init() { }

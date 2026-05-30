@@ -6,10 +6,7 @@ import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.BookmarkButton;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.network.Packets;
-import io.github.mortuusars.scholar.network.packet.serverbound.SetBookmarkC2SP;
-import io.github.mortuusars.scholar.network.packet.serverbound.SetCustomAuthorInHandC2SP;
-import io.github.mortuusars.scholar.network.packet.serverbound.StartedReadingInHandC2SP;
-import io.github.mortuusars.scholar.network.packet.serverbound.StoppedReadingInHandC2SP;
+import io.github.mortuusars.scholar.network.packet.serverbound.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
@@ -37,6 +34,11 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
         setPage(bookmarkedPage);
         Packets.sendToServer(new StartedReadingInHandC2SP(getBookSlot()));
         Minecraft.getInstance().level.playSound(player, player, SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1, 1);
+    }
+
+    @Override
+    protected void sendGoldenSkinChange(boolean golden) {
+        Packets.sendToServer(new SetGoldenSkinInHandC2SP(getBookSlot(), golden));
     }
 
     protected int getBookSlot() {

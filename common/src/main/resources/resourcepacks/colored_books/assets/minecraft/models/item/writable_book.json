@@ -5,5 +5,13 @@
     "layer1": "scholar:item/cover",
     "layer2": "scholar:item/paper",
     "layer3": "scholar:item/quill"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "scholar:book_golden": 1
+      },
+      "model": "scholar:item/golden_writable_book"
+    }
+  ]
 }

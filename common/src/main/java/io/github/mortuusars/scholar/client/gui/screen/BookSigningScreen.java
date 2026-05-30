@@ -5,6 +5,7 @@ import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.book.BookSignature;
 import io.github.mortuusars.scholar.client.gui.Widgets;
+import io.github.mortuusars.scholar.client.gui.screen.edit.SpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.display.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedString;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
@@ -31,6 +32,7 @@ import java.util.function.Consumer;
 
 public class BookSigningScreen extends Screen {
     public static final ResourceLocation TEXTURE = Scholar.resource("textures/gui/book_signing.png");
+    public static final ResourceLocation TEXTURE_GOLDEN = Scholar.resource("textures/gui/book_signing_golden.png");
 
     public static final WidgetSprites SIGN_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.resource("signing/sign_button"));
     public static final WidgetSprites CANCEL_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.resource("signing/cancel_button"));
@@ -40,7 +42,7 @@ public class BookSigningScreen extends Screen {
     @NotNull
     protected final Player player;
 
-    protected final Screen parentScreen;
+    protected final SpreadBookEditScreen parentScreen;
     protected final int bookColor;
     protected final Consumer<BookSignature> onSign;
 
@@ -60,7 +62,7 @@ public class BookSigningScreen extends Screen {
     protected String titleText = "";
     protected String authorText = Objects.requireNonNull(Minecraft.getInstance().player).getScoreboardName();
 
-    public BookSigningScreen(Screen parentScreen, int bookColor, Consumer<BookSignature> onSign) {
+    public BookSigningScreen(SpreadBookEditScreen parentScreen, int bookColor, Consumer<BookSignature> onSign) {
         super(Component.empty());
         this.parentScreen = parentScreen;
         this.bookColor = bookColor;
@@ -116,12 +118,12 @@ public class BookSigningScreen extends Screen {
         addRenderableWidget(authorTextBox);
 
         // SIGN
-        signButton = new ImageButton(leftPos + 46, topPos + 108, 22, 22,
+        signButton = new ImageButton(leftPos + 46, topPos + 109, 22, 22,
               SIGN_BUTTON_SPRITES, b -> sign(), Component.translatable("book.finalizeButton"));
         addRenderableWidget(signButton);
 
         // CANCEL
-        cancelSigningButton = new ImageButton(leftPos + 83, topPos + 108, 22, 22,
+        cancelSigningButton = new ImageButton(leftPos + 82, topPos + 108, 22, 22,
               CANCEL_BUTTON_SPRITES, b -> cancelSigning(), CommonComponents.GUI_CANCEL);
         cancelSigningButton.setTooltip(Tooltip.create(CommonComponents.GUI_CANCEL));
         addRenderableWidget(cancelSigningButton);
@@ -170,10 +172,16 @@ public class BookSigningScreen extends Screen {
 
         renderTransparentBackground(guiGraphics);
 
+        if (parentScreen.isGolden()) {
+            guiGraphics.blit(TEXTURE_GOLDEN, leftPos, topPos, 0, 0, 0,
+                  imageWidth, imageHeight, textureWidth, textureHeight);
+        } else {
+
         RenderUtil.withColorMultiplied(bookColor, () -> {
             guiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, 0,
                   imageWidth, imageHeight, textureWidth, textureHeight);
         });
+        }
 
         guiGraphics.blit(TEXTURE, leftPos, topPos + 31, 0, 0, 180,
               imageWidth, 76, textureWidth, textureHeight);

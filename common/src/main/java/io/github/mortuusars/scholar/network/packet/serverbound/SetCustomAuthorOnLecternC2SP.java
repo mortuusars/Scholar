@@ -54,6 +54,7 @@ public record SetCustomAuthorOnLecternC2SP(BlockPos lecternPos, String author) i
         if (book.get(DataComponents.WRITTEN_BOOK_CONTENT) instanceof WrittenBookContent content) {
             book.set(DataComponents.WRITTEN_BOOK_CONTENT, new WrittenBookContent(content.title(),
                   author, content.generation(), content.pages(), content.resolved()));
+            lecternBlockEntity.setChanged();
         }
 
         return true;

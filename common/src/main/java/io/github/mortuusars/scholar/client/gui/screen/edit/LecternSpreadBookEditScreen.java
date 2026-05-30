@@ -8,6 +8,7 @@ import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import io.github.mortuusars.scholar.network.Packets;
 import io.github.mortuusars.scholar.network.packet.serverbound.LecternEditBookC2SP;
 import io.github.mortuusars.scholar.network.packet.serverbound.SetCustomAuthorOnLecternC2SP;
+import io.github.mortuusars.scholar.network.packet.serverbound.SetGoldenSkinOnLecternC2SP;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -48,6 +49,11 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
     @Override
     public @NotNull LecternSpreadBookEditMenu getMenu() {
         return menu;
+    }
+
+    @Override
+    protected void sendGoldenSkinChange(boolean golden) {
+        Packets.sendToServer(new SetGoldenSkinOnLecternC2SP(getMenu().getLecternPos(), golden));
     }
 
     @Override
