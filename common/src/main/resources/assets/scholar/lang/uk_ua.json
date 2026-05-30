@@ -29,6 +29,8 @@
   "gui.scholar.formatting.underline": "Підкреслений",
   "gui.scholar.formatting.white": "Білий",
   "gui.scholar.formatting.yellow": "Жовтий",
+  "gui.scholar.golden": "Золота",
+  "gui.scholar.golden.change_skin": "Змінити скін",
   "gui.scholar.import_book": "Імпортувати книгу..",
   "gui.scholar.import_book.failure": "Неможливо імпортувати книгу. Дивіться деталі у логах.",
   "gui.scholar.import_book.tooltip": "§8Замінить весь текст у книзі текстом із файлу\n§8Утримуйте [§7Shift§8], щоб імпортувати без форматування",

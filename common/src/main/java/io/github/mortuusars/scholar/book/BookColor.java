@@ -1,5 +1,6 @@
 package io.github.mortuusars.scholar.book;
 
+import io.github.mortuusars.scholar.Scholar;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -14,6 +15,9 @@ public class BookColor {
     public static final int DEFAULT = 0xFF99452E;
 
     public static int of(ItemStack stack, int fallback) {
+        if (stack.has(Scholar.DataComponents.BOOK_GOLDEN)) {
+            return 0xFFFFB83C;
+        }
         return DyedItemColor.getOrDefault(stack, getDefaultColor(stack, fallback));
     }
 

@@ -54,6 +54,11 @@ public abstract class SpreadBookViewScreen extends SpreadBookScreen {
     }
 
     @Override
+    public boolean isGolden() {
+        return getBookAccess().isGolden();
+    }
+
+    @Override
     protected void createWidgets() {
         super.createWidgets();
         exportBookButton = new ImageButton(leftPos + 297, topPos + 16, 18, 18, SpreadBookEditScreen.EXPORT_BOOK_SPRITES,

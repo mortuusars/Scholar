@@ -3,13 +3,23 @@ package io.github.mortuusars.scholar;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.item.Items;
 
 import java.util.function.Consumer;
 
 public class ScholarClient {
     public static void init() {
+        registerItemModelProperties();
+    }
+
+    private static void registerItemModelProperties() {
+        ItemProperties.register(Items.WRITABLE_BOOK, Scholar.resource("book_golden"),
+              (stack, level, entity, seed) -> stack.has(Scholar.DataComponents.BOOK_GOLDEN) ? 1 : 0);
+        ItemProperties.register(Items.WRITTEN_BOOK, Scholar.resource("book_golden"),
+              (stack, level, entity, seed) -> stack.has(Scholar.DataComponents.BOOK_GOLDEN) ? 1 : 0);
     }
 
     public static class KeyMappings {

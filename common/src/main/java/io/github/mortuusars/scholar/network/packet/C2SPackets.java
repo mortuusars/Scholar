@@ -14,7 +14,9 @@ public class C2SPackets {
                 new CustomPacketPayload.TypeAndCodec<>(SetCustomAuthorInHandC2SP.TYPE, SetCustomAuthorInHandC2SP.STREAM_CODEC),
                 new CustomPacketPayload.TypeAndCodec<>(SetCustomAuthorOnLecternC2SP.TYPE, SetCustomAuthorOnLecternC2SP.STREAM_CODEC),
                 new CustomPacketPayload.TypeAndCodec<>(StartedReadingInHandC2SP.TYPE, StartedReadingInHandC2SP.STREAM_CODEC),
-                new CustomPacketPayload.TypeAndCodec<>(StoppedReadingInHandC2SP.TYPE, StoppedReadingInHandC2SP.STREAM_CODEC)
+                new CustomPacketPayload.TypeAndCodec<>(StoppedReadingInHandC2SP.TYPE, StoppedReadingInHandC2SP.STREAM_CODEC),
+                new CustomPacketPayload.TypeAndCodec<>(SetGoldenSkinInHandC2SP.TYPE, SetGoldenSkinInHandC2SP.STREAM_CODEC),
+                new CustomPacketPayload.TypeAndCodec<>(SetGoldenSkinOnLecternC2SP.TYPE, SetGoldenSkinOnLecternC2SP.STREAM_CODEC)
         );
     }
 }

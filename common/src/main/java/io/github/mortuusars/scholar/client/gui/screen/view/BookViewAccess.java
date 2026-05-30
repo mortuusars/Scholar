@@ -26,8 +26,14 @@ public interface BookViewAccess {
         public Component getPageRaw(int i) {
             return CommonComponents.EMPTY;
         }
+
+        @Override
+        public boolean isGolden() {
+            return false;
+        }
     };
 
+    boolean isGolden();
     int getPageCount();
     Component getPageRaw(int pageIndex);
     default int getBookmarkedPage() {
@@ -56,6 +62,11 @@ public interface BookViewAccess {
         public WritableBookAccess(ItemStack itemStack) {
             this.pages = readPages(itemStack);
             this.bookStack = itemStack;
+        }
+
+        @Override
+        public boolean isGolden() {
+            return bookStack.has(Scholar.DataComponents.BOOK_GOLDEN);
         }
 
         private static List<String> readPages(ItemStack itemStack) {
@@ -89,6 +100,11 @@ public interface BookViewAccess {
         public WrittenBookAccess(ItemStack bookStack) {
             this.pages = readPages(bookStack);
             this.bookStack = bookStack;
+        }
+
+        @Override
+        public boolean isGolden() {
+            return bookStack.has(Scholar.DataComponents.BOOK_GOLDEN);
         }
 
         private static List<Component> readPages(ItemStack itemStack) {
