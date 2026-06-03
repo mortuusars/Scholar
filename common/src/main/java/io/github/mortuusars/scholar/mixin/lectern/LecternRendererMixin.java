@@ -2,7 +2,7 @@ package io.github.mortuusars.scholar.mixin.lectern;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.scholar.Config;
-import io.github.mortuusars.scholar.book.ColoredBookModel;
+import io.github.mortuusars.scholar.client.ColoredBookModel;
 import net.minecraft.client.model.BookModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.LecternRenderer;
