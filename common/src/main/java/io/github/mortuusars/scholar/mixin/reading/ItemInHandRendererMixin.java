@@ -3,7 +3,7 @@ package io.github.mortuusars.scholar.mixin.reading;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.book.ColoredBookModel;
+import io.github.mortuusars.scholar.client.ColoredBookModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.BookModel;
 import net.minecraft.client.model.geom.ModelLayers;

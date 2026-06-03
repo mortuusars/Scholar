@@ -1,7 +1,6 @@
 package io.github.mortuusars.scholar.book;
 
 public class Spread {
-
     public enum Side {
         LEFT,
         RIGHT;

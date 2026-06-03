@@ -1,9 +1,10 @@
-package io.github.mortuusars.scholar.book;
+package io.github.mortuusars.scholar.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.client.animation.ReadingAnimation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.*;
@@ -21,6 +22,7 @@ import net.minecraft.world.item.WritableBookItem;
 import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 
 public class ColoredBookModel {
     public static final Material BOOK_COVER_LOCATION =
@@ -32,7 +34,8 @@ public class ColoredBookModel {
 
     public static void renderOnLectern(BlockState blockState, LecternBlockEntity blockEntity, float partialTick, PoseStack poseStack,
                                        MultiBufferSource bufferSource, int packedLight, int packedOverlay, BookModel bookModel) {
-        if (!blockEntity.getBook().isEmpty()) {
+        ItemStack book = blockEntity.getBook();
+        if (!book.isEmpty()) {
             poseStack.pushPose();
             poseStack.translate(0.5F, 1.0625F, 0.5F);
             float f = blockState.getValue(LecternBlock.FACING).getClockWise().toYRot();
@@ -40,14 +43,14 @@ public class ColoredBookModel {
             poseStack.mulPose(Axis.ZP.rotationDegrees(67.5F));
             poseStack.translate(0.0F, -0.125F, 0.0F);
             bookModel.setupAnim(0.0F, 0.1F, 0.9F, 1.2F);
-            if (blockEntity.getBook().has(Scholar.DataComponents.BOOK_GOLDEN)) {
-                VertexConsumer coverVertexConsumer = BOOK_COVER_GOLDEN_LOCATION.buffer(bufferSource, RenderType::entityCutout);
+            if (book.has(Scholar.DataComponents.BOOK_GOLDEN)) {
+                VertexConsumer coverVertexConsumer = getBookCoverGoldenLocation(book).buffer(bufferSource, RenderType::entityCutout);
                 bookModel.render(poseStack, coverVertexConsumer, packedLight, packedOverlay, -1);
             } else {
-                VertexConsumer coverVertexConsumer = BOOK_COVER_LOCATION.buffer(bufferSource, RenderType::entityCutout);
-                bookModel.render(poseStack, coverVertexConsumer, packedLight, packedOverlay, BookColor.of(blockEntity.getBook()));
+                VertexConsumer coverVertexConsumer = getBookCoverLocation(book).buffer(bufferSource, RenderType::entityCutout);
+                bookModel.render(poseStack, coverVertexConsumer, packedLight, packedOverlay, BookColor.of(book));
             }
-            VertexConsumer pagesVertexConsumer = BOOK_PAGES_LOCATION.buffer(bufferSource, RenderType::entityCutout);
+            VertexConsumer pagesVertexConsumer = getBookPagesLocation(book).buffer(bufferSource, RenderType::entityCutout);
             bookModel.render(poseStack, pagesVertexConsumer, packedLight, packedOverlay, -1);
             poseStack.popPose();
         }
@@ -74,14 +77,14 @@ public class ColoredBookModel {
         ReadingAnimation.poseBook(entity, stack, arm, entityModel, bookModel);
 
         if (stack.has(Scholar.DataComponents.BOOK_GOLDEN)) {
-            VertexConsumer coverVertexConsumer = ColoredBookModel.BOOK_COVER_GOLDEN_LOCATION.buffer(buffer, RenderType::entityCutout);
+            VertexConsumer coverVertexConsumer = getBookCoverGoldenLocation(stack).buffer(buffer, RenderType::entityCutout);
             bookModel.render(poseStack, coverVertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, -1);
         } else {
-            VertexConsumer coverVertexConsumer = ColoredBookModel.BOOK_COVER_LOCATION.buffer(buffer, RenderType::entityCutout);
+            VertexConsumer coverVertexConsumer = getBookCoverLocation(stack).buffer(buffer, RenderType::entityCutout);
             bookModel.render(poseStack, coverVertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, BookColor.of(stack));
         }
 
-        VertexConsumer pagesVertexConsumer = ColoredBookModel.BOOK_PAGES_LOCATION.buffer(buffer, RenderType::entityCutout);
+        VertexConsumer pagesVertexConsumer = getBookPagesLocation(stack).buffer(buffer, RenderType::entityCutout);
         bookModel.render(poseStack, pagesVertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, -1);
 
         poseStack.popPose();
@@ -123,15 +126,27 @@ public class ColoredBookModel {
         bookModel.setupAnim(0.0F, 0.1F, 0.9F, 1.2F);
 
         if (stack.has(Scholar.DataComponents.BOOK_GOLDEN)) {
-            VertexConsumer coverVertexConsumer = ColoredBookModel.BOOK_COVER_GOLDEN_LOCATION.buffer(buffer, RenderType::entityCutout);
+            VertexConsumer coverVertexConsumer = getBookCoverGoldenLocation(stack).buffer(buffer, RenderType::entityCutout);
             bookModel.render(poseStack, coverVertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, -1);
         } else {
-            VertexConsumer coverVertexConsumer = ColoredBookModel.BOOK_COVER_LOCATION.buffer(buffer, RenderType::entityCutout);
+            VertexConsumer coverVertexConsumer = getBookCoverLocation(stack).buffer(buffer, RenderType::entityCutout);
             bookModel.render(poseStack, coverVertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, BookColor.of(stack));
         }
 
-        VertexConsumer pagesVertexConsumer = ColoredBookModel.BOOK_PAGES_LOCATION.buffer(buffer, RenderType::entityCutout);
+        VertexConsumer pagesVertexConsumer = getBookPagesLocation(stack).buffer(buffer, RenderType::entityCutout);
         bookModel.render(poseStack, pagesVertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, -1);
         poseStack.popPose();
+    }
+
+    public static @NotNull Material getBookCoverLocation(ItemStack book) {
+        return ColoredBookModel.BOOK_COVER_LOCATION;
+    }
+
+    public static @NotNull Material getBookPagesLocation(ItemStack stack) {
+        return ColoredBookModel.BOOK_PAGES_LOCATION;
+    }
+
+    public static @NotNull Material getBookCoverGoldenLocation(ItemStack stack) {
+        return ColoredBookModel.BOOK_COVER_GOLDEN_LOCATION;
     }
 }
