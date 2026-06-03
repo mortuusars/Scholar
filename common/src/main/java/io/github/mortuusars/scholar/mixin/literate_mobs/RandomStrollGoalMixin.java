@@ -1,7 +1,7 @@
 package io.github.mortuusars.scholar.mixin.literate_mobs;
 
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.client.animation.ReadingAnimation;
+import io.github.mortuusars.scholar.world.entity.Reading;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
@@ -21,7 +21,7 @@ public abstract class RandomStrollGoalMixin extends Goal {
     @Inject(method = "canUse", at = @At("HEAD"), cancellable = true)
     private void onCanUse(CallbackInfoReturnable<Boolean> cir) {
         if (mob.getType().is(Scholar.Tags.EntityTypes.LITERATE)
-              && ReadingAnimation.getOpenedBookHand(mob) != null
+              && Reading.getOpenedBookHand(mob) != null
               && mob.getRandom().nextFloat() > 0.05) {
             cir.setReturnValue(false); // Prevent moving when reading
         }

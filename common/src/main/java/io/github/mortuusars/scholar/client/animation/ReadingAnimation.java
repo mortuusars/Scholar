@@ -1,7 +1,6 @@
 package io.github.mortuusars.scholar.client.animation;
 
-import io.github.mortuusars.scholar.Config;
-import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.world.entity.Reading;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.*;
 import net.minecraft.client.model.geom.ModelPart;
@@ -9,21 +8,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WritableBookItem;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class ReadingAnimation {
-    public static @Nullable InteractionHand getOpenedBookHand(LivingEntity entity) {
-        if (!Config.Common.BOOK_READING_ANIMATION.get()) return null;
-        if (entity instanceof EnderMan) return null; // They cannot hold items as other mobs do.
-        if (entity.getMainHandItem().has(Scholar.DataComponents.BOOK_OPEN)) return InteractionHand.MAIN_HAND;
-        if (entity.getOffhandItem().has(Scholar.DataComponents.BOOK_OPEN)) return InteractionHand.OFF_HAND;
-        return null;
-    }
-
     public static <T extends LivingEntity> void poseLeftArm(T entity, ModelPart part, boolean isHoldingArm) {
         part.xRot = part.xRot * 0.5F - (float) (Math.PI / 5);
         part.yRot = 0F;
@@ -61,7 +50,7 @@ public class ReadingAnimation {
         }
 
         // Writing animation
-        if (getOpenedBookHand(entity) instanceof InteractionHand hand
+        if (Reading.getOpenedBookHand(entity) instanceof InteractionHand hand
               && entity.getItemInHand(hand).getItem() instanceof WritableBookItem) {
             // Up/down
             float anim = (ageInTicks % 6) / 3;

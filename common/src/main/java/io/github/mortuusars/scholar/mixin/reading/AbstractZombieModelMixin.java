@@ -3,7 +3,7 @@ package io.github.mortuusars.scholar.mixin.reading;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.mortuusars.scholar.client.animation.ReadingAnimation;
+import io.github.mortuusars.scholar.world.entity.Reading;
 import net.minecraft.client.model.AbstractZombieModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -20,7 +20,7 @@ public abstract class AbstractZombieModelMixin <T extends Monster> extends Human
     @WrapOperation(method = "setupAnim(Lnet/minecraft/world/entity/monster/Monster;FFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/AnimationUtils;animateZombieArms(Lnet/minecraft/client/model/geom/ModelPart;Lnet/minecraft/client/model/geom/ModelPart;ZFF)V"))
     private void onSetupAnim(ModelPart leftArm, ModelPart rightArm, boolean isAggressive,
                              float attackTime, float ageInTicks, Operation<Void> original, @Local(argsOnly = true) T entity) {
-        if (ReadingAnimation.getOpenedBookHand(entity) != null) {
+        if (Reading.getOpenedBookHand(entity) != null) {
             return; // Stop zombie arms animation, so it wouldn't override ours.
         }
 
