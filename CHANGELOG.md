@@ -1,40 +1,53 @@
 # Changelog
 
-## UNRELEASED
-- Added exporting of signed books.
-  - Exported to the same **.txt** format that Book and Quills can import. 
+## 1.2.0 - UNRELEASED 
+
+_New features:_
+- **Book Reading Animation**
+  - Opening Book and Quill or Written Book changes the user's pose and the book model in hand.
+  - Book and Quill makes it a "writing" animation, adding a feather to the hand.
+  - This is controlled by presence of a `scholar:book_open` component on the item.
+  - Some humanoid mobs support this animation as well.
+- **Literate Mobs**
+  - Zombies, Husks and Skeletons have a 5% chance to spawn with a book in hand and will be reading it from time to time.
+  - Book has a 50% chance to drop when the mob dies.
+  - Book item is controlled by a `scholar:entities/literate_mob_book` loot-table.
+- **Changeable Author**
+  - Author field on the book signing screen is now editable.
+  - And it even allows formatting.
+- **Bookmark**
+  - Books in hand have a small red button above the pages, clicking on it sets the bookmark on that page.
+  - Next time the book is opened it will open on that page.
+- **Exporting Signed Books**
+  - Exported to the same **.txt** format that Book and Quills can import.
+- **Lectern Book Tooltip**
+  - Displays placed book when looking at a block. Same system as Chiseled Bookshelf tooltip.
+- **Lectern Book Model**
+  - Displays actual color of the book.
+  - Added some shading on the pages under the ones that stick out.
+- **Golden Book Skin**
+  - Patreon supporters of **Gold** tier and above can change the book appearance to golden, by pressing a button in the book editing screen.
+- Holding [Shift] when changing page now jumps to the start/end of the book.
+  - It works in steps - first jump is to the first page with content on it, if already on it or past - jump to end.
+- [Scroll Wheel] changes pages.
+- Added sound to book opening
+- Added sounds to formatting actions
 - Added item dyeing recipes to JEI.
-- Added Golden book skin for patreon supporters. 
-- Literate Mobs book is now controlled by a loot table.
+  - Includes leather armor recipes as well.
+
+_Changes:_
+- Inverted behavior of [Shift] key when copying/pasting text or importing/exporting book - formatting is now included by default, and excluded if [Shift] key is held.
+- Insert Empty Page and Remove Page keyboard shortcuts can be changed.
+  - Default binds have changed as well.
+- Toggle Extra Tools button icon changed to a pencil icon instead of a question mark.
+  - It will also flash red until the player toggles it tools for the first time - to help new players discover the feature.
+- Moved definition of book item colors from Chiseled Bookshelf `chiseled_bookshelf/item_colors` built-in resourcepack to Colored Books `book/item_colors` built-in resourcepack.
+- Restructured config. Moved some config options from client to common for convenience.
+- Added "requires_sneaking" config option for showing in-world tooltips.
+
+_Fixes:_
 - Fixed page numbers not being centered properly.
 - Fixed signing screen buttons being slightly misaligned.
-
-## 1.2.0 Snapshot 1 - 2026-05-27
-- Added book reading animations
-  - Animation will start when a player opens Book and Quill or Written Book, and stops when the book is closed.
-  - This is controlled by `scholar:book_open` component. 
-  - Some humanoid mobs will have this animation as well, if they have opened book in hand.
-  - First-person book model reflects the "opened" book state as well.
-- Added sound to book opening.
-- Added literacy:
-  - Zombies, Husks and Skeletons will have a 5% chance to spawn with a book and will be reading it from time to time. 
-- Author of the book can be changed now.
-- Added bookmark - opens the book at the set page.
-- Added in-world tooltip for books placed on a Lectern.
-- Lectern model now renders proper book colors.
-- Added sounds to formatting actions.
-- [Scroll Wheel] can be used to change pages now.
-- Holding [Shift] when changing page now jumps to the start/end.
-  - It works in steps - first jump is to the first page with content on it, if already on it or past - jump to end.
-- Inverted behavior of [Shift] key when copying/pasting text or importing/exporting book.
-  - Formatting is now always kept by default, unless [Shift] key is held.
-- Insert Empty Page and Remove Page keyboard shortcuts can be changed now.
-  - Default binds have changed as well.
-- Toggle Extra Tools button now has a pencil icon instead of a question mark. 
-  - It will also flash red until the player toggles it tools for the first time - to help new players discover the feature.
-- Moved definition of book item colors from Chiseled Bookshelf `chiseled_bookshelf/item_colors` built-in resourcepack to Colored Books `book/item_colors` built-in resourcepack. 
-- Added "requires_sneaking" config option for showing in-world tooltips. 
-- Restructured config. Moved some config options from client to common for convenience.
 - Fixed Chiseled Bookshelf tooltip still displaying when the GUI is hidden.
 
 ## 1.1.16 - 2026-05-19
