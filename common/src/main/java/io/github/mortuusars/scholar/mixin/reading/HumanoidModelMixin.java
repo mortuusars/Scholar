@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar.mixin.reading;
 
 import io.github.mortuusars.scholar.client.animation.ReadingAnimation;
+import io.github.mortuusars.scholar.world.entity.Reading;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.AgeableListModel;
@@ -41,7 +42,7 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
             return;
         }
 
-        @Nullable InteractionHand openedBookHand = ReadingAnimation.getOpenedBookHand(entity);
+        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(entity);
         if (openedBookHand == null) {
             return;
         }
@@ -61,7 +62,7 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
             return;
         }
 
-        @Nullable InteractionHand openedBookHand = ReadingAnimation.getOpenedBookHand(entity);
+        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(entity);
         if (openedBookHand == null) {
             return;
         }
@@ -76,7 +77,7 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/HumanoidModel;setupAttackAnimation(Lnet/minecraft/world/entity/LivingEntity;F)V"))
     void onSetupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
-        @Nullable InteractionHand openedBookHand = ReadingAnimation.getOpenedBookHand(entity);
+        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(entity);
         if (openedBookHand == null) {
             return;
         }

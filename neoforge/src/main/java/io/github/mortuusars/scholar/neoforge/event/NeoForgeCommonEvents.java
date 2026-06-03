@@ -18,7 +18,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 @SuppressWarnings("unused")
-public class CommonEvents {
+public class NeoForgeCommonEvents {
     @EventBusSubscriber(modid = Scholar.ID, bus = EventBusSubscriber.Bus.MOD)
     public static class ModBus {
         @SubscribeEvent
@@ -49,8 +49,5 @@ public class CommonEvents {
                         (StreamCodec<FriendlyByteBuf, Packet>) definition.codec(), PacketsImpl::handle);
             }
         }
-    }
-
-    public static class GameBus {
     }
 }

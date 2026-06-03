@@ -33,7 +33,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 @SuppressWarnings("unused")
-public class ClientEvents {
+public class NeoForgeClientEvents {
     @EventBusSubscriber(modid = Scholar.ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ModBus {
         @SubscribeEvent
