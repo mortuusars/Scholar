@@ -1,6 +1,7 @@
 package io.github.mortuusars.scholar.mixin.reading;
 
 import io.github.mortuusars.scholar.client.animation.ReadingAnimation;
+import io.github.mortuusars.scholar.world.entity.Reading;
 import net.minecraft.client.model.ArmedModel;
 import net.minecraft.client.model.HeadedModel;
 import net.minecraft.client.model.HierarchicalModel;
@@ -36,7 +37,7 @@ public abstract class IllagerModelMixin<T extends AbstractIllager> extends Hiera
 
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/monster/AbstractIllager;FFFFF)V", at = @At("RETURN"))
     private void onSetupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
-        InteractionHand hand = ReadingAnimation.getOpenedBookHand(entity);
+        InteractionHand hand = Reading.getOpenedBookHand(entity);
         if (hand != null && entity.getArmPose() != AbstractIllager.IllagerArmPose.CROSSED) {
             HumanoidArm openedBookArm = hand == InteractionHand.MAIN_HAND
                   ? entity.getMainArm()
