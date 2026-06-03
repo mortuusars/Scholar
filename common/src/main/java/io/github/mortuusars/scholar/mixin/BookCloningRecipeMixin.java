@@ -1,5 +1,6 @@
 package io.github.mortuusars.scholar.mixin;
 
+import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.book.BookColor;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
@@ -79,6 +80,7 @@ public class BookCloningRecipeMixin {
 
         ItemStack resultStack = inputBook.copyWithCount(copies);
         resultStack.set(DataComponents.WRITTEN_BOOK_CONTENT, content);
+        resultStack.remove(Scholar.DataComponents.BOOK_GOLDEN);
         BookColor.set(resultStack, resultColor);
         cir.setReturnValue(resultStack);
     }
