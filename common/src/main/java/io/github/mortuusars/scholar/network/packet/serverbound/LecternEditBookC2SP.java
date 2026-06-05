@@ -110,7 +110,7 @@ public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optio
             // And because of that the old book is still showing in the tooltip.
             // 40 minutes of my life has been broadcasted down the drain.
             List<ServerPlayer> players = player.serverLevel().players();
-            net.minecraft.network.protocol.Packet<?> packet = lecternBlockEntity.getUpdatePacket();
+            var packet = lecternBlockEntity.getUpdatePacket();
             if (packet != null) {
                 players.forEach(serverPlayer -> serverPlayer.connection.send(packet));
             }
