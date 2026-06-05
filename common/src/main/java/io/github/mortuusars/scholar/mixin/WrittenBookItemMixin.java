@@ -11,13 +11,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Adds DyeableLeatherItem interface to written books. This makes it handle most of the coloring stuff automatically.
- * But can potentially introduce unwanted behaviour for mods that extend WrittenBookItem for their items.
+ * But can potentially introduce unwanted behavior for mods that extend WrittenBookItem for their items.
  */
 @Mixin(WrittenBookItem.class)
 public abstract class WrittenBookItemMixin implements DyeableLeatherItem {
     @Inject(method = "isFoil", at = @At("HEAD"), cancellable = true)
     private void onIsFoil(ItemStack stack, CallbackInfoReturnable<Boolean> cir) {
-        if (!Config.Common.BOOK_ENCHANTMENT_GLINT.get()) {
+        if (!Config.Common.WRITTEN_BOOK_ENCHANTMENT_GLINT.get()) {
             cir.setReturnValue(false);
         }
     }

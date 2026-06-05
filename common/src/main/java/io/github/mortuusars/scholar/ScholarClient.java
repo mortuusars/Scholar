@@ -17,9 +17,9 @@ public class ScholarClient {
 
     private static void registerItemModelProperties() {
         ItemProperties.register(Items.WRITABLE_BOOK, Scholar.resource("book_golden"),
-              (stack, level, entity, seed) -> stack.has(Scholar.DataComponents.BOOK_GOLDEN) ? 1 : 0);
+              (stack, level, entity, seed) -> stack.getTag() != null && stack.getTag().getBoolean(Scholar.NBT.BOOK_GOLDEN) ? 1 : 0);
         ItemProperties.register(Items.WRITTEN_BOOK, Scholar.resource("book_golden"),
-              (stack, level, entity, seed) -> stack.has(Scholar.DataComponents.BOOK_GOLDEN) ? 1 : 0);
+              (stack, level, entity, seed) -> stack.getTag() != null && stack.getTag().getBoolean(Scholar.NBT.BOOK_GOLDEN) ? 1 : 0);
     }
 
     public static class KeyMappings {

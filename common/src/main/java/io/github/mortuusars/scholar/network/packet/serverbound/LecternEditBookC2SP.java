@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.network.PacketDirection;
-import io.github.mortuusars.scholar.network.packet.IPacket;
+import io.github.mortuusars.scholar.network.packet.Packet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -34,7 +34,7 @@ import java.util.function.UnaryOperator;
  * Similar to {@link net.minecraft.network.protocol.game.ServerboundEditBookPacket} but for lecterns.
  * Contains logic copied from {@link net.minecraft.server.network.ServerGamePacketListenerImpl}, which is not ideal, but hopefully it'll not cause any issues.
  */
-public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optional<String> title) implements IPacket {
+public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optional<String> title) implements Packet {
     public static final ResourceLocation ID = Scholar.resource("lectern_edit_book");
 
     private static final int TITLE_MAX_CHARS = 128;

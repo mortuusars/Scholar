@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
-import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
 import net.minecraft.client.GameNarrator;
@@ -299,12 +298,12 @@ public abstract class SpreadBookScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        if (super.mouseScrolled(mouseX, mouseY, delta)) {
             return true;
         }
 
-        if (scrollY > 0) {
+        if (delta > 0) {
             if (Screen.hasShiftDown()) {
                 pageToStart();
             } else {
@@ -313,7 +312,7 @@ public abstract class SpreadBookScreen extends Screen {
             return true;
         }
 
-        if (scrollY < 0) {
+        if (delta < 0) {
             if (Screen.hasShiftDown()) {
                 pageToEnd();
             } else {

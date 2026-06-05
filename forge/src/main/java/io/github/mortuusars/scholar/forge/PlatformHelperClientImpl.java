@@ -1,9 +1,9 @@
-package io.github.mortuusars.scholar.neoforge;
+package io.github.mortuusars.scholar.forge;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
-import net.neoforged.neoforge.client.settings.KeyConflictContext;
-import net.neoforged.neoforge.client.settings.KeyModifier;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
 
 public class PlatformHelperClientImpl {
     public static KeyMapping createInsertEmptyPageLeftKeyMapping() {

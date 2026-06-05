@@ -1,6 +1,5 @@
 package io.github.mortuusars.scholar.client.gui.screen.edit;
 
-import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.PlatformHelperClient;
@@ -22,6 +21,7 @@ import io.github.mortuusars.scholar.util.History;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
 import io.github.mortuusars.scholar.util.supporter.Supporters;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
@@ -32,10 +32,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.*;
-import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.server.network.Filterable;
-import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,9 +46,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public abstract class SpreadBookEditScreen extends SpreadBookScreen {
-    public static final WidgetSprites SKIN_REGULAR_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/skin_regular_button"));
-    public static final WidgetSprites SKIN_GOLD_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/skin_gold_button"));
-
     protected final ItemStack bookStack;
 
     protected final List<String> pages = new ArrayList<>();
@@ -80,7 +73,7 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
 
     @Override
     public boolean isGolden() {
-        return bookStack.has(Scholar.DataComponents.BOOK_GOLDEN);
+        return bookStack.getTag() != null && bookStack.getTag().getBoolean(Scholar.NBT.BOOK_GOLDEN);
     }
 
     public boolean canToggleGolden() {
@@ -88,7 +81,11 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     protected void toggleGoldenSkin(boolean golden) {
-        bookStack.set(Scholar.DataComponents.BOOK_GOLDEN, golden ? Unit.INSTANCE : null);
+        if (golden) {
+            bookStack.getOrCreateTag().putBoolean(Scholar.NBT.BOOK_GOLDEN, true);
+        } else if (bookStack.getTag() != null) {
+            bookStack.getTag().remove(Scholar.NBT.BOOK_GOLDEN);
+        }
         bookColor = BookColor.of(bookStack);
         sendGoldenSkinChange(golden);
     }
@@ -138,8 +135,6 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
         createPrevPageButton();
         createNextPageButton();
 
-        ImageButton enterSignModeButton = new ImageButton(leftPos - 24, topPos + 18, 22, 22,
-              ENTER_SIGN_MODE_SPRITES, b -> enterSignMode(), Component.translatable("book.signButton"));
         ImageButton enterSignModeButton = new ImageButton(leftPos - 24, topPos + 18, 22, 22, 321, 0,
                 22, TEXTURE, 512, 512,
                 b -> enterSignMode(), Component.translatable("book.signButton"));
@@ -152,8 +147,6 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
     }
 
     protected void createExtraToolsButtons() {
-        insertEmptyPageLeftButton = new ImageButton(leftPos + 112, topPos + 154, 13, 13,
-              INSERT_EMPTY_PAGE_SPRITES, b -> insertEmptyPage(Spread.Side.LEFT), Component.translatable("gui.scholar.insert_empty_page"));
         insertEmptyPageLeftButton = new ImageButton(leftPos + 112, topPos + 154, 13, 13, 343, 0,
               13, TEXTURE, 512, 512,
               b -> insertEmptyPage(Spread.Side.LEFT), Component.translatable("gui.scholar.insert_empty_page"));
@@ -181,6 +174,8 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
         removePageRightButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.remove_page")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.removePageRight))));
         addRenderableWidget(removePageRightButton);
+
+        createImportExportButtons();
     }
 
     protected void createImportExportButtons() {
@@ -195,7 +190,7 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
 
         exportBookButton = new ImageButton(leftPos + 297, topPos + 41, 18, 18, 369, 0,
                 18, TEXTURE, 512, 512,
-                b -> exportBook(Screen.hasShiftDown()), Component.translatable("gui.scholar.export_book"));
+                b -> exportBook(!Screen.hasShiftDown()), Component.translatable("gui.scholar.export_book"));
         exportBookButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.export_book")
                 .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.exportBook))
                 .append(CommonComponents.NEW_LINE)
@@ -204,7 +199,7 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
 
         if (canToggleGolden()) {
             toggleGoldenSkinButton = new ToggleImageButton(leftPos - 20, topPos + 46, 18, 18,
-                  SKIN_GOLD_BUTTON_SPRITES, SKIN_REGULAR_BUTTON_SPRITES, this::toggleGoldenSkin);
+                  405, 0, 54, TEXTURE, 512, 512, this::toggleGoldenSkin);
             toggleGoldenSkinButton.setState(isGolden());
             toggleGoldenSkinButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.golden.change_skin")));
             addRenderableWidget(toggleGoldenSkinButton);
@@ -595,7 +590,7 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
                 title = null;
             }
             removeEmptyTrailingPages();
-            updateLocalCopy(sign, title);
+            updateLocalCopy();
 
             sendChanges(title);
         }

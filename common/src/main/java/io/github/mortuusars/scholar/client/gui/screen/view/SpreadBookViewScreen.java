@@ -4,7 +4,6 @@ import com.mojang.datafixers.util.Pair;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.client.gui.screen.SpreadBookScreen;
-import io.github.mortuusars.scholar.client.gui.screen.edit.SpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.util.FileDialogs;
 import io.github.mortuusars.scholar.client.util.RenderUtil;
 import net.minecraft.ChatFormatting;
@@ -52,7 +51,8 @@ public abstract class SpreadBookViewScreen extends SpreadBookScreen {
     @Override
     protected void createWidgets() {
         super.createWidgets();
-        exportBookButton = new ImageButton(leftPos + 297, topPos + 16, 18, 18, SpreadBookEditScreen.EXPORT_BOOK_SPRITES,
+        exportBookButton = new ImageButton(leftPos + 297, topPos + 16, 18, 18, 369, 0,
+              18, TEXTURE, 512, 512,
               b -> exportBook(!Screen.hasShiftDown()), Component.translatable("gui.scholar.export_book"));
         exportBookButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.export_book")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.exportBook))

@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.At;
 public class PlayerMixin {
     @ModifyReturnValue(method = "drop(Lnet/minecraft/world/item/ItemStack;ZZ)Lnet/minecraft/world/entity/item/ItemEntity;", at = @At("RETURN"))
     private ItemEntity onDrop(@Nullable ItemEntity original) {
-        if (original != null) {
-            original.getItem().remove(Scholar.DataComponents.BOOK_OPEN);
+        if (original != null && original.getItem().getTag() != null) {
+            original.getItem().getTag().remove(Scholar.NBT.BOOK_OPEN);
         }
         return original;
     }

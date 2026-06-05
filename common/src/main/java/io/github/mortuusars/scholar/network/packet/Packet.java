@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-public interface IPacket {
+public interface Packet {
     default FriendlyByteBuf toBuffer(FriendlyByteBuf buffer) { return buffer; }
     /**
      * @param player will be null when on the client.

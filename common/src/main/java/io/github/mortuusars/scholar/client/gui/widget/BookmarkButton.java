@@ -2,17 +2,19 @@ package io.github.mortuusars.scholar.client.gui.widget;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
 public class BookmarkButton extends ImageButton {
-    protected final WidgetSprites expandedSprites;
+    protected int expandedVOffset;
+    protected final ResourceLocation texture;
     protected boolean expanded;
 
-    public BookmarkButton(int x, int y, int width, int height, WidgetSprites defaultSprites, WidgetSprites expandedSprites, OnPress onPress, Component message) {
-        super(x, y, width, height, defaultSprites, onPress, message);
-        this.expandedSprites = expandedSprites;
+    public BookmarkButton(int x, int y, int width, int height, int u, int v, int expandedVOffset,
+                          int textureWidth, int textureHeight, ResourceLocation texture, OnPress onPress, Component message) {
+        super(x, y, width, height, u, v, height, texture, textureWidth, textureHeight, onPress, message);
+        this.expandedVOffset = expandedVOffset;
+        this.texture = texture;
     }
 
     public boolean isExpanded() {
@@ -25,8 +27,7 @@ public class BookmarkButton extends ImageButton {
 
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        WidgetSprites sprites = expanded ? expandedSprites : this.sprites;
-        ResourceLocation texture = sprites.get(isActive(), isHoveredOrFocused());
-        guiGraphics.blitSprite(texture, getX(), getY(), width, height);
+        renderTexture(guiGraphics, texture, getX(), getY(), xTexStart, yTexStart + (isExpanded() ? expandedVOffset : 0), yDiffTex,
+              width, height, textureWidth, textureHeight);
     }
 }

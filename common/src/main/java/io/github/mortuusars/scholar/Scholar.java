@@ -2,32 +2,19 @@ package io.github.mortuusars.scholar;
 
 import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
-import io.github.mortuusars.scholar.item.ColoredWritableBookItem;
-import io.github.mortuusars.scholar.item.ColoredWrittenBookItem;
 import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
 import io.github.mortuusars.scholar.util.supporter.Supporters;
 import io.github.mortuusars.scholar.recipe.NbtTransferringRecipe;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.TagKey;
-import net.minecraft.util.ExtraCodecs;
-import net.minecraft.util.Unit;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.item.DyeColor;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import org.slf4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public class Scholar {
@@ -47,15 +34,10 @@ public class Scholar {
         Supporters.query();
     }
 
-    public static class DataComponents {
-        public static final DataComponentType<Integer> BOOKMARK = Register.dataComponentType("bookmark",
-              b -> b.persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.INT));
-        public static final DataComponentType<Unit> BOOK_OPEN = Register.dataComponentType("book_open",
-              b -> b.persistent(Unit.CODEC).networkSynchronized(StreamCodec.unit(Unit.INSTANCE)));
-        public static final DataComponentType<Unit> BOOK_GOLDEN = Register.dataComponentType("book_golden",
-              b -> b.persistent(Unit.CODEC).networkSynchronized(StreamCodec.unit(Unit.INSTANCE)));
-
-        static void init() { }
+    public static class NBT {
+        public static final String BOOKMARK = "ScholarBookmark";
+        public static final String BOOK_OPEN = "ScholarBookOpen";
+        public static final String BOOK_GOLDEN = "ScholarBookGolden";
     }
 
     public static class MenuTypes {
@@ -96,6 +78,6 @@ public class Scholar {
     }
 
     public static class LootTables {
-        public static final ResourceKey<LootTable> LITERATE_MOB_BOOK = ResourceKey.create(Registries.LOOT_TABLE, resource("entities/literate_mob_book"));
+        public static final ResourceLocation LITERATE_MOB_BOOK = resource("entities/literate_mob_book");
     }
 }

@@ -12,8 +12,8 @@ public class EntityMixin {
     @ModifyReturnValue(method = "spawnAtLocation(Lnet/minecraft/world/item/ItemStack;F)Lnet/minecraft/world/entity/item/ItemEntity;",
           at = @At("RETURN"))
     private ItemEntity onSpawnAtLocation(ItemEntity original) {
-        if (original != null) {
-            original.getItem().remove(Scholar.DataComponents.BOOK_OPEN);
+        if (original != null && original.getItem().getTag() != null) {
+            original.getItem().getTag().remove(Scholar.NBT.BOOK_OPEN);
         }
         return original;
     }

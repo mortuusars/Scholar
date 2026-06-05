@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.book.BookSignature;
-import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.screen.edit.SpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.display.HorizontalAlignment;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedString;
@@ -95,7 +94,7 @@ public class BookSigningScreen extends Screen {
               .setSelectionUnfocusedColor(selectionUnfocusedColor)
               .setHorizontalAlignment(HorizontalAlignment.CENTER)
               .setOnTextChanged(this::setTitleText)
-              .setTextValidator(text -> text != null && text.length() <= WrittenBookContent.TITLE_MAX_LENGTH
+              .setTextValidator(text -> text != null && text.length() <= 32
                     && font.wordWrapHeight(text, 108) <= 9 && !text.contains("\n"));
         addRenderableWidget(titleTextBox);
 
@@ -107,24 +106,24 @@ public class BookSigningScreen extends Screen {
               .setSelectionUnfocusedColor(0xFFc6b2f2)
               .setHorizontalAlignment(HorizontalAlignment.CENTER)
               .setOnTextChanged(this::setAuthorText)
-              .setTextValidator(text -> text != null && text.length() <= WrittenBookContent.TITLE_MAX_LENGTH
+              .setTextValidator(text -> text != null && text.length() <= 32
                     && font.wordWrapHeight(text, 100) <= 9 && !text.contains("\n"));
         authorTextBox.getEditor().setCursorToEnd(false);
         addRenderableWidget(authorTextBox);
 
         // SIGN
         signButton = new ImageButton(leftPos + 46, topPos + 109, 22, 22, 149, 0,
-                22, TEXTURE, textureWidth, textureHeight,
-                b -> sign(), Component.translatable("book.finalizeButton"));
+              22, TEXTURE, textureWidth, textureHeight,
+              b -> sign(), Component.translatable("book.finalizeButton"));
         MutableComponent component = Component.translatable("book.finalizeButton")
-                .append("\n").append(Component.translatable("book.finalizeWarning").withStyle(ChatFormatting.GRAY));
+              .append("\n").append(Component.translatable("book.finalizeWarning").withStyle(ChatFormatting.GRAY));
         signButton.setTooltip(Tooltip.create(component));
         addRenderableWidget(signButton);
 
         // CANCEL
         cancelSigningButton = new ImageButton(leftPos + 82, topPos + 108, 22, 22, 171, 0,
-                22, TEXTURE, textureWidth, textureHeight,
-                b -> cancelSigning(), CommonComponents.GUI_CANCEL);
+              22, TEXTURE, textureWidth, textureHeight,
+              b -> cancelSigning(), CommonComponents.GUI_CANCEL);
         cancelSigningButton.setTooltip(Tooltip.create(CommonComponents.GUI_CANCEL));
         addRenderableWidget(cancelSigningButton);
 
@@ -153,7 +152,7 @@ public class BookSigningScreen extends Screen {
         MutableComponent component = Component.translatable("book.finalizeButton")
               .append(CommonComponents.NEW_LINE)
               .append(Component.translatable("book.finalizeWarning").withStyle(ChatFormatting.GRAY));
-        if (!canSign && titleText.length() > WrittenBookContent.TITLE_MAX_LENGTH) {
+        if (!canSign && titleText.length() > 32) {
             component.append(CommonComponents.NEW_LINE);
             component.append(Component.translatable("scholar.book_singing.error_title_too_long").withStyle(ChatFormatting.RED));
         }
@@ -175,11 +174,10 @@ public class BookSigningScreen extends Screen {
             guiGraphics.blit(TEXTURE_GOLDEN, leftPos, topPos, 0, 0, 0,
                   imageWidth, imageHeight, textureWidth, textureHeight);
         } else {
-
-        RenderUtil.withColorMultiplied(bookColor, () -> {
-            guiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, 0,
-                  imageWidth, imageHeight, textureWidth, textureHeight);
-        });
+            RenderUtil.withColorMultiplied(bookColor, () -> {
+                guiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, 0,
+                      imageWidth, imageHeight, textureWidth, textureHeight);
+            });
         }
 
         guiGraphics.blit(TEXTURE, leftPos, topPos + 31, 0, 0, 180,

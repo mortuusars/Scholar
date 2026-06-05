@@ -3,7 +3,6 @@ package io.github.mortuusars.scholar.world.entity;
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Unit;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -48,7 +47,7 @@ public class ReadBookGoal extends Goal {
 
     @Override
     public void start() {
-        mob.getMainHandItem().set(Scholar.DataComponents.BOOK_OPEN, Unit.INSTANCE);
+        mob.getMainHandItem().getOrCreateTag().putBoolean(Scholar.NBT.BOOK_OPEN, true);
         mob.playSound(SoundEvents.BOOK_PAGE_TURN, 0.6f, 1.1f);
         mob.swing(InteractionHand.MAIN_HAND);
         readingTime = 0;
@@ -62,7 +61,9 @@ public class ReadBookGoal extends Goal {
 
     @Override
     public void stop() {
-        mob.getMainHandItem().remove(Scholar.DataComponents.BOOK_OPEN);
+        if (mob.getMainHandItem().getTag() != null) {
+            mob.getMainHandItem().getTag().remove(Scholar.NBT.BOOK_OPEN);
+        }
         mob.playSound(SoundEvents.BOOK_PAGE_TURN, 0.6f, 0.75f);
         mob.swing(InteractionHand.MAIN_HAND);
     }

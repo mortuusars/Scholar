@@ -2,8 +2,8 @@ package io.github.mortuusars.scholar.client.gui.screen.view;
 
 import com.google.common.collect.ImmutableList;
 import io.github.mortuusars.scholar.Scholar;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -11,8 +11,6 @@ import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WritableBookItem;
 import net.minecraft.world.item.WrittenBookItem;
-import net.minecraft.world.item.component.WritableBookContent;
-import net.minecraft.world.item.component.WrittenBookContent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,12 +94,15 @@ public interface BookViewAccess {
 
         @Override
         public boolean isGolden() {
-            return bookStack.has(Scholar.DataComponents.BOOK_GOLDEN);
+            return bookStack.getTag() != null && bookStack.getTag().getBoolean(Scholar.NBT.BOOK_GOLDEN);
         }
 
         private static List<String> readPages(ItemStack itemStack) {
-            WritableBookContent content = itemStack.getOrDefault(DataComponents.WRITABLE_BOOK_CONTENT, WritableBookContent.EMPTY);
-            return content.getPages(Minecraft.getInstance().isTextFilteringEnabled()).toList();
+            CompoundTag compoundTag = itemStack.getTag();
+            return (WrittenBookItem.makeSureTagIsValid(compoundTag) ?
+                  loadPages(compoundTag) :
+                  ImmutableList.of(Component.Serializer.toJson(Component.translatable("book.invalid.tag")
+                        .withStyle(ChatFormatting.DARK_RED))));
         }
 
         public int getPageCount() {
@@ -114,17 +115,23 @@ public interface BookViewAccess {
 
         @Override
         public int getBookmarkedPage() {
-            return bookStack.getOrDefault(Scholar.DataComponents.BOOKMARK, 0);
+            return bookStack.getTag() != null ? bookStack.getTag().getInt(Scholar.NBT.BOOKMARK) : 0;
         }
 
         @Override
         public void setBookmarkedPage(@Nullable Integer page) {
-            bookStack.set(Scholar.DataComponents.BOOKMARK, page);
+            if (page == null) {
+                if (bookStack.getTag() != null) {
+                    bookStack.getTag().remove(Scholar.NBT.BOOKMARK);
+                }
+            } else {
+                bookStack.getOrCreateTag().putInt(Scholar.NBT.BOOKMARK, page);
+            }
         }
     }
 
     class WrittenBookAccess implements BookViewAccess {
-        private final List<Component> pages;
+        private final List<String> pages;
         private final ItemStack bookStack;
 
         public WrittenBookAccess(ItemStack bookStack) {
@@ -134,12 +141,15 @@ public interface BookViewAccess {
 
         @Override
         public boolean isGolden() {
-            return bookStack.has(Scholar.DataComponents.BOOK_GOLDEN);
+            return bookStack.getTag() != null && bookStack.getTag().getBoolean(Scholar.NBT.BOOK_GOLDEN);
         }
 
-        private static List<Component> readPages(ItemStack itemStack) {
-            WrittenBookContent content = itemStack.getOrDefault(DataComponents.WRITTEN_BOOK_CONTENT, WrittenBookContent.EMPTY);
-            return content.getPages(Minecraft.getInstance().isTextFilteringEnabled());
+        private static List<String> readPages(ItemStack itemStack) {
+            CompoundTag compoundTag = itemStack.getTag();
+            return (WrittenBookItem.makeSureTagIsValid(compoundTag) ?
+                  loadPages(compoundTag) :
+                  ImmutableList.of(Component.Serializer.toJson(Component.translatable("book.invalid.tag")
+                        .withStyle(ChatFormatting.DARK_RED))));
         }
 
         public int getPageCount() {
@@ -147,17 +157,33 @@ public interface BookViewAccess {
         }
 
         public @NotNull FormattedText getPageRaw(int i) {
-            return pages.get(i);
+            String string = this.pages.get(i);
+
+            try {
+                FormattedText formattedText = Component.Serializer.fromJson(string);
+                if (formattedText != null) {
+                    return formattedText;
+                }
+            } catch (Exception ignored) {
+            }
+
+            return FormattedText.of(string);
         }
 
         @Override
         public int getBookmarkedPage() {
-            return bookStack.getOrDefault(Scholar.DataComponents.BOOKMARK, 0);
+            return bookStack.getTag() != null ? bookStack.getTag().getInt(Scholar.NBT.BOOKMARK) : 0;
         }
 
         @Override
         public void setBookmarkedPage(@Nullable Integer page) {
-            bookStack.set(Scholar.DataComponents.BOOKMARK, page);
+            if (page == null) {
+                if (bookStack.getTag() != null) {
+                    bookStack.getTag().remove(Scholar.NBT.BOOKMARK);
+                }
+            } else {
+                bookStack.getOrCreateTag().putInt(Scholar.NBT.BOOKMARK, page);
+            }
         }
     }
 }

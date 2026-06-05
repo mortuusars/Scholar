@@ -14,10 +14,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(Mob.class)
-public abstract class MobMixin extends LivingEntity implements EquipmentUser, Leashable, Targeting {
-    @Shadow
-    public abstract void setDropChance(EquipmentSlot slot, float dropChance);
-
+public abstract class MobMixin extends LivingEntity implements Targeting {
     @Shadow
     @Final
     protected GoalSelector goalSelector;

@@ -1,11 +1,9 @@
 package io.github.mortuusars.scholar.book;
 
 import io.github.mortuusars.scholar.Scholar;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.DyedItemColor;
 
 import java.util.Collections;
 import java.util.Map;
@@ -15,10 +13,17 @@ public class BookColor {
     public static final int DEFAULT = 0xFF99452E;
 
     public static int of(ItemStack stack, int fallback) {
-        if (stack.has(Scholar.DataComponents.BOOK_GOLDEN)) {
+        if (stack.getTag() != null && stack.getTag().getBoolean(Scholar.NBT.BOOK_GOLDEN)) {
             return 0xFFFFB83C;
         }
-        return DyedItemColor.getOrDefault(stack, getDefaultColor(stack, fallback));
+
+        if (stack.getItem() instanceof DyeableLeatherItem dyeable) {
+            return dyeable.hasCustomColor(stack)
+                  ? dyeable.getColor(stack)
+                  : DEFAULT;
+        }
+
+        return getDefaultColor(stack, fallback);
     }
 
     public static int of(ItemStack stack) {
@@ -43,6 +48,8 @@ public class BookColor {
     }
 
     public static void set(ItemStack stack, int color) {
-        stack.set(DataComponents.DYED_COLOR, new DyedItemColor(color, color != DEFAULT));
+        if (stack.getItem() instanceof DyeableLeatherItem dyeable) {
+            dyeable.setColor(stack, color);
+        }
     }
 }

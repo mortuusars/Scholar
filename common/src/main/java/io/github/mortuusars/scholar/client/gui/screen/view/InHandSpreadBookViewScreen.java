@@ -1,7 +1,5 @@
 package io.github.mortuusars.scholar.client.gui.screen.view;
 
-import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.BookmarkButton;
 import io.github.mortuusars.scholar.network.Packets;
 import io.github.mortuusars.scholar.network.packet.serverbound.SetBookmarkC2SP;
@@ -36,8 +34,7 @@ public class InHandSpreadBookViewScreen extends SpreadBookViewScreen {
     protected void createWidgets() {
         super.createWidgets();
         bookmarkButton = addRenderableWidget(new BookmarkButton(leftPos + 118, topPos + 2, 20, 20,
-              Widgets.threeStateSprites(Scholar.resource("book/bookmark_button_inactive")),
-              Widgets.threeStateSprites(Scholar.resource("book/bookmark_button_active")),
+              423, 0, 60, 512, 512, TEXTURE,
               this::pressBookmarkButton,
               Component.translatable("gui.scholar.bookmark")));
     }

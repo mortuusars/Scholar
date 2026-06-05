@@ -75,9 +75,11 @@ public class BookCloningRecipeMixin {
         ItemStack resultStack = new ItemStack(Items.WRITTEN_BOOK, copies);
         CompoundTag inputBookTag = inputBook.getTag().copy();
         inputBookTag.putInt("generation", WrittenBookItem.getGeneration(inputBook) + 1);
-        resultStack.remove(Scholar.DataComponents.BOOK_GOLDEN);
+        inputBookTag.remove(Scholar.NBT.BOOK_GOLDEN);
         resultStack.setTag(inputBookTag);
-        BookColor.set(resultStack, resultColor);
+        if (resultColor != BookColor.DEFAULT) {
+            BookColor.set(resultStack, resultColor);
+        }
         cir.setReturnValue(resultStack);
     }
 }

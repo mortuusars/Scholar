@@ -2,7 +2,6 @@ package io.github.mortuusars.scholar.client.lectern;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.client.gui.InWorldTooltip;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
@@ -10,7 +9,7 @@ import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class LecternTooltip {
-    public static boolean render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+    public static boolean render(GuiGraphics guiGraphics, float partialTicks) {
         if (!Config.Common.LECTERN_TOOLTIP.get()) {
             return false;
         }
@@ -32,7 +31,7 @@ public class LecternTooltip {
             return false;
         }
 
-        InWorldTooltip.renderItemTooltip(guiGraphics, deltaTracker, bookStack);
+        InWorldTooltip.renderItemTooltip(guiGraphics, partialTicks, bookStack);
         return true;
     }
 }

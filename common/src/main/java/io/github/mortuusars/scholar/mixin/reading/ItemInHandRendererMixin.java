@@ -27,7 +27,9 @@ public abstract class ItemInHandRendererMixin {
     @Inject(method = "renderItem", at = @At("HEAD"), cancellable = true)
     private void renderItem(LivingEntity entity, ItemStack stack, ItemDisplayContext displayContext, boolean leftHand,
                             PoseStack poseStack, MultiBufferSource buffer, int seed, CallbackInfo ci) {
-        if (Config.Common.BOOK_READING_ANIMATION.get() && stack.has(Scholar.DataComponents.BOOK_OPEN) && displayContext.firstPerson()) {
+        if (Config.Common.BOOK_READING_ANIMATION.get()
+              && stack.getTag() != null && stack.getTag().getBoolean(Scholar.NBT.BOOK_OPEN)
+              && displayContext.firstPerson()) {
             // Cannot use constructor to initialize book model due to
             // (my guess) entity models not being available at the time of initialization.
             if (scholar$bookModel == null) {

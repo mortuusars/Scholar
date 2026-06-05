@@ -11,6 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WritableBookItem;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ReadingAnimation {
     public static <T extends LivingEntity> void poseLeftArm(T entity, ModelPart part, boolean isHoldingArm) {
@@ -50,8 +51,8 @@ public class ReadingAnimation {
         }
 
         // Writing animation
-        if (Reading.getOpenedBookHand(entity) instanceof InteractionHand hand
-              && entity.getItemInHand(hand).getItem() instanceof WritableBookItem) {
+        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(entity);
+        if (openedBookHand != null && entity.getItemInHand(openedBookHand).getItem() instanceof WritableBookItem) {
             // Up/down
             float anim = (ageInTicks % 6) / 3;
             if (anim > 1) {
@@ -205,6 +206,6 @@ public class ReadingAnimation {
     }
 
     public static float getPartialTick() {
-        return Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
+        return Minecraft.getInstance().getFrameTime();
     }
 }

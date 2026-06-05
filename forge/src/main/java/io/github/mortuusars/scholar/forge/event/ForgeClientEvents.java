@@ -3,10 +3,10 @@ package io.github.mortuusars.scholar.forge.event;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.ScholarClient;
 import io.github.mortuusars.scholar.book.BookColor;
+import io.github.mortuusars.scholar.book.BookItemColorsReloadListener;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.BookshelfDefaultColorsReloadListener;
-import io.github.mortuusars.scholar.client.chiseled_bookshelf.BookshelfItemColorsReloadListener;
 import io.github.mortuusars.scholar.client.chiseled_bookshelf.ChiseledBookshelfColors;
-import io.github.mortuusars.scholar.client.chiseled_bookshelf.ChiseledBookshelfTooltip;
+import io.github.mortuusars.scholar.client.gui.InWorldTooltip;
 import io.github.mortuusars.scholar.client.gui.screen.edit.LecternSpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.screen.view.LecternSpreadBookViewScreen;
 import io.github.mortuusars.scholar.client.resource.BuiltInResourcePacks;
@@ -29,7 +29,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @SuppressWarnings("unused")
-public class ClientEvents {
+public class ForgeClientEvents {
     @Mod.EventBusSubscriber(modid = Scholar.ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ModBus {
         @SubscribeEvent
@@ -52,7 +52,7 @@ public class ClientEvents {
         @SubscribeEvent
         public static void registerClientReloadListeners(RegisterClientReloadListenersEvent event) {
             event.registerReloadListener(new BookshelfDefaultColorsReloadListener());
-            event.registerReloadListener(new BookshelfItemColorsReloadListener());
+            event.registerReloadListener(new BookItemColorsReloadListener());
         }
 
         @SubscribeEvent
@@ -98,7 +98,7 @@ public class ClientEvents {
     public static class ForgeBus {
         @SubscribeEvent
         public static void onRenderGuiPost(RenderGuiEvent.Post event) {
-            ChiseledBookshelfTooltip.renderSlotTooltip(event.getGuiGraphics(), event.getPartialTick());
+            InWorldTooltip.render(event.getGuiGraphics(), event.getPartialTick());
         }
     }
 }

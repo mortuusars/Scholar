@@ -2,7 +2,6 @@ package io.github.mortuusars.scholar.client.gui.screen.edit;
 
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.book.BookSignature;
-import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.BookmarkButton;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import io.github.mortuusars.scholar.network.Packets;
@@ -30,7 +29,7 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
     public InHandSpreadBookEditScreen(ItemStack bookStack, InteractionHand hand) {
         super(bookStack);
         this.hand = hand;
-        int bookmarkedPage = bookStack.getOrDefault(Scholar.DataComponents.BOOKMARK, 0);
+        int bookmarkedPage = bookStack.getTag() != null ? bookStack.getTag().getInt(Scholar.NBT.BOOKMARK) : 0;
         setPage(bookmarkedPage);
         Packets.sendToServer(new StartedReadingInHandC2SP(getBookSlot()));
         Minecraft.getInstance().level.playSound(player, player, SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1, 1);
@@ -49,8 +48,7 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
     protected void createExtraToolsButtons() {
         super.createExtraToolsButtons();
         bookmarkButton = addRenderableWidget(new BookmarkButton(leftPos + 118, topPos + 2, 20, 20,
-              Widgets.threeStateSprites(Scholar.resource("book/bookmark_button_inactive")),
-              Widgets.threeStateSprites(Scholar.resource("book/bookmark_button_active")),
+              423, 0, 60, 512, 512, TEXTURE,
               this::pressBookmarkButton,
               Component.translatable("gui.scholar.bookmark")));
     }
@@ -58,7 +56,7 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
     @Override
     protected void updateButtons() {
         super.updateButtons();
-        int bookmarkedSpread = bookStack.getOrDefault(Scholar.DataComponents.BOOKMARK, 0) / 2;
+        int bookmarkedSpread = bookStack.getTag() != null ? bookStack.getTag().getInt(Scholar.NBT.BOOKMARK) / 2 : 0;
         bookmarkButton.visible = currentSpread != 0 || bookmarkedSpread != 0;
         if (bookmarkButton.visible) {
             boolean isAtBookmarkedSpread = bookmarkedSpread == currentSpread;
@@ -75,7 +73,7 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
     }
 
     protected void pressBookmarkButton(Button button) {
-        int bookmarkedSpread = bookStack.getOrDefault(Scholar.DataComponents.BOOKMARK, 0) / 2;
+        int bookmarkedSpread = bookStack.getTag() != null ? bookStack.getTag().getInt(Scholar.NBT.BOOKMARK) / 2 : 0;
 
         int newBookmarkedPage;
 
@@ -89,9 +87,11 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
         }
 
         if (newBookmarkedPage == 0) {
-            bookStack.remove(Scholar.DataComponents.BOOKMARK);
+            if (bookStack.getTag() != null) {
+                bookStack.getTag().remove(Scholar.NBT.BOOKMARK);
+            }
         } else {
-            bookStack.set(Scholar.DataComponents.BOOKMARK, newBookmarkedPage);
+            bookStack.getOrCreateTag().putInt(Scholar.NBT.BOOKMARK, newBookmarkedPage);
         }
 
         int slot = getBookSlot();

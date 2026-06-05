@@ -2,7 +2,6 @@ package io.github.mortuusars.scholar.mixin.lectern;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.mixin.BlockEntityParentMixin;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -29,9 +28,9 @@ public abstract class LecternBlockEntityMixin extends BlockEntityParentMixin {
     }
 
     @Override
-    protected CompoundTag onGetUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+    protected CompoundTag onGetUpdateTag(CompoundTag tag) {
         if (Config.Common.LECTERN_TOOLTIP.get()) {
-            CompoundTag data = saveCustomOnly(registries);
+            CompoundTag data = saveWithoutMetadata();
             if (book.isEmpty()) {
                 // Empty tag (if book is removed) does not trigger the loadAdditional method on the client block entity,
                 // and thus the tooltip shows the book even if it's no longer there. So we add placeholder data to trigger an update.

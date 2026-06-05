@@ -101,5 +101,8 @@
   "scholar.configuration.written_book_enchantment_glint": "Блиск написаної книги",
   "subtitles.scholar.ui.book_signed": "Книга підписана",
   "subtitles.scholar.ui.ink": "Чорнило капає",
-  "subtitles.scholar.ui.scribble": "Перо шкрябає"
+  "subtitles.scholar.ui.scribble": "Перо шкрябає",
+  "scholar.configuration.book_coloring": "Розфарбовування",
+  "scholar.configuration.writable_book_coloring": "Книга з пером",
+  "scholar.configuration.written_book_coloring": "Написана книга"
 }

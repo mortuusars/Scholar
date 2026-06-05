@@ -42,7 +42,7 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
     private void onRenderArmWithItem(LivingEntity entity, ItemStack stack, ItemDisplayContext displayContext,
                                      HumanoidArm arm, PoseStack poseStack, MultiBufferSource buffer, int packedLight, CallbackInfo ci) {
         if (Config.Common.BOOK_READING_ANIMATION.get()) {
-            if (stack.has(Scholar.DataComponents.BOOK_OPEN)) {
+            if (stack.getTag() != null && stack.getTag().getBoolean(Scholar.NBT.BOOK_OPEN)) {
                 M parentModel = getParentModel();
                 ColoredBookModel.renderInHand(entity, stack, arm, poseStack, buffer, packedLight, parentModel, scholar$bookModel);
                 ci.cancel();
@@ -54,7 +54,7 @@ public abstract class ItemInHandLayerMixin<T extends LivingEntity, M extends Ent
                       ? entity.getOffhandItem()
                       : entity.getMainHandItem();
 
-                if (otherHandStack.has(Scholar.DataComponents.BOOK_OPEN)) {
+                if (otherHandStack.getTag() != null && otherHandStack.getTag().getBoolean(Scholar.NBT.BOOK_OPEN)) {
                     ci.cancel(); // Do not render item in hand if a book is held in another
                 }
             }

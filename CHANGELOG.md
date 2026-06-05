@@ -44,6 +44,7 @@ _Changes:_
 - Moved definition of book item colors from Chiseled Bookshelf `chiseled_bookshelf/item_colors` built-in resourcepack to Colored Books `book/item_colors` built-in resourcepack.
 - Restructured config. Moved some config options from client to common for convenience.
 - Added "requires_sneaking" config option for showing in-world tooltips.
+- Removed old deprecated colored books (when each color was a separate item - 'scholar:green_written_book', etc.).
 
 _Fixes:_
 - Fixed page numbers not being centered properly.

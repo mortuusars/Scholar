@@ -2,7 +2,8 @@ package io.github.mortuusars.scholar.client.chiseled_bookshelf;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.client.gui.InWorldTooltip;
-import net.minecraft.client.DeltaTracker;
+import io.github.mortuusars.scholar.integration.Mods;
+import io.github.mortuusars.scholar.integration.woodworks.WoodworksIntegration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
@@ -20,7 +21,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 
 public class ChiseledBookshelfTooltip {
-    public static boolean render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+    public static boolean render(GuiGraphics guiGraphics, float partialTicks) {
         if (!Config.Common.CHISELED_BOOKSHELF_TOOLTIP.get()) {
             return false;
         }
@@ -46,23 +47,23 @@ public class ChiseledBookshelfTooltip {
         @Nullable BlockEntity blockEntity = minecraft.level.getBlockEntity(hitPos);
 
         if (!(blockEntity instanceof ChiseledBookShelfBlockEntity chiseledBookShelfBlockEntity)) {
-            return;
+            return false;
         }
 
         Optional<Vec2> blockHitPos = ChiseledBookShelfBlock.getRelativeHitCoordinatesForBlockFace(blockHitResult,
               blockState.getValue(HorizontalDirectionalBlock.FACING));
         if (blockHitPos.isEmpty()) {
-            return;
+            return false;
         }
 
         int hitSlot = getHitSlot(blockState, blockHitPos.get());
 
         ItemStack bookStack = chiseledBookShelfBlockEntity.getItem(hitSlot);
         if (bookStack.isEmpty()) {
-            return;
+            return false;
         }
 
-        InWorldTooltip.renderItemTooltip(guiGraphics, deltaTracker, bookStack);
+        InWorldTooltip.renderItemTooltip(guiGraphics, partialTicks, bookStack);
         return true;
     }
 

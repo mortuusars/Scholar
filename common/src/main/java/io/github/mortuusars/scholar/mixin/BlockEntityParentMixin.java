@@ -1,16 +1,15 @@
 package io.github.mortuusars.scholar.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import com.llamalad7.mixinextras.sugar.Local;
 import io.github.mortuusars.scholar.mixin.chiseled_bookshelf.ChiseledBookShelfBlockEntityMixin;
 import io.github.mortuusars.scholar.mixin.lectern.LecternBlockEntityMixin;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
 /**
@@ -19,10 +18,8 @@ import org.spongepowered.asm.mixin.injection.At;
  */
 @Mixin(BlockEntity.class)
 public abstract class BlockEntityParentMixin {
-    @Shadow @Nullable protected Level level;
-
     @Shadow
-    public abstract CompoundTag saveCustomOnly(HolderLookup.Provider registries);
+    public abstract CompoundTag saveWithoutMetadata();
 
     @ModifyReturnValue(method = "getUpdatePacket", at = @At("RETURN"))
     protected @Nullable Packet<ClientGamePacketListener> onGetUpdatePacket(@Nullable Packet<ClientGamePacketListener> original) {
@@ -30,7 +27,7 @@ public abstract class BlockEntityParentMixin {
     }
 
     @ModifyReturnValue(method = "getUpdateTag", at = @At("RETURN"))
-    protected CompoundTag onGetUpdateTag(CompoundTag original, @Local(argsOnly = true) HolderLookup.Provider registries) {
+    protected CompoundTag onGetUpdateTag(CompoundTag original) {
         return original;
     }
 }

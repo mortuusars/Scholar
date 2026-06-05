@@ -1,52 +1,64 @@
 package io.github.mortuusars.scholar;
 
 import com.mojang.logging.LogUtils;
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 public class Config {
     public static class Common {
-        public static final ModConfigSpec SPEC;
+        public static final ForgeConfigSpec SPEC;
 
         // Book
-        public static final ModConfigSpec.BooleanValue BOOK_CHANGEABLE_AUTHOR;
+        public static final ForgeConfigSpec.BooleanValue BOOK_CHANGEABLE_AUTHOR;
 
         // Reading
-        public static final ModConfigSpec.BooleanValue BOOK_READING_ANIMATION;
-        public static final ModConfigSpec.BooleanValue BOOK_READING_HIDE_OFFHAND_ITEM;
+        public static final ForgeConfigSpec.BooleanValue BOOK_READING_ANIMATION;
+        public static final ForgeConfigSpec.BooleanValue BOOK_READING_HIDE_OFFHAND_ITEM;
 
         // Literate Mobs
-        public static final ModConfigSpec.DoubleValue LITERATE_MOBS_BOOK_SPAWN_CHANCE;
-        public static final ModConfigSpec.DoubleValue LITERATE_MOBS_BOOK_DROP_CHANCE;
-        public static final ModConfigSpec.DoubleValue LITERATE_MOBS_BOOK_READING_CHANCE;
+        public static final ForgeConfigSpec.DoubleValue LITERATE_MOBS_BOOK_SPAWN_CHANCE;
+        public static final ForgeConfigSpec.DoubleValue LITERATE_MOBS_BOOK_DROP_CHANCE;
+        public static final ForgeConfigSpec.DoubleValue LITERATE_MOBS_BOOK_READING_CHANCE;
 
         // Screen
-        public static final ModConfigSpec.BooleanValue IN_HAND_TWO_PAGE_BOOK_SCREEN;
-        public static final ModConfigSpec.BooleanValue LECTERN_TWO_PAGE_BOOK_SCREEN;
-        public static final ModConfigSpec.BooleanValue SNEAKING_OPENS_VANILLA_BOOK_SCREEN;
-        public static final ModConfigSpec.BooleanValue BOOK_SCREEN_PAUSE;
-        public static final ModConfigSpec.BooleanValue BOOK_SCREEN_SHOW_DONE_BUTTON;
-        public static final ModConfigSpec.BooleanValue EDIT_SCREEN_SHOW_EXTRA_TOOLS;
+        public static final ForgeConfigSpec.BooleanValue IN_HAND_TWO_PAGE_BOOK_SCREEN;
+        public static final ForgeConfigSpec.BooleanValue LECTERN_TWO_PAGE_BOOK_SCREEN;
+        public static final ForgeConfigSpec.BooleanValue SNEAKING_OPENS_VANILLA_BOOK_SCREEN;
+        public static final ForgeConfigSpec.BooleanValue BOOK_SCREEN_PAUSE;
+        public static final ForgeConfigSpec.BooleanValue BOOK_SCREEN_SHOW_DONE_BUTTON;
+        public static final ForgeConfigSpec.BooleanValue EDIT_SCREEN_SHOW_EXTRA_TOOLS;
 
         // Tooltip
-        public static final ModConfigSpec.BooleanValue CHISELED_BOOKSHELF_TOOLTIP;
-        public static final ModConfigSpec.BooleanValue LECTERN_TOOLTIP;
-        public static final ModConfigSpec.BooleanValue TOOLTIP_REQUIRES_SNEAK;
+        public static final ForgeConfigSpec.BooleanValue CHISELED_BOOKSHELF_TOOLTIP;
+        public static final ForgeConfigSpec.BooleanValue LECTERN_TOOLTIP;
+        public static final ForgeConfigSpec.BooleanValue TOOLTIP_REQUIRES_SNEAK;
 
         // Visuals
-        public static final ModConfigSpec.BooleanValue LECTERN_COLORED_BOOK_MODEL;
-        public static final ModConfigSpec.BooleanValue WRITTEN_BOOK_ENCHANTMENT_GLINT;
+        public static final ForgeConfigSpec.BooleanValue WRITABLE_BOOK_COLORING;
+        public static final ForgeConfigSpec.BooleanValue WRITTEN_BOOK_COLORING;
+        public static final ForgeConfigSpec.BooleanValue LECTERN_COLORED_BOOK_MODEL;
+        public static final ForgeConfigSpec.BooleanValue WRITTEN_BOOK_ENCHANTMENT_GLINT;
 
         // Integration
-        public static final ModConfigSpec.BooleanValue JEI_DYEING_RECIPES;
-        public static final ModConfigSpec.BooleanValue JEI_DYEING_RECIPES_ONLY_BOOKS;
+        public static final ForgeConfigSpec.BooleanValue JEI_DYEING_RECIPES;
+        public static final ForgeConfigSpec.BooleanValue JEI_DYEING_RECIPES_ONLY_BOOKS;
 
         static {
-            ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
+            ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
             builder.push("book");
             BOOK_CHANGEABLE_AUTHOR = builder
                   .comment("Author can be changed when signing a book. Default: true")
                   .define("changeable_author", true);
+            {
+                builder.push("book_coloring");
+                WRITABLE_BOOK_COLORING = builder
+                      .comment("Writable Book (Book and Quill) can be colored like Leather armor. Default: true")
+                      .define("writable_book_coloring", true);
+                WRITTEN_BOOK_COLORING = builder
+                      .comment("Written Book can be colored like Leather armor. Default: false")
+                      .define("written_book_coloring", false);
+                builder.pop();
+            }
 
             {
                 builder.push("screen");
@@ -135,20 +147,20 @@ public class Config {
     }
 
     public static class Client {
-        public static final ModConfigSpec SPEC;
+        public static final ForgeConfigSpec SPEC;
 
         // Colors
-        public static final ModConfigSpec.ConfigValue<String> TEXT_COLOR;
-        public static final ModConfigSpec.ConfigValue<String> PAGE_NUMBERS_COLOR;
-        public static final ModConfigSpec.ConfigValue<String> ENTER_TITLE_COLOR;
-        public static final ModConfigSpec.ConfigValue<String> BY_AUTHOR_COLOR;
-        public static final ModConfigSpec.ConfigValue<String> SELECTION_COLOR;
-        public static final ModConfigSpec.ConfigValue<String> SELECTION_UNFOCUSED_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<String> TEXT_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<String> PAGE_NUMBERS_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<String> ENTER_TITLE_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<String> BY_AUTHOR_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<String> SELECTION_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<String> SELECTION_UNFOCUSED_COLOR;
 
-        public static final ModConfigSpec.BooleanValue TUTORIAL_EXTRA_TOOLS;
+        public static final ForgeConfigSpec.BooleanValue TUTORIAL_EXTRA_TOOLS;
 
         static {
-            ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
+            ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
             builder.push("ui");
 
@@ -204,7 +216,7 @@ public class Config {
             SPEC = builder.build();
         }
 
-        public static int getColor(ModConfigSpec.ConfigValue<String> configValue) {
+        public static int getColor(ForgeConfigSpec.ConfigValue<String> configValue) {
             String hexString = configValue.get();
             try {
                 // Can't parse straight to int because of how integers are interpreted

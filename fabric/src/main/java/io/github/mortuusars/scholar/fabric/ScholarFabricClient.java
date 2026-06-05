@@ -24,6 +24,8 @@ import net.minecraft.world.item.Items;
 public class ScholarFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        ScholarClient.init();
+
         ChiseledBookshelfColors.setBookshelfRenderLayer(BlockRenderLayerMap.INSTANCE::putBlock);
         ChiseledBookshelfColors.registerBookshelfBlockColors(ColorProviderRegistry.BLOCK::register);
 

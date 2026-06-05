@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +30,7 @@ public abstract class ChiseledBookShelfBlockEntityMixin extends BlockEntityParen
     }
 
     @Override
-    protected CompoundTag onGetUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
-        return saveCustomOnly(registries);
+    protected CompoundTag onGetUpdateTag(CompoundTag tag) {
+        return ContainerHelper.saveAllItems(tag, this.items);
     }
 }
