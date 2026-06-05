@@ -1,11 +1,8 @@
 package io.github.mortuusars.scholar.client.gui.screen.view;
 
-import com.google.common.collect.ImmutableList;
 import io.github.mortuusars.scholar.Scholar;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.item.ItemStack;
@@ -17,9 +14,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.IntFunction;
 
 public interface BookViewAccess {
     BookViewAccess EMPTY = new BookViewAccess() {
@@ -32,18 +26,26 @@ public interface BookViewAccess {
         }
 
         @Override
-        public boolean isGolden() {
-            return false;
+        public ItemStack getBook() {
+            return ItemStack.EMPTY;
         }
     };
 
-    boolean isGolden();
+    ItemStack getBook();
     int getPageCount();
     FormattedText getPageRaw(int pageIndex);
-    default int getBookmarkedPage() {
-        return 0;
+
+    default boolean isGolden() {
+        return getBook().has(Scholar.DataComponents.BOOK_GOLDEN);
     }
-    default void setBookmarkedPage(@Nullable Integer page) {}
+
+    default int getBookmarkedPage() {
+        return getBook().getOrDefault(Scholar.DataComponents.BOOKMARK, 0);
+    }
+
+    default void setBookmarkedPage(@Nullable Integer page) {
+        getBook().set(Scholar.DataComponents.BOOKMARK, page);
+    }
 
     default FormattedText getPage(int pageIndex) {
         return pageIndex >= 0 && pageIndex < getPageCount() ? getPageRaw(pageIndex) : FormattedText.EMPTY;
@@ -59,32 +61,6 @@ public interface BookViewAccess {
         }
     }
 
-    static List<String> loadPages(CompoundTag compoundTag) {
-        ImmutableList.Builder<String> builder = ImmutableList.builder();
-        Objects.requireNonNull(builder);
-        loadPages(compoundTag, builder::add);
-        return builder.build();
-    }
-
-    static void loadPages(CompoundTag compoundTag, Consumer<String> consumer) {
-        ListTag listTag = compoundTag.getList("pages", 8).copy();
-        IntFunction<String> intFunction;
-        if (Minecraft.getInstance().isTextFilteringEnabled() && compoundTag.contains("filtered_pages", 10)) {
-            CompoundTag compoundTag2 = compoundTag.getCompound("filtered_pages");
-            intFunction = (ix) -> {
-                String string = String.valueOf(ix);
-                return compoundTag2.contains(string) ? compoundTag2.getString(string) : listTag.getString(ix);
-            };
-        } else {
-            Objects.requireNonNull(listTag);
-            intFunction = listTag::getString;
-        }
-
-        for (int i = 0; i < listTag.size(); ++i) {
-            consumer.accept(intFunction.apply(i));
-        }
-    }
-
     class WritableBookAccess implements BookViewAccess {
         private final List<String> pages;
         private final ItemStack bookStack;
@@ -95,8 +71,8 @@ public interface BookViewAccess {
         }
 
         @Override
-        public boolean isGolden() {
-            return bookStack.has(Scholar.DataComponents.BOOK_GOLDEN);
+        public ItemStack getBook() {
+            return bookStack;
         }
 
         private static List<String> readPages(ItemStack itemStack) {
@@ -111,16 +87,6 @@ public interface BookViewAccess {
         public FormattedText getPageRaw(int i) {
             return i >= pages.size() ? FormattedText.EMPTY : FormattedText.of(this.pages.get(i));
         }
-
-        @Override
-        public int getBookmarkedPage() {
-            return bookStack.getOrDefault(Scholar.DataComponents.BOOKMARK, 0);
-        }
-
-        @Override
-        public void setBookmarkedPage(@Nullable Integer page) {
-            bookStack.set(Scholar.DataComponents.BOOKMARK, page);
-        }
     }
 
     class WrittenBookAccess implements BookViewAccess {
@@ -133,8 +99,8 @@ public interface BookViewAccess {
         }
 
         @Override
-        public boolean isGolden() {
-            return bookStack.has(Scholar.DataComponents.BOOK_GOLDEN);
+        public ItemStack getBook() {
+            return bookStack;
         }
 
         private static List<Component> readPages(ItemStack itemStack) {
@@ -148,16 +114,6 @@ public interface BookViewAccess {
 
         public @NotNull FormattedText getPageRaw(int i) {
             return pages.get(i);
-        }
-
-        @Override
-        public int getBookmarkedPage() {
-            return bookStack.getOrDefault(Scholar.DataComponents.BOOKMARK, 0);
-        }
-
-        @Override
-        public void setBookmarkedPage(@Nullable Integer page) {
-            bookStack.set(Scholar.DataComponents.BOOKMARK, page);
         }
     }
 }
