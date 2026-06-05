@@ -1,3 +1,5 @@
 {
-  "minecraft:book": "#9C763E"
+  "minecraft:writable_book": "#FF99452E",
+  "minecraft:written_book": "#FF99452E",
+  "minecraft:book": "#FF9C763E"
 }
