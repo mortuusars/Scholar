@@ -1,6 +1,5 @@
 package io.github.mortuusars.scholar.client.gui.screen.view;
 
-import com.google.common.collect.ImmutableList;
 import io.github.mortuusars.scholar.Scholar;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponents;
@@ -28,18 +27,26 @@ public interface BookViewAccess {
         }
 
         @Override
-        public boolean isGolden() {
-            return false;
+        public ItemStack getBook() {
+            return ItemStack.EMPTY;
         }
     };
 
-    boolean isGolden();
+    ItemStack getBook();
     int getPageCount();
     Component getPageRaw(int pageIndex);
-    default int getBookmarkedPage() {
-        return 0;
+
+    default boolean isGolden() {
+        return getBook().has(Scholar.DataComponents.BOOK_GOLDEN);
     }
-    default void setBookmarkedPage(@Nullable Integer page) {}
+
+    default int getBookmarkedPage() {
+        return getBook().getOrDefault(Scholar.DataComponents.BOOKMARK, 0);
+    }
+
+    default void setBookmarkedPage(@Nullable Integer page) {
+        getBook().set(Scholar.DataComponents.BOOKMARK, page);
+    }
 
     default Component getPage(int pageIndex) {
         return pageIndex >= 0 && pageIndex < getPageCount() ? getPageRaw(pageIndex) : CommonComponents.EMPTY;
@@ -65,8 +72,8 @@ public interface BookViewAccess {
         }
 
         @Override
-        public boolean isGolden() {
-            return bookStack.has(Scholar.DataComponents.BOOK_GOLDEN);
+        public ItemStack getBook() {
+            return bookStack;
         }
 
         private static List<String> readPages(ItemStack itemStack) {
@@ -81,16 +88,6 @@ public interface BookViewAccess {
         public Component getPageRaw(int i) {
             return i < pages.size() ? Component.literal(pages.get(i)) : CommonComponents.EMPTY;
         }
-
-        @Override
-        public int getBookmarkedPage() {
-            return bookStack.getOrDefault(Scholar.DataComponents.BOOKMARK, 0);
-        }
-
-        @Override
-        public void setBookmarkedPage(@Nullable Integer page) {
-            bookStack.set(Scholar.DataComponents.BOOKMARK, page);
-        }
     }
 
     class WrittenBookAccess implements BookViewAccess {
@@ -103,8 +100,8 @@ public interface BookViewAccess {
         }
 
         @Override
-        public boolean isGolden() {
-            return bookStack.has(Scholar.DataComponents.BOOK_GOLDEN);
+        public ItemStack getBook() {
+            return bookStack;
         }
 
         private static List<Component> readPages(ItemStack itemStack) {
@@ -118,16 +115,6 @@ public interface BookViewAccess {
 
         public @NotNull Component getPageRaw(int i) {
             return i < pages.size() ? pages.get(i) : CommonComponents.EMPTY;
-        }
-
-        @Override
-        public int getBookmarkedPage() {
-            return bookStack.getOrDefault(Scholar.DataComponents.BOOKMARK, 0);
-        }
-
-        @Override
-        public void setBookmarkedPage(@Nullable Integer page) {
-            bookStack.set(Scholar.DataComponents.BOOKMARK, page);
         }
     }
 }
