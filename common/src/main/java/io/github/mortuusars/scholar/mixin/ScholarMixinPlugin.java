@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 
 public class ScholarMixinPlugin implements IMixinConfigPlugin {
     private static final Map<String, Supplier<Boolean>> CONDITIONS = ImmutableMap.of(
+
     );
 
     @Override

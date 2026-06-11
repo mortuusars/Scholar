@@ -1,38 +1,42 @@
 package io.github.mortuusars.scholar.client.animation;
 
-import io.github.mortuusars.scholar.world.entity.Reading;
+import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.client.ScholarHumanoidRenderState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.*;
 import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.object.book.BookModel;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WritableBookItem;
-import org.jetbrains.annotations.NotNull;
 
 public class ReadingAnimation {
-    public static <T extends LivingEntity> void poseLeftArm(T entity, ModelPart part, boolean isHoldingArm) {
+    public static final BookModel.State BOOK_OPEN_STATE = new BookModel.State(0.0F, 0.1F, 0.9F, 1.2F);
+
+    public static <T extends HumanoidRenderState> void poseLeftArm(T renderState, ModelPart part) {
         part.xRot = part.xRot * 0.5F - (float) (Math.PI / 5);
         part.yRot = 0F;
         // Undo most of the bobbing:
-        AnimationUtils.bobModelPart(part, entity.tickCount + getPartialTick(), 0.8F);
+        AnimationUtils.bobModelPart(part, renderState.ageInTicks, 0.8F);
     }
 
-    public static <T extends LivingEntity> void poseRightArm(T entity, ModelPart part, boolean isHoldingArm) {
+    public static <T extends HumanoidRenderState> void poseRightArm(T renderState, ModelPart part) {
         part.xRot = part.xRot * 0.5F - (float) (Math.PI / 5);
         part.yRot = 0F;
 
         // Undo original bobbing:
-        AnimationUtils.bobModelPart(part, entity.tickCount + getPartialTick(), -1F);
+        AnimationUtils.bobModelPart(part, renderState.ageInTicks, -1F);
         // Apply bobbing in the opposite direction to match left arm:
-        AnimationUtils.bobModelPart(part, entity.tickCount + getPartialTick(), -0.2F);
+        AnimationUtils.bobModelPart(part, renderState.ageInTicks, -0.2F);
+
+        int entityId = getEntityId(renderState);
 
         // Page flip animation
-        int perEntityOffset = 42 * entity.getId();
-        float ageInTicks = entity.tickCount + getPartialTick() + perEntityOffset;
-        int lineDuration = getLineDuration(entity);
+        int perEntityOffset = 42 * entityId;
+        float ageInTicks = renderState.ageInTicks + perEntityOffset;
+        int lineDuration = getLineDuration(renderState);
         int spreadDuration = lineDuration * getLinesPerPage() * 2;
         float spreadProgress = ageInTicks % spreadDuration;
         float returnDuration = lineDuration * (1 - getForwardToReturnRatio());
@@ -49,9 +53,20 @@ public class ReadingAnimation {
             part.xRot -= anim * 2;
         }
 
+//
+//
+//        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(renderState.leftHandItemStack,
+//              renderState.rightHandItemStack,
+//              renderState.mainArm == HumanoidArm.RIGHT);
+//        if (openedBookHand == null) {
+//            return;
+//        }
+
+        boolean isWriting = (renderState.rightHandItemStack.has(Scholar.DataComponents.BOOK_OPEN) && renderState.rightHandItemStack.getItem() instanceof WritableBookItem)
+                || (renderState.leftHandItemStack.has(Scholar.DataComponents.BOOK_OPEN) && renderState.leftHandItemStack.getItem() instanceof WritableBookItem);
+
         // Writing animation
-        if (Reading.getOpenedBookHand(entity) instanceof InteractionHand hand
-              && entity.getItemInHand(hand).getItem() instanceof WritableBookItem) {
+        if (isWriting) {
             // Up/down
             float anim = (ageInTicks % 6) / 3;
             if (anim > 1) {
@@ -79,8 +94,9 @@ public class ReadingAnimation {
      * <br>
      * Each entity has slightly different time to read.
      */
-    public static int getLineDuration(LivingEntity entity) {
-        return 30 + ((entity.getId() % 5) * 5);
+    public static <T extends HumanoidRenderState> int getLineDuration(T renderState) {
+        int entityId = getEntityId(renderState);
+        return 30 + ((entityId % 5) * 5);
     }
 
     public static int getLinesPerPage() {
@@ -94,19 +110,20 @@ public class ReadingAnimation {
         return 0.8f;
     }
 
-    public static <T extends LivingEntity> void poseHead(T entity, float ageInTicks, float headPitch,
-                                                         @NotNull InteractionHand openedBookHand, ModelPart body, ModelPart head) {
+    public static <T extends HumanoidRenderState> void poseHead(T renderState, ModelPart body, ModelPart head) {
         float amplitude = 0.25f; // How much head turns when reading the line
         float forwardToReturnRatio = getForwardToReturnRatio();
         float turnOffset = 0.05f; // Slight head rotation towards the current book side
         float pitchPerLine = 0.1f;
 
-        int lineDuration = getLineDuration(entity);
+        int lineDuration = getLineDuration(renderState);
         int lines = getLinesPerPage();
         int pageDuration = lineDuration * lines;
         int spreadDuration = pageDuration * 2;
 
-        double age = ageInTicks + entity.getId() * 42.0; // Animations should be unique per entity. Age would be similar after world load.
+        int entityId = getEntityId(renderState);
+
+        double age = renderState.ageInTicks + entityId * 42.0; // Animations should be unique per entity. Age would be similar after world load.
         float spreadTime = (float) (age % spreadDuration);
         float pageTime = spreadTime % pageDuration;
         float lineTime = pageTime % lineDuration;
@@ -138,8 +155,8 @@ public class ReadingAnimation {
             turn = Mth.lerp(isOnTheRightPage ? 1 - scanningAnim : scanningAnim, turn, target);
         }
 
-        if (entity.attackAnim > 0) {
-            float anim = easeInOutSine(entity.getAttackAnim(getPartialTick()));
+        if (renderState.attackTime > 0) {
+            float anim = easeInOutSine(renderState.attackTime);
             head.yRot = Mth.lerp(anim, head.yRot, body.yRot + turn);
         } else {
             head.yRot = body.yRot + turn;
@@ -169,19 +186,19 @@ public class ReadingAnimation {
             pitch = Mth.lerp(t, currentPitch, nextPitch);
         }
 
-        if (entity.attackAnim > 0) {
-            float anim = easeInOutSine(entity.getAttackAnim(getPartialTick()));
+        if (renderState.attackTime > 0) {
+            float anim = easeInOutSine(renderState.attackTime);
             head.xRot = Mth.lerp(anim, head.yRot, pitch);
         } else {
             head.xRot = pitch;
         }
     }
 
-    public static <M extends EntityModel<?> & ArmedModel> void poseBook(LivingEntity entity, ItemStack stack,
-                                                                        HumanoidArm arm, M entityModel, BookModel bookModel) {
-        int perEntityOffset = 42 * entity.getId();
-        float ageInTicks = entity.tickCount + getPartialTick() + perEntityOffset;
-        int lineDuration = getLineDuration(entity);
+    public static <S extends HumanoidRenderState> BookModel.State createBookRenderState(S renderState, ItemStack stack,
+                                                                                        HumanoidArm arm, BookModel bookModel) {
+        int perEntityOffset = 42 * getEntityId(renderState);
+        float ageInTicks = renderState.ageInTicks + perEntityOffset;
+        int lineDuration = getLineDuration(renderState);
         int spreadDuration = lineDuration * getLinesPerPage() * 2;
         float spreadProgress = ageInTicks % spreadDuration;
         float returnDuration = lineDuration * (1 - getForwardToReturnRatio());
@@ -194,9 +211,33 @@ public class ReadingAnimation {
             float flip = anim < 0.9f
                   ? 0.9F - anim * 0.9f
                   : 0.9f + (1f - anim);
-            bookModel.setupAnim(0.0F, 0.1F, flip, 1.2F);
+            return new BookModel.State(0.0F, 0.1F, flip, 1.2F);
         } else {
-            bookModel.setupAnim(0.0F, 0.1F, 0.9F, 1.2F);
+            return BOOK_OPEN_STATE;
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static <S extends HumanoidRenderState, M extends EntityModel<?> & ArmedModel> void poseBook(S renderState, ItemStack stack,
+                                                                                                       HumanoidArm arm, M entityModel, BookModel bookModel) {
+        int perEntityOffset = 42 * getEntityId(renderState);
+        float ageInTicks = renderState.ageInTicks + perEntityOffset;
+        int lineDuration = getLineDuration(renderState);
+        int spreadDuration = lineDuration * getLinesPerPage() * 2;
+        float spreadProgress = ageInTicks % spreadDuration;
+        float returnDuration = lineDuration * (1 - getForwardToReturnRatio());
+        float timeUntilLastReturn = spreadDuration - returnDuration;
+
+        // Flip the page on the last return
+        if (spreadProgress > timeUntilLastReturn) {
+            float progress = spreadProgress - timeUntilLastReturn;
+            float anim = easeInOutSine(progress / returnDuration);
+            float flip = anim < 0.9f
+                  ? 0.9F - anim * 0.9f
+                  : 0.9f + (1f - anim);
+            bookModel.setupAnim(new BookModel.State(0.0F, 0.1F, flip, 1.2F));
+        } else {
+            bookModel.setupAnim(BOOK_OPEN_STATE);
         }
     }
 
@@ -205,6 +246,10 @@ public class ReadingAnimation {
     }
 
     public static float getPartialTick() {
-        return Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
+        return Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
+    }
+
+    public static <T extends HumanoidRenderState> int getEntityId(T renderState) {
+        return renderState instanceof ScholarHumanoidRenderState state ? state.scholar$getEntityId() : 0;
     }
 }

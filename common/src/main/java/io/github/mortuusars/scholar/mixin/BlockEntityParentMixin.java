@@ -23,6 +23,9 @@ import org.spongepowered.asm.mixin.injection.At;
  */
 @Mixin(BlockEntity.class)
 public abstract class BlockEntityParentMixin {
+    @Shadow
+    public abstract CompoundTag saveCustomOnly(HolderLookup.Provider registries);
+
     @ModifyReturnValue(method = "getUpdatePacket", at = @At("RETURN"))
     protected @Nullable Packet<ClientGamePacketListener> onGetUpdatePacket(@Nullable Packet<ClientGamePacketListener> original) {
         return original;

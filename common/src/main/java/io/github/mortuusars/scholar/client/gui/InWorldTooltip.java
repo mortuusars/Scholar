@@ -21,13 +21,10 @@ public class InWorldTooltip {
         int x = Minecraft.getInstance().getWindow().getGuiScaledWidth() / 2 + 16;
         int y = Minecraft.getInstance().getWindow().getGuiScaledHeight() / 2 - 9;
 
-        TooltipRenderUtil.renderTooltipBackground(guiGraphics, x, y, 18, 18, 400);
-
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(0, 0, 400);
+        TooltipRenderUtil.renderTooltipBackground(guiGraphics, x, y, 18, 18, null);
         guiGraphics.renderItem(stack, x + 1, y + 1);
-        guiGraphics.pose().popPose();
 
-        guiGraphics.renderTooltip(Minecraft.getInstance().font, stack, x + 16, y + 12);
+        guiGraphics.setTooltipForNextFrame(Minecraft.getInstance().font, stack, x + 16, y + 12);
+        guiGraphics.renderDeferredElements();
     }
 }

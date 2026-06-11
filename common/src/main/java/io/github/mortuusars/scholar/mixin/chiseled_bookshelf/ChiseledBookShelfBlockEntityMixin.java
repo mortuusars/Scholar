@@ -34,7 +34,6 @@ public abstract class ChiseledBookShelfBlockEntityMixin extends BlockEntityParen
 
     @Override
     protected CompoundTag onGetUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
-        return saveCustomOnly(registries);
         TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, registries);
         ContainerHelper.saveAllItems(output, this.items, true);
         return output.buildResult();

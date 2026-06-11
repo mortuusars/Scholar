@@ -1,7 +1,9 @@
 package io.github.mortuusars.scholar.neoforge;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.github.mortuusars.scholar.ScholarClient;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.input.KeyEvent;
 import net.neoforged.neoforge.client.settings.KeyConflictContext;
 import net.neoforged.neoforge.client.settings.KeyModifier;
 
@@ -11,7 +13,7 @@ public class PlatformHelperClientImpl {
               KeyConflictContext.GUI,
               KeyModifier.SHIFT,
               InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_INSERT),
-              "key.scholar.categories.scholar");
+              ScholarClient.KeyMappings.SCHOLAR_CATEGORY);
     }
 
     public static KeyMapping createRemovePageLeftKeyMapping() {
@@ -19,7 +21,7 @@ public class PlatformHelperClientImpl {
               KeyConflictContext.GUI,
               KeyModifier.SHIFT,
               InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_DELETE),
-              "key.scholar.categories.scholar");
+              ScholarClient.KeyMappings.SCHOLAR_CATEGORY);
     }
 
     public static KeyMapping createInsertEmptyPageRightKeyMapping() {
@@ -27,7 +29,7 @@ public class PlatformHelperClientImpl {
               KeyConflictContext.GUI,
               KeyModifier.ALT,
               InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_INSERT),
-              "key.scholar.categories.scholar");
+              ScholarClient.KeyMappings.SCHOLAR_CATEGORY);
     }
 
     public static KeyMapping createRemovePageRightKeyMapping() {
@@ -35,10 +37,10 @@ public class PlatformHelperClientImpl {
               KeyConflictContext.GUI,
               KeyModifier.ALT,
               InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_DELETE),
-              "key.scholar.categories.scholar");
+              ScholarClient.KeyMappings.SCHOLAR_CATEGORY);
     }
 
-    public static boolean matchesWithModifiers(KeyMapping keyMapping, int keyCode, int scancode, int modifiers) {
-        return keyMapping.matches(keyCode, scancode) && keyMapping.isConflictContextAndModifierActive();
+    public static boolean matchesWithModifiers(KeyMapping keyMapping, KeyEvent event) {
+        return keyMapping.matches(event) && keyMapping.isConflictContextAndModifierActive();
     }
 }

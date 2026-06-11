@@ -1,0 +1,16 @@
+{
+  "sources": [
+    {
+      "type": "minecraft:single",
+      "resource": "scholar:entity/book_cover"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "scholar:entity/book_cover_golden"
+    },
+    {
+      "type": "minecraft:single",
+      "resource": "scholar:entity/book_pages"
+    }
+  ]
+}

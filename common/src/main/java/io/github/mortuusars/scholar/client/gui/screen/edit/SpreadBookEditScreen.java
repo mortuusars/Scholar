@@ -19,7 +19,6 @@ import io.github.mortuusars.scholar.client.util.Minecrft;
 import io.github.mortuusars.scholar.util.Change;
 import io.github.mortuusars.scholar.client.util.FileDialogs;
 import io.github.mortuusars.scholar.util.History;
-import io.github.mortuusars.scholar.client.util.RenderUtil;
 import io.github.mortuusars.scholar.util.supporter.Supporters;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -34,7 +33,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.network.Filterable;
 import net.minecraft.util.Util;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.util.Unit;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.WritableBookContent;
@@ -276,63 +274,23 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
 
     @Override
     protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        if (isGolden()) {
-            if (isToolsVisible()) {
-                // Import/Export buttons BG
-                guiGraphics.blit(TEXTURE_GOLDEN, leftPos + 295, topPos + 14, 0, 388,
-                      23, 48, 512, 512);
-            }
-
-            // Cover
-            guiGraphics.blit(TEXTURE_GOLDEN, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
-                  0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
-
-            // Enter Sign Mode button BG
-            guiGraphics.blit(TEXTURE_GOLDEN, leftPos - 29, topPos + 14, 0, 360, 29, 28, 512, 512);
-
-            if (toggleGoldenSkinButton != null && toggleGoldenSkinButton.visible) {
-                guiGraphics.blit(TEXTURE_GOLDEN, leftPos - 23, topPos + 44, 0, 436, 23, 23, 512, 512);
-            }
-        } else {
-            RenderUtil.withColorMultiplied(bookColor, () -> {
-                if (isToolsVisible()) {
-                    // Import/Export buttons BG
-                    guiGraphics.blit(TEXTURE, leftPos + 295, topPos + 14, 0, 388,
-                          23, 48, 512, 512);
-                }
-
-                // Cover
-                guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
-                      0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
-
-                // Enter Sign Mode button BG
-                guiGraphics.blit(TEXTURE, leftPos - 29, topPos + 14, 0, 360,
-                      29, 28, 512, 512);
-
-                if (toggleGoldenSkinButton != null && toggleGoldenSkinButton.visible) {
-                    guiGraphics.blit(TEXTURE, leftPos - 23, topPos + 44, 0, 436, 23, 23, 512, 512);
-                }
-            });
-        }
-
-        // Paper
-        guiGraphics.blit(TEXTURE, (width - BOOK_WIDTH) / 2, (height - BOOK_HEIGHT) / 2, BOOK_WIDTH, BOOK_HEIGHT,
-              0, 180, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
-    }
-
-    @Override
-    protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.renderBook(guiGraphics, mouseX, mouseY, partialTick);
 
         if (isToolsVisible()) {
             // Import/Export buttons BG
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + 295, topPos + 14, 0, 388,
-                  23, 48, 512, 512, bookColor);
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos + 295, topPos + 14, 0, 388,
+                  23, 48, 512, 512, getTintColor());
+
+            // Toggle Golden Skin button BG
+            if (toggleGoldenSkinButton != null && toggleGoldenSkinButton.visible) {
+                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos - 23, topPos + 44, 0, 436,
+                      23, 23, 512, 512, getTintColor());
+            }
         }
 
         // Enter Sign Mode button BG
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos - 29, topPos + 14, 0, 360,
-              29, 28, 512, 512, bookColor);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos - 29, topPos + 14, 0, 360,
+              29, 28, 512, 512, getTintColor());
     }
 
     @Override
@@ -402,31 +360,31 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
             return true;
         }
 
-        if (PlatformHelperClient.matchesWithModifiers(ScholarClient.KeyMappings.insertEmptyPageLeft, key, scanCode, modifiers)) {
+        if (PlatformHelperClient.matchesWithModifiers(ScholarClient.KeyMappings.insertEmptyPageLeft, event)) {
             insertEmptyPage(Spread.Side.LEFT);
             return true;
         }
 
-        if (PlatformHelperClient.matchesWithModifiers(ScholarClient.KeyMappings.insertEmptyPageRight, key, scanCode, modifiers)) {
+        if (PlatformHelperClient.matchesWithModifiers(ScholarClient.KeyMappings.insertEmptyPageRight, event)) {
             insertEmptyPage(Spread.Side.RIGHT);
             return true;
         }
 
-        if (PlatformHelperClient.matchesWithModifiers(ScholarClient.KeyMappings.removePageLeft, key, scanCode, modifiers)) {
+        if (PlatformHelperClient.matchesWithModifiers(ScholarClient.KeyMappings.removePageLeft, event)) {
             removePage(Spread.Side.LEFT);
             return true;
         }
 
-        if (PlatformHelperClient.matchesWithModifiers(ScholarClient.KeyMappings.removePageRight, key, scanCode, modifiers)) {
+        if (PlatformHelperClient.matchesWithModifiers(ScholarClient.KeyMappings.removePageRight, event)) {
             removePage(Spread.Side.RIGHT);
             return true;
         }
 
-        return super.keyPressed(key, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
         int x = width - 12;
         int y = 6;
         if (event.x() >= x - 3 && event.x() < x + 12 + 3 && event.y() >= y - 3 && event.y() < y + 12) {

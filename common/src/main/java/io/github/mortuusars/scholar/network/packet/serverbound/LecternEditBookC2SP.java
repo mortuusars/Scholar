@@ -109,7 +109,7 @@ public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optio
             // blockEntity.setChanged, level.sendBlockUpdated, level.setBlock - nothing works.
             // And because of that the old book is still showing in the tooltip.
             // 40 minutes of my life has been broadcasted down the drain.
-            List<ServerPlayer> players = player.serverLevel().players();
+            List<ServerPlayer> players = player.level().players();
             var packet = lecternBlockEntity.getUpdatePacket();
             if (packet != null) {
                 players.forEach(serverPlayer -> serverPlayer.connection.send(packet));

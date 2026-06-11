@@ -8,17 +8,17 @@ import io.github.mortuusars.scholar.client.gui.screen.SpreadBookScreen;
 import net.minecraft.client.gui.ActiveTextCollector;
 import io.github.mortuusars.scholar.client.gui.screen.edit.SpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.util.FileDialogs;
-import io.github.mortuusars.scholar.client.util.RenderUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.*;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.*;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -62,7 +62,7 @@ public abstract class SpreadBookViewScreen extends SpreadBookScreen {
     protected void createWidgets() {
         super.createWidgets();
         exportBookButton = new ImageButton(leftPos + 297, topPos + 16, 18, 18, SpreadBookEditScreen.EXPORT_BOOK_SPRITES,
-              b -> exportBook(!Screen.hasShiftDown()), Component.translatable("gui.scholar.export_book"));
+              b -> exportBook(!Minecraft.getInstance().hasShiftDown()), Component.translatable("gui.scholar.export_book"));
         exportBookButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.export_book")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.exportBook))
               .append(CommonComponents.NEW_LINE)
@@ -148,10 +148,9 @@ public abstract class SpreadBookViewScreen extends SpreadBookScreen {
     protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.renderBook(guiGraphics, mouseX, mouseY, partialTick);
         if (isToolsVisible()) {
-            RenderUtil.withColorMultiplied(bookColor, () -> {
-                // Export button BG
-                guiGraphics.blit(TEXTURE, leftPos + 295, topPos + 14, 0, 388, 23, 24, 512, 512);
-            });
+            // Export button BG
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos + 295, topPos + 14,
+                  0, 388, 23, 24, 512, 512, getTintColor());
         }
     }
 
@@ -241,14 +240,14 @@ public abstract class SpreadBookViewScreen extends SpreadBookScreen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (ScholarClient.KeyMappings.exportBook.matches(keyCode, scanCode)) {
+    public boolean keyPressed(KeyEvent event) {
+        if (ScholarClient.KeyMappings.exportBook.matches(event)) {
             playButtonClickSound();
-            exportBook(!Screen.hasShiftDown());
+            exportBook(!event.hasShiftDown());
             return true;
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     // --
@@ -276,7 +275,7 @@ public abstract class SpreadBookViewScreen extends SpreadBookScreen {
                     Files.writeString(Path.of(filePath), content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                     MutableComponent filePathComponent = Component.literal(filePath).withStyle(Style.EMPTY
                           .withUnderlined(true)
-                          .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, filePath)));
+                          .withClickEvent(new ClickEvent.OpenFile(filePath)));
                     Minecraft.getInstance().execute(() -> player.displayClientMessage(
                           Component.translatable("gui.scholar.export_book.success")
                                 .append(filePathComponent), false));

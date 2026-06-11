@@ -10,10 +10,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -21,8 +19,10 @@ import net.minecraft.world.item.component.WrittenBookContent;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public record SetCustomAuthorOnLecternC2SP(BlockPos lecternPos, String author) implements Packet {
-    public static final ResourceLocation ID = Scholar.resource("set_custom_author_on_lectern");
+    public static final Identifier ID = Scholar.resource("set_custom_author_on_lectern");
     public static final Type<SetCustomAuthorOnLecternC2SP> TYPE = new Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, SetCustomAuthorOnLecternC2SP> STREAM_CODEC = StreamCodec.composite(
@@ -61,12 +61,11 @@ public record SetCustomAuthorOnLecternC2SP(BlockPos lecternPos, String author) i
 
             // Manually sending the block data to clients because it doesn't happen when block is changed for some reason
             if (Config.Common.LECTERN_TOOLTIP.get() && player instanceof ServerPlayer serverPlayer) {
-                var bePacket = lecternBlockEntity.getUpdatePacket();
-                serverPlayer.serverLevel().players().forEach(pl -> {
-                    if (lecternPos.distSqr(pl.blockPosition()) < 128) {
-                        pl.connection.send(bePacket);
-                    }
-                });
+                List<ServerPlayer> players = serverPlayer.level().players();
+                var packet = lecternBlockEntity.getUpdatePacket();
+                if (packet != null) {
+                    players.forEach(pl -> pl.connection.send(packet));
+                }
             }
         }
 

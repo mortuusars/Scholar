@@ -2,6 +2,7 @@ package io.github.mortuusars.scholar;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.input.KeyEvent;
 
 public class PlatformHelperClient {
     @ExpectPlatform
@@ -25,7 +26,7 @@ public class PlatformHelperClient {
     }
 
     @ExpectPlatform
-    public static boolean matchesWithModifiers(KeyMapping keyMapping, int keyCode, int scancode, int modifiers) {
+    public static boolean matchesWithModifiers(KeyMapping keyMapping, KeyEvent event) {
         throw new AssertionError();
     }
 }

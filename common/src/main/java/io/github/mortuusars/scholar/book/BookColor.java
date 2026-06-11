@@ -3,7 +3,7 @@ package io.github.mortuusars.scholar.book;
 import io.github.mortuusars.scholar.Scholar;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.DyedItemColor;
 
@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.Map;
 
 public class BookColor {
-    public static Map<ResourceLocation, Integer> ITEM_COLORS = Collections.emptyMap();
+    public static Map<Identifier, Integer> ITEM_COLORS = Collections.emptyMap();
     public static final int DEFAULT = 0xFF99452E;
 
     public static int of(ItemStack stack, int fallback) {
@@ -26,8 +26,8 @@ public class BookColor {
     }
 
     public static int getDefaultColor(ItemStack stack, int fallback) {
-        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
-        return ITEM_COLORS.getOrDefault(itemId, fallback);
+        Identifier key = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        return ITEM_COLORS.getOrDefault(key, fallback);
     }
 
     public static int getDefaultColor(ItemStack stack) {

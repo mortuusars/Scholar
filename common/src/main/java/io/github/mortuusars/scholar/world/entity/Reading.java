@@ -5,6 +5,7 @@ import io.github.mortuusars.scholar.Scholar;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 public class Reading {
@@ -13,6 +14,15 @@ public class Reading {
         if (entity instanceof EnderMan) return null; // They cannot hold items as other mobs do.
         if (entity.getMainHandItem().has(Scholar.DataComponents.BOOK_OPEN)) return InteractionHand.MAIN_HAND;
         if (entity.getOffhandItem().has(Scholar.DataComponents.BOOK_OPEN)) return InteractionHand.OFF_HAND;
+        return null;
+    }
+
+    public static @Nullable InteractionHand getOpenedBookHand(ItemStack leftHandStack, ItemStack rightHandStack, boolean rightHanded) {
+        if (!Config.Common.BOOK_READING_ANIMATION.get()) return null;
+        ItemStack mainHandStack = rightHanded ? rightHandStack : leftHandStack;
+        ItemStack offHandStack = !rightHanded ? rightHandStack : leftHandStack;
+        if (mainHandStack.has(Scholar.DataComponents.BOOK_OPEN)) return InteractionHand.MAIN_HAND;
+        if (offHandStack.has(Scholar.DataComponents.BOOK_OPEN)) return InteractionHand.OFF_HAND;
         return null;
     }
 }

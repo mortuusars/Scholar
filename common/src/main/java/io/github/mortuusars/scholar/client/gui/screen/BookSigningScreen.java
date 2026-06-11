@@ -2,6 +2,7 @@ package io.github.mortuusars.scholar.client.gui.screen;
 
 import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
+import io.github.mortuusars.scholar.book.BookSignature;
 import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.screen.edit.SpreadBookEditScreen;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.display.HorizontalAlignment;
@@ -80,6 +81,14 @@ public class BookSigningScreen extends Screen {
         this.textureHeight = 256;
     }
 
+    public Identifier getTexture() {
+        return parentScreen.isGolden() ? TEXTURE_GOLDEN : TEXTURE;
+    }
+
+    public int getTintColor() {
+        return parentScreen.isGolden() ? 0xFFFFFFFF : bookColor;
+    }
+
     @Override
     public boolean isPauseScreen() {
         return Config.Common.BOOK_SCREEN_PAUSE.get();
@@ -113,7 +122,7 @@ public class BookSigningScreen extends Screen {
               .setHorizontalAlignment(HorizontalAlignment.CENTER)
               .setOnTextChanged(this::setAuthorText)
               .setTextValidator(text -> text != null && text.length() <= WrittenBookContent.TITLE_MAX_LENGTH
-                    && font.wordWrapHeight(text, 100) <= 9 && !text.contains("\n"));
+                    && font.wordWrapHeight(FormattedText.of(text), 100) <= 9 && !text.contains("\n"));
         authorTextBox.getEditor().setCursorToEnd(false);
         addRenderableWidget(authorTextBox);
 
@@ -175,23 +184,12 @@ public class BookSigningScreen extends Screen {
 
         renderTransparentBackground(guiGraphics);
 
-        if (parentScreen.isGolden()) {
-            guiGraphics.blit(TEXTURE_GOLDEN, leftPos, topPos, 0, 0, 0,
-                  imageWidth, imageHeight, textureWidth, textureHeight);
-        } else {
-
-            RenderUtil.withColorMultiplied(bookColor, () -> {
-                guiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, 0,
-                      imageWidth, imageHeight, textureWidth, textureHeight);
-            });
-        }
-
         // Cover
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos,
-              0, 0, imageWidth, imageHeight, textureWidth, textureHeight, bookColor);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos, topPos,
+              0, 0, imageWidth, imageHeight, textureWidth, textureHeight, getTintColor());
 
         // Label
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos + 31,
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos, topPos + 31,
               0, 180, imageWidth, 76, textureWidth, textureHeight);
 
         renderLabels(guiGraphics);
@@ -209,9 +207,6 @@ public class BookSigningScreen extends Screen {
         guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 51,
               enterBookTitleFontColor, false);
 
-        component = Component.translatable("book.byAuthor", player.getName());
-        guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 81,
-              byAuthorFontColor, false);
         if (!Config.Common.BOOK_CHANGEABLE_AUTHOR.get()) {
             component = Component.translatable("book.byAuthor", player.getName());
             guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 81,

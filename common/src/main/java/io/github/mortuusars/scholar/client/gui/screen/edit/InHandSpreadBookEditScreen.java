@@ -42,7 +42,7 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
     }
 
     protected int getBookSlot() {
-        return hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : Inventory.SLOT_OFFHAND;
+        return hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : Inventory.SLOT_OFFHAND;
     }
 
     @Override
@@ -110,6 +110,7 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
         saveChanges(true, signature.title());
         signature.customAuthor().ifPresent(customAuthor ->
               Packets.sendToServer(new SetCustomAuthorInHandC2SP(getBookSlot(), customAuthor)));
+        Packets.sendToServer(new StoppedReadingInHandC2SP(getBookSlot()));
     }
 
     @Override

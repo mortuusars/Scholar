@@ -9,7 +9,9 @@ import mezz.jei.api.registration.*;
 import net.minecraft.core.Holder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.DyedItemColor;
@@ -21,10 +23,10 @@ import java.util.List;
 
 @JeiPlugin
 public class ScholarJeiPlugin implements IModPlugin {
-    private static final ResourceLocation ID = Scholar.resource("jei_plugin");
+    private static final Identifier ID = Scholar.resource("jei_plugin");
 
     @Override
-    public @NotNull ResourceLocation getPluginUid() {
+    public @NotNull Identifier getPluginUid() {
         return ID;
     }
 
@@ -45,14 +47,14 @@ public class ScholarJeiPlugin implements IModPlugin {
                 }
 
                 DyeItem dye = DyeItem.byColor(color);
-                NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY,
+                NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.of(ItemStack.EMPTY.getItem()),
                       Ingredient.of(itemHolder.value()),
                       Ingredient.of(dye));
                 ItemStack result = DyedItemColor.applyDyes(new ItemStack(itemHolder), List.of(dye));
                 String id = "dyeing_" + itemHolder.value().toString().replace(':', '_') + "_with_" + color.getName();
                 ShapelessRecipe recipe = new ShapelessRecipe("dyeing_" + color.getName(),
                       CraftingBookCategory.MISC, result, inputs);
-                recipes.add(new RecipeHolder<>(ResourceLocation.withDefaultNamespace(id), recipe));
+                recipes.add(new RecipeHolder<>(ResourceKey.create(Registries.RECIPE, Identifier.withDefaultNamespace(id)), recipe));
             }
         }
 

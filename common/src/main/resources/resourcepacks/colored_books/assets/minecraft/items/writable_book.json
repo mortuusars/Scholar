@@ -1,12 +1,21 @@
 {
   "model": {
-    "type": "minecraft:model",
-    "model": "minecraft:item/writable_book",
-    "tints": [
-      {
-        "type": "minecraft:dye",
-        "default": -6732498
-      }
-    ]
+    "type": "minecraft:condition",
+    "property": "minecraft:has_component",
+    "component": "scholar:book_golden",
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "scholar:item/golden_writable_book"
+    },
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "minecraft:item/writable_book",
+      "tints": [
+        {
+          "type": "minecraft:dye",
+          "default": -6732498
+        }
+      ]
+    }
   }
 }

@@ -8,7 +8,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Unit;
 import net.minecraft.world.entity.player.Inventory;
@@ -18,7 +18,7 @@ import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
 public record SetGoldenSkinInHandC2SP(int slot, boolean golden) implements Packet {
-    public static final ResourceLocation ID = Scholar.resource("set_golden_skin_in_hand");
+    public static final Identifier ID = Scholar.resource("set_golden_skin_in_hand");
     public static final Type<SetGoldenSkinInHandC2SP> TYPE = new Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, SetGoldenSkinInHandC2SP> STREAM_CODEC = StreamCodec.composite(

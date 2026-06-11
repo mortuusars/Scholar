@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.component.TooltipProvider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +22,8 @@ import java.util.function.Consumer;
 public abstract class ItemStackMixin implements DataComponentHolder {
     @Inject(method = "addToTooltip", at = @At("HEAD"), cancellable = true)
     private <T extends TooltipProvider> void onAddToTooltip(DataComponentType<T> component, Item.TooltipContext context,
-                                                            Consumer<Component> tooltipAdder, TooltipFlag tooltipFlag, CallbackInfo ci) {
+                                                            TooltipDisplay tooltipDisplay, Consumer<Component> tooltipAdder,
+                                                            TooltipFlag tooltipFlag, CallbackInfo ci) {
         if (component == DataComponents.DYED_COLOR && has(Scholar.DataComponents.BOOK_GOLDEN)) {
             tooltipAdder.accept(Component.translatable("gui.scholar.golden").withStyle(ChatFormatting.GRAY));
             ci.cancel();

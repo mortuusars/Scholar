@@ -7,7 +7,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -15,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public record SetBookmarkC2SP(int slot, int page) implements Packet {
-    public static final ResourceLocation ID = Scholar.resource("set_bookmark");
+    public static final Identifier ID = Scholar.resource("set_bookmark");
     public static final Type<SetBookmarkC2SP> TYPE = new Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, SetBookmarkC2SP> STREAM_CODEC = StreamCodec.composite(

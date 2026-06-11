@@ -29,6 +29,7 @@ import java.util.Objects;
 public abstract class SpreadBookScreen extends Screen {
     public static final Identifier TEXTURE = Scholar.resource("textures/gui/book.png");
     public static final Identifier TEXTURE_GOLDEN = Scholar.resource("textures/gui/book_golden.png");
+
     public static final int BOOK_WIDTH = 295;
     public static final int BOOK_HEIGHT = 180;
     public static final int TEXT_LEFT_X = 22;
@@ -68,6 +69,14 @@ public abstract class SpreadBookScreen extends Screen {
 
     public abstract boolean isGolden();
 
+    public Identifier getTexture() {
+        return isGolden() ? TEXTURE_GOLDEN : TEXTURE;
+    }
+
+    public int getTintColor() {
+        return isGolden() ? 0xFFFFFFFF : bookColor;
+    }
+
     @Override
     public boolean isPauseScreen() {
         return Config.Common.BOOK_SCREEN_PAUSE.get();
@@ -95,7 +104,7 @@ public abstract class SpreadBookScreen extends Screen {
         ImageButton prevPageButton = new ImageButton(leftPos + 12, topPos + 156, 13, 15,
               Widgets.PREVIOUS_PAGE_SPRITES,
               (button) -> {
-                  if (Screen.hasShiftDown()) {
+                  if (Minecraft.getInstance().hasShiftDown()) {
                       pageToStart();
                   } else {
                       pageBack();
@@ -110,7 +119,7 @@ public abstract class SpreadBookScreen extends Screen {
     protected void createNextPageButton() {
         ImageButton nextPageButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
               Widgets.NEXT_PAGE_SPRITES, (button) -> {
-            if (Screen.hasShiftDown()) {
+            if (Minecraft.getInstance().hasShiftDown()) {
                 pageToEnd();
             } else {
                 pageForward();
@@ -225,30 +234,12 @@ public abstract class SpreadBookScreen extends Screen {
     // -- Render
 
     protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        if (isGolden()) {
-            // Cover
-            guiGraphics.blit(TEXTURE_GOLDEN, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,
-                  0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
-        } else {
-            RenderUtil.withColorMultiplied(bookColor, () -> {
-                // Cover
-                guiGraphics.blit(TEXTURE, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,
-                      0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
-            });
-        }
-
-        // Paper
-        guiGraphics.blit(TEXTURE, leftPos, topPos, BOOK_WIDTH, BOOK_HEIGHT,
-              0, BOOK_HEIGHT, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
-    }
-
-    protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         // Cover
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos,
-              0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512, bookColor);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos, topPos,
+              0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512, getTintColor());
 
         // Paper
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos,
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos, topPos,
               0, BOOK_HEIGHT, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
     }
 
@@ -287,10 +278,10 @@ public abstract class SpreadBookScreen extends Screen {
                 return true;
             }
 
-            if (keyCode == InputConstants.KEY_LEFT
-                  || keyCode == InputConstants.KEY_PAGEUP
-                  || Minecraft.getInstance().options.keyLeft.matches(keyCode, scanCode)) {
-                if (Screen.hasShiftDown()) {
+            if (event.key() == InputConstants.KEY_LEFT
+                  || event.key() == InputConstants.KEY_PAGEUP
+                  || Minecraft.getInstance().options.keyLeft.matches(event)) {
+                if (Minecraft.getInstance().hasShiftDown()) {
                     pageToStart();
                 } else {
                     pageBack();
@@ -298,10 +289,10 @@ public abstract class SpreadBookScreen extends Screen {
                 return true;
             }
 
-            if (keyCode == InputConstants.KEY_RIGHT
-                  || keyCode == InputConstants.KEY_PAGEDOWN
-                  || Minecraft.getInstance().options.keyRight.matches(keyCode, scanCode)) {
-                if (Screen.hasShiftDown()) {
+            if (event.key() == InputConstants.KEY_RIGHT
+                  || event.key() == InputConstants.KEY_PAGEDOWN
+                  || Minecraft.getInstance().options.keyRight.matches(event)) {
+                if (Minecraft.getInstance().hasShiftDown()) {
                     pageToEnd();
                 } else {
                     pageForward();
@@ -320,7 +311,7 @@ public abstract class SpreadBookScreen extends Screen {
         }
 
         if (scrollY > 0) {
-            if (Screen.hasShiftDown()) {
+            if (Minecraft.getInstance().hasShiftDown()) {
                 pageToStart();
             } else {
                 pageBack();
@@ -329,7 +320,7 @@ public abstract class SpreadBookScreen extends Screen {
         }
 
         if (scrollY < 0) {
-            if (Screen.hasShiftDown()) {
+            if (Minecraft.getInstance().hasShiftDown()) {
                 pageToEnd();
             } else {
                 pageForward();

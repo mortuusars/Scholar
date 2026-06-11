@@ -29,7 +29,7 @@ public class InHandSpreadBookViewScreen extends SpreadBookViewScreen {
     }
 
     protected int getBookSlot() {
-        return hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : Inventory.SLOT_OFFHAND;
+        return hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : Inventory.SLOT_OFFHAND;
     }
 
     @Override
@@ -75,7 +75,7 @@ public class InHandSpreadBookViewScreen extends SpreadBookViewScreen {
             getBookAccess().setBookmarkedPage(newBookmarkedPage);
         }
 
-        int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().selected : Inventory.SLOT_OFFHAND;
+        int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : Inventory.SLOT_OFFHAND;
         Packets.sendToServer(new SetBookmarkC2SP(slot, newBookmarkedPage));
     }
 

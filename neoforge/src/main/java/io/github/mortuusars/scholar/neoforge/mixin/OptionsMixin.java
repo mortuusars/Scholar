@@ -23,10 +23,8 @@ public class OptionsMixin {
      * Enables resource packs that should be enabled by default, but only once (to not enable it again if user disabled it)
      * This is here because forge does not do this by itself (fabric does, though).
      */
-    @Inject(method = "load(Z)V", at = @At("RETURN"), remap = false)
-    private void onLoad(boolean limited, CallbackInfo ci) {
-        if (limited) return;
-
+    @Inject(method = "load", at = @At("HEAD"), remap = false)
+    private void onLoad(CallbackInfo ci) {
         Set<String> processedPacks = ProcessedBuiltInResourcePackTracker.getPacks(); // Packs, that were enabled before.
         Set<String> resourcePacks = new LinkedHashSet<>(this.resourcePacks);
 

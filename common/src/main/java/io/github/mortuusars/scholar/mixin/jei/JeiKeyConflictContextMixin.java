@@ -20,10 +20,10 @@ public class JeiKeyConflictContextMixin {
     /**
      * Fixes keys such as Ctrl+O used in formatting.
      */
-    @Inject(method = "handleUserInput", at = @At("HEAD"), cancellable = true)
-    private void onHandleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings, CallbackInfoReturnable<Optional<IUserInputHandler>> cir) {
-        if (screen instanceof SpreadBookScreen || screen instanceof BookSigningScreen) {
-            cir.setReturnValue(Optional.empty());
-        }
-    }
+//    @Inject(method = "handleUserInput", at = @At("HEAD"), cancellable = true)
+//    private void onHandleUserInput(Screen screen, IGuiProperties guiProperties, UserInput input, IInternalKeyMappings keyBindings, CallbackInfoReturnable<Optional<IUserInputHandler>> cir) {
+//        if (screen instanceof SpreadBookScreen || screen instanceof BookSigningScreen) {
+//            cir.setReturnValue(Optional.empty());
+//        }
+//    }
 }

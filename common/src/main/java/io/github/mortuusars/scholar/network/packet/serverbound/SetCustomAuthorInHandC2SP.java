@@ -9,7 +9,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -18,7 +18,7 @@ import net.minecraft.world.item.component.WrittenBookContent;
 import org.jetbrains.annotations.NotNull;
 
 public record SetCustomAuthorInHandC2SP(int slot, String author) implements Packet {
-    public static final ResourceLocation ID = Scholar.resource("set_custom_author_in_hand");
+    public static final Identifier ID = Scholar.resource("set_custom_author_in_hand");
     public static final Type<SetCustomAuthorInHandC2SP> TYPE = new Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, SetCustomAuthorInHandC2SP> STREAM_CODEC = StreamCodec.composite(

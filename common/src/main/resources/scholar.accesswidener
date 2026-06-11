@@ -1,4 +1,4 @@
-accessWidener   v2  named
+accessWidener v2 named
 
 accessible field net/minecraft/world/level/block/entity/LecternBlockEntity bookAccess Lnet/minecraft/world/Container;
 accessible field net/minecraft/world/level/block/entity/LecternBlockEntity dataAccess Lnet/minecraft/world/inventory/ContainerData;
@@ -13,5 +13,3 @@ accessible field net/minecraft/client/gui/font/TextFieldHelper selectionPos I
 extendable method net/minecraft/client/gui/font/TextFieldHelper resetSelectionIfNeeded (Z)V
 
 accessible field net/minecraft/world/level/block/entity/LecternBlockEntity pageCount I
-
-accessible method net/minecraft/client/renderer/item/ItemProperties register (Lnet/minecraft/world/item/Item;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/client/renderer/item/ClampedItemPropertyFunction;)V
