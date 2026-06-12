@@ -1,8 +1,8 @@
 plugins {
-    id 'dev.architectury.loom' version '1.13-SNAPSHOT' apply false
-    id 'architectury-plugin' version '3.4-SNAPSHOT'
-    id 'com.gradleup.shadow' version '8.3.6' apply false
-    id "me.modmuss50.mod-publish-plugin" version "1.1.0"
+    id 'architectury-plugin' version '3.5-SNAPSHOT'
+    id "dev.architectury.loom-no-remap" version "1.14-SNAPSHOT" apply false
+    id "com.gradleup.shadow" version "9.4.+" apply false
+    id "me.modmuss50.mod-publish-plugin" version "2.0.0"
 }
 
 architectury {
@@ -15,63 +15,40 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'dev.architectury.loom'
+    apply plugin: 'dev.architectury.loom-no-remap'
     apply plugin: 'architectury-plugin'
     apply plugin: 'maven-publish'
+    apply plugin: 'com.gradleup.shadow'
 
     base {
         archivesName = "$rootProject.archives_name-$project.name-${rootProject.minecraft_version}"
     }
 
-    loom {
-        silentMojangMappingsLicense()
-        runs {
-            client {
-                vmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:HotswapAgent=fatjar'
+    repositories {
+        var path = System.getenv("MAVEN_LOCAL")
+        if (path != null) {
+            maven {
+                name = 'mortuusarsLocal'
+                url = uri(path + "/maven")
             }
         }
-    }
 
-    repositories {
-        // Add repositories to retrieve artifacts from in here.
-        // You should only use this when depending on other mods because
-        // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-        // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-        // for more information about repositories.
         maven {
-            name = 'ParchmentMC'
-            url = 'https://maven.parchmentmc.org'
+            name = "Mortuusars Github Maven"
+            url = "https://raw.githubusercontent.com/mortuusars/resources/main/maven/"
         }
-        maven {
-            // location of the maven that hosts JEI files before January 2023
-            name = "Progwml6's maven"
-            url = "https://dvs1.progwml6.com/files/maven/"
-        }
-        maven {
-            name = 'tterrag maven'
-            url = 'https://maven.tterrag.com/'
-        }
-        maven {
-            // location of the maven that hosts JEI files since January 2023
-            name = "Jared's maven"
-            url = "https://maven.blamejared.com/"
-        }
-        maven {
-            // location of a maven mirror for JEI files, as a fallback
-            name = "ModMaven"
-            url = "https://modmaven.dev"
-        }
-        maven {
-            url = "https://cursemaven.com"
-        }
-        maven {
-            url "https://maven.shedaniel.me"
-        } // REI
-        maven { url = "https://jitpack.io/" } // Mixin Extras, Fabric ASM
+
         maven {
             name = "Fuzs Mod Resources"
             url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
-        } // Forge Config API Port
+        }
+
+        maven {
+            url 'https://www.cursemaven.com'
+            content {
+                includeGroup "curse.maven"
+            }
+        }
         maven {
             name = "Modrinth"
             url = "https://api.modrinth.com/maven"
@@ -79,14 +56,33 @@ subprojects {
                 includeGroup "maven.modrinth"
             }
         }
-    }
 
-    dependencies {
-        minecraft "net.minecraft:minecraft:${rootProject.minecraft_version}"
+        // JEI
+        maven {
+            name = 'tterrag maven'
+            url = 'https://maven.tterrag.com/'
+        }
+        maven {
+            name = "Jared's maven"
+            url = "https://maven.blamejared.com/"
+        }
+        maven {
+            name = "ModMaven"
+            url = "https://modmaven.dev"
+        }
 
-        mappings loom.layered() {
-            officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-${parchment_version}@zip")
+        maven {
+            url "https://maven.latvian.dev/releases"
+            content {
+                includeGroup "dev.latvian.mods"
+                includeGroup "dev.latvian.apps"
+            }
+        }
+        maven {
+            url 'https://jitpack.io'
+            content {
+                includeGroup "com.github.rtyley"
+            }
         }
     }
 
@@ -96,33 +92,91 @@ subprojects {
         // If you remove this line, sources will not be generated.
         withSourcesJar()
 
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_25
+        targetCompatibility = JavaVersion.VERSION_25
     }
 
     tasks.withType(JavaCompile).configureEach {
-        it.options.release = 21
+        it.options.release = 25
+    }
+
+    configurations {
+        common
+        shadowCommon // Don't use shadow from the shadow plugin since it *excludes* files.
+        compileClasspath.extendsFrom common
+        runtimeClasspath.extendsFrom common
+
+        apiElements {
+            outgoing.artifacts.clear()
+            outgoing.artifact(shadowJar)
+        }
+        runtimeElements {
+            outgoing.artifacts.clear()
+            outgoing.artifact(shadowJar)
+        }
+    }
+
+    loom {
+        silentMojangMappingsLicense()
+        accessWidenerPath.set(project(":common").loom.accessWidenerPath)
+
+        runs {
+            client {
+                programArgs "--username", "Dev"
+                vmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:HotswapAgent=fatjar'
+            }
+
+            register("client2") {
+                inherit(getByName("client"))
+
+                name("Second Client")
+                programArgs("--username", "AnotherDev")
+
+                client()
+            }
+        }
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+    }
+
+    jar {
+        archiveClassifier = "raw"
+    }
+
+    // https://gist.github.com/shedaniel/18d4eebf940e9c3296e87d994ebb2838
+    shadowJar {
+        dependsOn(jar)
+        mainSpec.sourcePaths.clear()       // Remove default source set inclusion
+        from(zipTree(jar.archiveFile))     // Unpack jar output (preserves Loom modifications)
+
+        configurations = [project.configurations.shadowCommon]
+        archiveClassifier = null           // shadowJar becomes the main artifact
     }
 
     processResources {
         var expandProps = [
-                minecraft_version            : minecraft_version,
-                minecraft_version_range      : minecraft_version_range,
-                neoforge_version             : neoforge_version,
-                neoforge_version_range       : neoforge_version_range,
-                neoforge_loader_version_range: neoforge_loader_version_range,
-                mod_id                       : mod_id,
-                mod_name                     : mod_name,
-                mod_version                  : mod_version,
-                mod_authors                  : mod_authors,
-                mod_description              : mod_description,
-                mod_issues                   : mod_issues,
-                mod_page                     : mod_page,
-                mod_github                   : mod_github,
-                mod_license                  : mod_license,
-                maven_group                  : mod_maven_group
+                minecraft_version                     : minecraft_version,
+                minecraft_version_range               : minecraft_version_range,
+                neoforge_version                      : neoforge_version,
+                neoforge_version_range                : neoforge_version_range,
+                neoforge_loader_version_range         : neoforge_loader_version_range,
+                fabric_supported_minecraft_versions   : fabric_supported_minecraft_versions,
+                forge_config_api_port_version         : forge_config_api_port_version,
+                required_forge_config_api_port_version: required_forge_config_api_port_version,
+                mod_id                                : mod_id,
+                mod_name                              : mod_name,
+                mod_version                           : mod_version,
+                mod_authors                           : mod_authors,
+                mod_description                       : mod_description,
+                mod_issues                            : mod_issues,
+                mod_page                              : mod_page,
+                mod_github                            : mod_github,
+                mod_license                           : mod_license,
+                mod_maven_group                       : mod_maven_group
         ]
-        filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', "*.mixins.json"]) {
+        filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/neoforge.mods.toml', "*.mixins.json"]) {
             expand expandProps
         }
         inputs.properties(expandProps)
@@ -204,13 +258,17 @@ task printLatestVersionChangelog {
 publishMods {
     changelog = project.ext.changelog
     type = STABLE
-    dryRun = providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null || providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null
+
+    def forceDryRun = false
+    dryRun = forceDryRun || providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null || providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null
 
     def cfOptions = curseforgeOptions {
         accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
         projectId = mod_curseforge_project_id
-        minecraftVersions.add("${minecraft_version}")
-        javaVersions.add(JavaVersion.VERSION_21)
+        for (final def ver in supported_minecraft_versions.split(",")) {
+            minecraftVersions.add(ver)
+        }
+        javaVersions.add(JavaVersion.VERSION_25)
         clientRequired = true
         serverRequired = true
     }
@@ -218,7 +276,9 @@ publishMods {
     def mrOptions = modrinthOptions {
         accessToken = providers.environmentVariable("MODRINTH_TOKEN")
         projectId = mod_modrinth_project_id
-        minecraftVersions.add("${minecraft_version}")
+        for (final def ver in supported_minecraft_versions.split(",")) {
+            minecraftVersions.add(ver)
+        }
     }
 
     curseforge("curseforgeNeoForge") {
