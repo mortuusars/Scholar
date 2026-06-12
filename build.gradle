@@ -88,8 +88,6 @@ subprojects {
             officialMojangMappings()
             parchment("org.parchmentmc.data:parchment-${parchment_version}@zip")
         }
-
-//        modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     }
 
     java {
