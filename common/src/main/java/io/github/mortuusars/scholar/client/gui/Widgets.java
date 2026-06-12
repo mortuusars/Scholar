@@ -6,9 +6,9 @@ import net.minecraft.resources.Identifier;
 
 public class Widgets {
     public static final WidgetSprites PREVIOUS_PAGE_SPRITES =
-            threeStateSprites(Scholar.resource("book/previous_page"));
+            threeStateSprites(Scholar.identifier("book/previous_page"));
     public static final WidgetSprites NEXT_PAGE_SPRITES =
-            threeStateSprites(Scholar.resource("book/next_page"));
+            threeStateSprites(Scholar.identifier("book/next_page"));
 
     public static WidgetSprites threeStateSprites(Identifier base) {
         return new WidgetSprites(base,

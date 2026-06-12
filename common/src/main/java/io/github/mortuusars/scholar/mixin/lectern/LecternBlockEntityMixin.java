@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(LecternBlockEntity.class)
 public abstract class LecternBlockEntityMixin extends BlockEntityParentMixin {
     @Shadow
-    ItemStack book;
+    private ItemStack book;
 
     @Override
     protected Packet<ClientGamePacketListener> onGetUpdatePacket(@Nullable Packet<ClientGamePacketListener> packet) {

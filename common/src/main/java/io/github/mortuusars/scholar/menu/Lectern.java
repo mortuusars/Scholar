@@ -1,7 +1,11 @@
 package io.github.mortuusars.scholar.menu;
 
 import io.github.mortuusars.scholar.PlatformHelper;
+import io.github.mortuusars.scholar.Register;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
@@ -13,7 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import org.jetbrains.annotations.NotNull;
 
-public class LecternMenus {
+public class Lectern {
     public static void openBookViewMenu(ServerPlayer player, LecternBlockEntity lecternBlockEntity, ItemStack bookStack) {
         MenuProvider menuProvider = new MenuProvider() {
             @Override
@@ -29,10 +33,7 @@ public class LecternMenus {
             }
         };
 
-        PlatformHelper.openMenu(player, menuProvider, buffer -> {
-            ItemStack.STREAM_CODEC.encode(buffer, bookStack);
-            buffer.writeBlockPos(lecternBlockEntity.getBlockPos());
-        });
+        PlatformHelper.openMenu(player, menuProvider, new Lectern.Data(lecternBlockEntity.getBlockPos(), bookStack));
     }
 
     public static void openBookEditMenu(ServerPlayer player, LecternBlockEntity lecternBlockEntity, ItemStack bookStack) {
@@ -50,9 +51,19 @@ public class LecternMenus {
             }
         };
 
-        PlatformHelper.openMenu(player, menuProvider, buffer -> {
-            ItemStack.STREAM_CODEC.encode(buffer, bookStack);
-            buffer.writeBlockPos(lecternBlockEntity.getBlockPos());
-        });
+        PlatformHelper.openMenu(player, menuProvider, new Lectern.Data(lecternBlockEntity.getBlockPos(), bookStack));
+    }
+
+    public record Data(BlockPos pos, ItemStack book) implements Register.MenuData<Data> {
+        public static final StreamCodec<RegistryFriendlyByteBuf, Data> STREAM_CODEC = StreamCodec.composite(
+              BlockPos.STREAM_CODEC, Data::pos,
+              ItemStack.STREAM_CODEC, Data::book,
+              Data::new
+        );
+
+        @Override
+        public StreamCodec<RegistryFriendlyByteBuf, Data> streamCodec() {
+            return STREAM_CODEC;
+        }
     }
 }

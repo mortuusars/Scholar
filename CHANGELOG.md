@@ -32,8 +32,6 @@ _New features:_
 - [Scroll Wheel] changes pages.
 - Added sound to book opening
 - Added sounds to formatting actions
-- Added item dyeing recipes to JEI.
-  - Includes leather armor recipes as well.
 
 _Changes:_
 - Inverted behavior of [Shift] key when copying/pasting text or importing/exporting book - formatting is now included by default, and excluded if [Shift] key is held.

@@ -3,7 +3,6 @@ package io.github.mortuusars.scholar.menu;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.book.Spread;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -12,7 +11,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WritableBookItem;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import org.jetbrains.annotations.NotNull;
@@ -22,9 +20,9 @@ public class LecternSpreadBookEditMenu extends LecternSpreadMenu {
         super(containerId, lectern, lecternData, lecternPos);
     }
 
-    public static LecternSpreadBookEditMenu fromBuffer(int containerId, Inventory inventory, RegistryFriendlyByteBuf buffer) {
-        return new LecternSpreadBookEditMenu(containerId, new SimpleContainer(ItemStack.STREAM_CODEC.decode(buffer)),
-              new SimpleContainerData(1), buffer.readBlockPos());
+    public static LecternSpreadBookEditMenu fromNetwork(int containerId, Inventory inventory, Lectern.Data data) {
+        return new LecternSpreadBookEditMenu(containerId, new SimpleContainer(data.book()),
+              new SimpleContainerData(1), data.pos());
     }
 
     @Override
@@ -86,7 +84,7 @@ public class LecternSpreadBookEditMenu extends LecternSpreadMenu {
                   .ifPresent(pl -> {
                       pl.closeContainer();
                       if (be.getBook().getItem() instanceof WritableBookItem) {
-                          LecternMenus.openBookEditMenu(pl, be, be.getBook());
+                          Lectern.openBookEditMenu(pl, be, be.getBook());
                       }
                   });
         }

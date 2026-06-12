@@ -10,6 +10,8 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
@@ -71,7 +73,7 @@ public class RegisterImpl {
               .clientTrackingRange(clientTrackingRange)
               .setShouldReceiveVelocityUpdates(velocityUpdates)
               .updateInterval(updateInterval)
-              .build(ResourceKey.create(Registries.ENTITY_TYPE, Scholar.resource(id))));
+              .build(ResourceKey.create(Registries.ENTITY_TYPE, Scholar.identifier(id))));
     }
 
     public static <T extends Entity> Supplier<EntityType<T>> entityType(String id, EntityType.EntityFactory<T> factory, MobCategory category, boolean receiveVelocityUpdates, Consumer<EntityType.Builder<T>> typeBuilder) {
@@ -79,7 +81,7 @@ public class RegisterImpl {
             EntityType.Builder<T> builder = EntityType.Builder.of(factory, category);
             builder.setShouldReceiveVelocityUpdates(receiveVelocityUpdates);
             typeBuilder.accept(builder);
-            return builder.build(ResourceKey.create(Registries.ENTITY_TYPE, Scholar.resource(id)));
+            return builder.build(ResourceKey.create(Registries.ENTITY_TYPE, Scholar.identifier(id)));
         });
     }
 
@@ -87,8 +89,11 @@ public class RegisterImpl {
         return SOUND_EVENTS.register(id, supplier);
     }
 
-    public static <T extends MenuType<E>, E extends AbstractContainerMenu> Supplier<MenuType<E>> menuType(String id, Register.MenuTypeSupplier<E> supplier) {
-        return MENU_TYPES.register(id, () -> IMenuTypeExtension.create(supplier::create));
+    public static <E extends AbstractContainerMenu, D> Supplier<MenuType<E>> menuType(
+          String id, Register.MenuTypeSupplier<E, D> supplier, StreamCodec<RegistryFriendlyByteBuf, D> dataCodec) {
+        return MENU_TYPES.register(id, () -> IMenuTypeExtension.create(
+              (containerId, inventory, buffer) ->
+                    supplier.create(containerId, inventory, dataCodec.decode(buffer))));
     }
 
     public static Supplier<RecipeType<?>> recipeType(String id, Supplier<RecipeType<?>> supplier) {

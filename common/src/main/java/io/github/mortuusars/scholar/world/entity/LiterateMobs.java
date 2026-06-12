@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class LiterateMobs {
     public static void populateEquipmentSlots(RandomSource random, DifficultyInstance difficulty, Mob mob) {
-        if (mob.getType().is(Scholar.Tags.EntityTypes.LITERATE)
+        if (mob.is(Scholar.Tags.EntityTypes.LITERATE)
               && random.nextDouble() < Config.Common.LITERATE_MOBS_BOOK_SPAWN_CHANCE.get()) {
             float dropChance = (float) Config.Common.LITERATE_MOBS_BOOK_DROP_CHANCE.getAsDouble();
             mob.equip(new EquipmentTable(Scholar.LootTables.LITERATE_MOB_BOOK,

@@ -22,7 +22,7 @@ import io.github.mortuusars.scholar.util.History;
 import io.github.mortuusars.scholar.util.supporter.Supporters;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -50,14 +50,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 public abstract class SpreadBookEditScreen extends SpreadBookScreen {
-    public static final WidgetSprites ENTER_SIGN_MODE_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/sign_button"));
-    public static final WidgetSprites INSERT_EMPTY_PAGE_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/insert_empty_page_button"));
-    public static final WidgetSprites REMOVE_PAGE_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/remove_page_button"));
-    public static final WidgetSprites IMPORT_BOOK_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/import_book_button"));
-    public static final WidgetSprites EXPORT_BOOK_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/export_book_button"));
+    public static final WidgetSprites ENTER_SIGN_MODE_SPRITES = Widgets.threeStateSprites(Scholar.identifier("book/sign_button"));
+    public static final WidgetSprites INSERT_EMPTY_PAGE_SPRITES = Widgets.threeStateSprites(Scholar.identifier("book/insert_empty_page_button"));
+    public static final WidgetSprites REMOVE_PAGE_SPRITES = Widgets.threeStateSprites(Scholar.identifier("book/remove_page_button"));
+    public static final WidgetSprites IMPORT_BOOK_SPRITES = Widgets.threeStateSprites(Scholar.identifier("book/import_book_button"));
+    public static final WidgetSprites EXPORT_BOOK_SPRITES = Widgets.threeStateSprites(Scholar.identifier("book/export_book_button"));
 
-    public static final WidgetSprites SKIN_REGULAR_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/skin_regular_button"));
-    public static final WidgetSprites SKIN_GOLD_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.resource("book/skin_gold_button"));
+    public static final WidgetSprites SKIN_REGULAR_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.identifier("book/skin_regular_button"));
+    public static final WidgetSprites SKIN_GOLD_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.identifier("book/skin_gold_button"));
 
     public static final int AUTOMATIC_SAVE_INTERVAL_MS = 60000;
 
@@ -166,25 +166,25 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
         addRenderableWidget(insertEmptyPageLeftButton);
 
         removePageLeftButton = new ImageButton(leftPos + 126, topPos + 154, 13, 13,
-              REMOVE_PAGE_SPRITES, b -> removePage(Spread.Side.LEFT), Component.translatable("gui.scholar.remove_page"));
+              REMOVE_PAGE_SPRITES, _ -> removePage(Spread.Side.LEFT), Component.translatable("gui.scholar.remove_page"));
         removePageLeftButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.remove_page")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.removePageLeft))));
         addRenderableWidget(removePageLeftButton);
 
         insertEmptyPageRightButton = new ImageButton(leftPos + 156, topPos + 154, 13, 13,
-              INSERT_EMPTY_PAGE_SPRITES, b -> insertEmptyPage(Spread.Side.RIGHT), Component.translatable("gui.scholar.insert_empty_page"));
+              INSERT_EMPTY_PAGE_SPRITES, _ -> insertEmptyPage(Spread.Side.RIGHT), Component.translatable("gui.scholar.insert_empty_page"));
         insertEmptyPageRightButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.insert_empty_page")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.insertEmptyPageRight))));
         addRenderableWidget(insertEmptyPageRightButton);
 
         removePageRightButton = new ImageButton(leftPos + 170, topPos + 154, 13, 13,
-              REMOVE_PAGE_SPRITES, b -> removePage(Spread.Side.RIGHT), Component.translatable("gui.scholar.remove_page"));
+              REMOVE_PAGE_SPRITES, _ -> removePage(Spread.Side.RIGHT), Component.translatable("gui.scholar.remove_page"));
         removePageRightButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.remove_page")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.removePageRight))));
         addRenderableWidget(removePageRightButton);
 
         importBookButton = new ImageButton(leftPos + 297, topPos + 16, 18, 18, IMPORT_BOOK_SPRITES,
-              b -> importBook(!minecraft.hasShiftDown()), Component.translatable("gui.scholar.import_book"));
+              _ -> importBook(!minecraft.hasShiftDown()), Component.translatable("gui.scholar.import_book"));
         importBookButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.import_book")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.importBook))
               .append(CommonComponents.NEW_LINE)
@@ -192,7 +192,7 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
         addRenderableWidget(importBookButton);
 
         exportBookButton = new ImageButton(leftPos + 297, topPos + 41, 18, 18, EXPORT_BOOK_SPRITES,
-              b -> exportBook(!minecraft.hasShiftDown()), Component.translatable("gui.scholar.export_book"));
+              _ -> exportBook(!minecraft.hasShiftDown()), Component.translatable("gui.scholar.export_book"));
         exportBookButton.setTooltip(Tooltip.create(Component.translatable("gui.scholar.export_book")
               .append(ScholarClient.KeyMappings.componentForTooltip(ScholarClient.KeyMappings.exportBook))
               .append(CommonComponents.NEW_LINE)
@@ -257,44 +257,44 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
     // -- Render
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         updateButtons();
 
-        renderTransparentBackground(guiGraphics);
-        renderBook(guiGraphics, mouseX, mouseY, partialTick);
-        renderPageNumbers(guiGraphics, mouseX, mouseY, partialTick, currentSpread);
-        renderTools(guiGraphics, mouseX, mouseY, partialTick);
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        extractTransparentBackground(graphics);
+        extractBook(graphics, mouseX, mouseY, partialTick);
+        extractPageNumbers(graphics, mouseX, mouseY, partialTick, currentSpread);
+        extractTools(graphics, mouseX, mouseY, partialTick);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
 
     @Override
-    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         // Stops blur from rendering
     }
 
     @Override
-    protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderBook(guiGraphics, mouseX, mouseY, partialTick);
+    protected void extractBook(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractBook(graphics, mouseX, mouseY, partialTick);
 
         if (isToolsVisible()) {
             // Import/Export buttons BG
-            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos + 295, topPos + 14, 0, 388,
+            graphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos + 295, topPos + 14, 0, 388,
                   23, 48, 512, 512, getTintColor());
 
             // Toggle Golden Skin button BG
             if (toggleGoldenSkinButton != null && toggleGoldenSkinButton.visible) {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos - 23, topPos + 44, 0, 436,
+                graphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos - 23, topPos + 44, 0, 436,
                       23, 23, 512, 512, getTintColor());
             }
         }
 
         // Enter Sign Mode button BG
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos - 29, topPos + 14, 0, 360,
+        graphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos - 29, topPos + 14, 0, 360,
               29, 28, 512, 512, getTintColor());
     }
 
     @Override
-    protected void renderTools(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractTools(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         int x = width - 12;
         int y = 6;
         boolean isHovering = mouseX >= x - 3 && mouseX < x + 12 + 3 && mouseY >= y - 3 && mouseY < y + 12;
@@ -302,7 +302,7 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
         int color = isHovering
               ? 0xFFFFFFFF
               : Config.Client.TUTORIAL_EXTRA_TOOLS.get() && Util.getMillis() % 750 > 300 ? 0xFFff625e : 0xFFAAAAAA;
-        guiGraphics.drawString(font, "✎", x, y, color);
+        graphics.text(font, "✎", x, y, color);
 
         if (isHovering) {
             List<Component> tooltip = new ArrayList<>();
@@ -312,7 +312,7 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
             tooltip.add(Component.translatable("gui.scholar.tools.tooltip.paste_without_formatting"));
             tooltip.add(Component.translatable("gui.scholar.tools.tooltip.undo"));
             tooltip.add(Component.translatable("gui.scholar.tools.tooltip.redo"));
-            guiGraphics.setTooltipForNextFrame(font, tooltip, Optional.empty(), mouseX, mouseY + 20);
+            graphics.setTooltipForNextFrame(font, tooltip, Optional.empty(), mouseX, mouseY + 20);
         }
     }
 
@@ -544,8 +544,8 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
 
     protected void insertEmptyPage(Spread.Side side) {
         if (!canInsertEmptyPage(side)) {
-            Objects.requireNonNull(Minecraft.getInstance().player).displayClientMessage(
-                  Component.translatable("gui.scholar.cannot_insert_page"), false);
+            Objects.requireNonNull(Minecraft.getInstance().player).sendSystemMessage(
+                  Component.translatable("gui.scholar.cannot_insert_page"));
             return;
         }
 
@@ -755,14 +755,14 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
                     String content = Files.readString(Path.of(filePath));
                     Minecraft.getInstance().execute(() -> setBookContents(content, withFormatting));
                 } catch (IOException e) {
-                    Minecraft.getInstance().execute(() -> player.displayClientMessage(
-                          Component.translatable("gui.scholar.import_book.failure"), false));
+                    Minecraft.getInstance().execute(() -> player.sendSystemMessage(
+                          Component.translatable("gui.scholar.import_book.failure")));
                     Scholar.LOGGER.error("Failed to import book: ", e);
                 }
             });
         }).exceptionally(e -> {
-            Minecraft.getInstance().execute(() -> player.displayClientMessage(
-                  Component.translatable("gui.scholar.import_book.failure"), false));
+            Minecraft.getInstance().execute(() -> player.sendSystemMessage(
+                  Component.translatable("gui.scholar.import_book.failure")));
             Scholar.LOGGER.error("Failed to import book: ", e);
             return null;
         });
@@ -786,18 +786,18 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
                     MutableComponent filePathComponent = Component.literal(filePath).withStyle(Style.EMPTY
                           .withUnderlined(true)
                           .withClickEvent(new ClickEvent.OpenFile(filePath)));
-                    Minecraft.getInstance().execute(() -> player.displayClientMessage(
+                    Minecraft.getInstance().execute(() -> player.sendSystemMessage(
                           Component.translatable("gui.scholar.export_book.success")
-                                .append(filePathComponent), false));
+                                .append(filePathComponent)));
                 } catch (IOException e) {
-                    Minecraft.getInstance().execute(() -> player.displayClientMessage(
-                          Component.translatable("gui.scholar.export_book.failure"), false));
+                    Minecraft.getInstance().execute(() -> player.sendSystemMessage(
+                          Component.translatable("gui.scholar.export_book.failure")));
                     Scholar.LOGGER.error("Failed to export book: ", e);
                 }
             });
         }).exceptionally(e -> {
-            Minecraft.getInstance().execute(() -> player.displayClientMessage(
-                  Component.translatable("gui.scholar.export_book.failure"), false));
+            Minecraft.getInstance().execute(() -> player.sendSystemMessage(
+                  Component.translatable("gui.scholar.export_book.failure")));
             Scholar.LOGGER.error("Failed to export book: ", e);
             return null;
         });

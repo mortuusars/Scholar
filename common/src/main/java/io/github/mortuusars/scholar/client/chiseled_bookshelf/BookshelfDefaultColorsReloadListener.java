@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BookshelfDefaultColorsReloadListener extends SimpleJsonResourceReloadListener<Map<Identifier, BookshelfDefaultColors>> {
-    public static final Identifier ID = Scholar.resource("bookshelf_default_colors");
+    public static final Identifier ID = Scholar.identifier("bookshelf_default_colors");
 
     public BookshelfDefaultColorsReloadListener() {
         super(Codec.unboundedMap(Identifier.CODEC, BookshelfDefaultColors.CODEC),

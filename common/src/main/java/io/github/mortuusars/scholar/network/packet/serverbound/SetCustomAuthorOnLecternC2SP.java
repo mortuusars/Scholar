@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public record SetCustomAuthorOnLecternC2SP(BlockPos lecternPos, String author) implements Packet {
-    public static final Identifier ID = Scholar.resource("set_custom_author_on_lectern");
+    public static final Identifier ID = Scholar.identifier("set_custom_author_on_lectern");
     public static final Type<SetCustomAuthorOnLecternC2SP> TYPE = new Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, SetCustomAuthorOnLecternC2SP> STREAM_CODEC = StreamCodec.composite(

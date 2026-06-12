@@ -11,13 +11,13 @@ public class FabricS2CPackets {
     @SuppressWarnings("unchecked")
     public static void register() {
         for (var definition : S2CPackets.getDefinitions()) {
-            PayloadTypeRegistry.playS2C().register(
+            PayloadTypeRegistry.clientboundPlay().register(
                     (CustomPacketPayload.Type<CustomPacketPayload>) definition.type(),
                     (StreamCodec<FriendlyByteBuf, CustomPacketPayload>) definition.codec());
         }
 
         for (var definition : CommonPackets.getDefinitions()) {
-            PayloadTypeRegistry.playS2C().register(
+            PayloadTypeRegistry.clientboundPlay().register(
                     (CustomPacketPayload.Type<CustomPacketPayload>) definition.type(),
                     (StreamCodec<FriendlyByteBuf, CustomPacketPayload>) definition.codec());
         }

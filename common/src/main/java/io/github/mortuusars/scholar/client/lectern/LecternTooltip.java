@@ -4,13 +4,13 @@ import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.client.gui.InWorldTooltip;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.phys.BlockHitResult;
 
 public class LecternTooltip {
-    public static boolean render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
+    public static boolean extract(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
         if (!Config.Common.LECTERN_TOOLTIP.get()) {
             return false;
         }

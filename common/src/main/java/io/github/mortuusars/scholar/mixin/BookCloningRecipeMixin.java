@@ -2,7 +2,6 @@ package io.github.mortuusars.scholar.mixin;
 
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.book.BookColor;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -26,9 +25,9 @@ public class BookCloningRecipeMixin {
      * This mixin basically overrides whole method which may cause compatibility issues. But it would require more mixins to change it in specific parts.
      * Mods that modify this recipe should be very rare anyway.
      */
-    @Inject(method = "assemble(Lnet/minecraft/world/item/crafting/CraftingInput;Lnet/minecraft/core/HolderLookup$Provider;)Lnet/minecraft/world/item/ItemStack;",
+    @Inject(method = "assemble(Lnet/minecraft/world/item/crafting/CraftingInput;)Lnet/minecraft/world/item/ItemStack;",
             at = @At("HEAD"), cancellable = true)
-    private void onAssemble(CraftingInput input, HolderLookup.Provider registries, CallbackInfoReturnable<ItemStack> cir) {
+    private void onAssemble(CraftingInput input, CallbackInfoReturnable<ItemStack> cir) {
         ItemStack inputBook = ItemStack.EMPTY;
         @Nullable Integer resultColor = null;
         int copies = 0;
@@ -72,14 +71,14 @@ public class BookCloningRecipeMixin {
             return; // Cannot be copied
         }
 
-        @Nullable WrittenBookContent content = inputBook.getOrDefault(DataComponents.WRITTEN_BOOK_CONTENT, WrittenBookContent.EMPTY).tryCraftCopy();
-        if (content == null) {
+        WrittenBookContent content = inputBook.getOrDefault(DataComponents.WRITTEN_BOOK_CONTENT, WrittenBookContent.EMPTY);
+        if (content.generation() >= 3) {
             cir.setReturnValue(ItemStack.EMPTY);
             return; // Cannot be copied
         }
 
         ItemStack resultStack = inputBook.copyWithCount(copies);
-        resultStack.set(DataComponents.WRITTEN_BOOK_CONTENT, content);
+        resultStack.set(DataComponents.WRITTEN_BOOK_CONTENT, content.craftCopy());
         resultStack.remove(Scholar.DataComponents.BOOK_GOLDEN);
         BookColor.set(resultStack, resultColor);
         cir.setReturnValue(resultStack);

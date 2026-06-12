@@ -20,7 +20,7 @@ import net.minecraft.world.item.WrittenBookItem;
 import org.jetbrains.annotations.NotNull;
 
 public record StartedReadingInHandC2SP(int slot) implements Packet {
-    public static final Identifier ID = Scholar.resource("started_reading_in_hand");
+    public static final Identifier ID = Scholar.identifier("started_reading_in_hand");
     public static final Type<StartedReadingInHandC2SP> TYPE = new Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, StartedReadingInHandC2SP> STREAM_CODEC = StreamCodec.composite(

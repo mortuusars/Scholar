@@ -4,7 +4,6 @@ import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.book.Spread;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -14,7 +13,6 @@ import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.LecternMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.SimpleContainerData;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.WritableBookContent;
 import net.minecraft.world.item.component.WrittenBookContent;
 import org.jetbrains.annotations.NotNull;
@@ -30,8 +28,8 @@ public class LecternSpreadMenu extends LecternMenu {
         this.lecternPos = lecternPos;
     }
 
-    public static LecternSpreadMenu fromBuffer(int containerId, Inventory inventory, RegistryFriendlyByteBuf buffer) {
-        return new LecternSpreadMenu(containerId, new SimpleContainer(ItemStack.STREAM_CODEC.decode(buffer)), new SimpleContainerData(1), buffer.readBlockPos());
+    public static LecternSpreadMenu fromNetwork(int id, Inventory inventory, Lectern.Data data) {
+        return new LecternSpreadMenu(id, new SimpleContainer(data.book()), new SimpleContainerData(1), data.pos());
     }
 
     @Override

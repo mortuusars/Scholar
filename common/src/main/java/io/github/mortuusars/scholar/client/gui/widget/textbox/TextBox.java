@@ -12,11 +12,10 @@ import io.github.mortuusars.scholar.client.gui.widget.textbox.text.Formatting;
 import io.github.mortuusars.scholar.client.util.Pos2i;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -166,11 +165,12 @@ public class TextBox extends AbstractWidget {
 
     // -- Render
 
+
     @Override
-    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         FormattedStringDisplayCache displayCache = getDisplayCache();
 
-        renderLines(guiGraphics, mouseX, mouseY, partialTick, displayCache.getLines(), getCurrentFontColor());
+        renderLines(graphics, mouseX, mouseY, partialTick, displayCache.getLines(), getCurrentFontColor());
 
         int cursorColor = getCurrentFontColor();
         Formatting currentFormatting = getEditor().getFormattingAtCursor();
@@ -179,30 +179,30 @@ public class TextBox extends AbstractWidget {
             cursorColor = currentFormatting.color().asChatFormatting().getColor() | 0xFF000000;
         }
 
-        renderCursor(guiGraphics, mouseX, mouseY, partialTick, getEditor(), displayCache.getCursor(), cursorColor);
-        renderSelection(guiGraphics, mouseX, mouseY, partialTick, displayCache.getSelection(), getCurrentSelectionColor());
+        renderCursor(graphics, mouseX, mouseY, partialTick, getEditor(), displayCache.getCursor(), cursorColor);
+        renderSelection(graphics, mouseX, mouseY, partialTick, displayCache.getSelection(), getCurrentSelectionColor());
 
-        getFormattingToolbar().render(guiGraphics, mouseX, mouseY, partialTick);
+        getFormattingToolbar().render(graphics, mouseX, mouseY, partialTick);
     }
 
-    public void renderLines(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, List<Line> lines, int color) {
+    public void renderLines(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick, List<Line> lines, int color) {
         for (Line line : lines) {
-            guiGraphics.drawString(font, line.renderedString(), getX() + line.x(), getY() + line.y(), color, false);
+            graphics.text(font, line.renderedString(), getX() + line.x(), getY() + line.y(), color, false);
         }
     }
 
-    public void renderSelection(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, List<Rect2i> selection, int color) {
+    public void renderSelection(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick, List<Rect2i> selection, int color) {
         for (Rect2i rect : selection) {
             int x0 = getX() + rect.getX();
             int y0 = getY() + rect.getY();
             int x1 = x0 + rect.getWidth();
             int y1 = y0 + rect.getHeight();
-            guiGraphics.fill(RenderPipelines.GUI_INVERT, x0, y0, x1, y1, 0xFFFFFFFF);
-            guiGraphics.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, x0, y0, x1, y1, color);
+            graphics.fill(RenderPipelines.GUI_INVERT, x0, y0, x1, y1, 0xFFFFFFFF);
+            graphics.fill(RenderPipelines.GUI_TEXT_HIGHLIGHT, x0, y0, x1, y1, color);
         }
     }
 
-    public void renderCursor(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, FormattedStringEditor editor, Pos2i cursor, int color) {
+    public void renderCursor(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick, FormattedStringEditor editor, Pos2i cursor, int color) {
         if (!isFocused()) return;
         if (editor.isSelecting()) return;
         if (System.currentTimeMillis() - lastActionTime > 200 && (System.currentTimeMillis() - lastActionTime) % 600 > 300) // Blinking
@@ -213,14 +213,14 @@ public class TextBox extends AbstractWidget {
             if (cursor.y + font.lineHeight > getHeight()) {
                 int x = line.x() + line.width();
                 int y = line.y();
-                guiGraphics.drawString(getFont(), "<", getX() + x, getY() + y,
+                graphics.text(getFont(), "<", getX() + x, getY() + y,
                         color, false);
             } else {
-                guiGraphics.drawString(getFont(), "_", getX() + cursor.x, getY() + cursor.y,
+                graphics.text(getFont(), "_", getX() + cursor.x, getY() + cursor.y,
                         color, false);
             }
         } else {
-            guiGraphics.fill(
+            graphics.fill(
                     getX() + cursor.x,
                     getY() + cursor.y - 1,
                     getX() + cursor.x + 1,

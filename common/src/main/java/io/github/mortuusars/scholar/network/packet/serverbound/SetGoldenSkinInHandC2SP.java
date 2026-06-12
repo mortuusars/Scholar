@@ -18,7 +18,7 @@ import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
 public record SetGoldenSkinInHandC2SP(int slot, boolean golden) implements Packet {
-    public static final Identifier ID = Scholar.resource("set_golden_skin_in_hand");
+    public static final Identifier ID = Scholar.identifier("set_golden_skin_in_hand");
     public static final Type<SetGoldenSkinInHandC2SP> TYPE = new Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, SetGoldenSkinInHandC2SP> STREAM_CODEC = StreamCodec.composite(

@@ -16,14 +16,14 @@ public class FabricC2SPackets {
     public static void register() {
         // This monstrosity is to avoid having to define packets for forge and fabric separately.
         for (var definition : C2SPackets.getDefinitions()) {
-            PayloadTypeRegistry.playC2S().register(
+            PayloadTypeRegistry.serverboundPlay().register(
                     (CustomPacketPayload.Type<CustomPacketPayload>) definition.type(),
                     (StreamCodec<FriendlyByteBuf, CustomPacketPayload>) definition.codec().cast());
             ServerPlayNetworking.registerGlobalReceiver((CustomPacketPayload.Type<Packet>) definition.type(), FabricC2SPackets::handleServerboundPacket);
         }
 
         for (var definition : CommonPackets.getDefinitions()) {
-            PayloadTypeRegistry.playC2S().register(
+            PayloadTypeRegistry.serverboundPlay().register(
                     (CustomPacketPayload.Type<CustomPacketPayload>) definition.type(),
                     (StreamCodec<FriendlyByteBuf, CustomPacketPayload>) definition.codec().cast());
             ServerPlayNetworking.registerGlobalReceiver((CustomPacketPayload.Type<Packet>) definition.type(), FabricC2SPackets::handleServerboundPacket);

@@ -20,7 +20,7 @@ public abstract class RandomStrollGoalMixin extends Goal {
 
     @Inject(method = "canUse", at = @At("HEAD"), cancellable = true)
     private void onCanUse(CallbackInfoReturnable<Boolean> cir) {
-        if (mob.getType().is(Scholar.Tags.EntityTypes.LITERATE)
+        if (mob.is(Scholar.Tags.EntityTypes.LITERATE)
               && Reading.getOpenedBookHand(mob) != null
               && mob.getRandom().nextFloat() > 0.05) {
             cir.setReturnValue(false); // Prevent moving when reading

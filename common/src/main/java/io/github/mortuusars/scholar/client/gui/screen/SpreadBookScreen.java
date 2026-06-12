@@ -8,7 +8,7 @@ import io.github.mortuusars.scholar.client.gui.Widgets;
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import net.minecraft.client.GameNarrator;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
@@ -27,8 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public abstract class SpreadBookScreen extends Screen {
-    public static final Identifier TEXTURE = Scholar.resource("textures/gui/book.png");
-    public static final Identifier TEXTURE_GOLDEN = Scholar.resource("textures/gui/book_golden.png");
+    public static final Identifier TEXTURE = Scholar.identifier("textures/gui/book.png");
+    public static final Identifier TEXTURE_GOLDEN = Scholar.identifier("textures/gui/book_golden.png");
 
     public static final int BOOK_WIDTH = 295;
     public static final int BOOK_HEIGHT = 180;
@@ -103,7 +103,7 @@ public abstract class SpreadBookScreen extends Screen {
     protected void createPrevPageButton() {
         ImageButton prevPageButton = new ImageButton(leftPos + 12, topPos + 156, 13, 15,
               Widgets.PREVIOUS_PAGE_SPRITES,
-              (button) -> {
+              _ -> {
                   if (Minecraft.getInstance().hasShiftDown()) {
                       pageToStart();
                   } else {
@@ -118,7 +118,7 @@ public abstract class SpreadBookScreen extends Screen {
 
     protected void createNextPageButton() {
         ImageButton nextPageButton = new ImageButton(leftPos + 270, topPos + 156, 13, 15,
-              Widgets.NEXT_PAGE_SPRITES, (button) -> {
+              Widgets.NEXT_PAGE_SPRITES, _ -> {
             if (Minecraft.getInstance().hasShiftDown()) {
                 pageToEnd();
             } else {
@@ -133,7 +133,7 @@ public abstract class SpreadBookScreen extends Screen {
 
     protected void createBottomButtons() {
         if (Config.Common.BOOK_SCREEN_SHOW_DONE_BUTTON.get()) {
-            addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, (button) -> onClose())
+            addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, _ -> onClose())
                   .bounds(this.width / 2 - 60, topPos + BOOK_HEIGHT + 12, 120, 20)
                   .build());
         }
@@ -233,34 +233,34 @@ public abstract class SpreadBookScreen extends Screen {
 
     // -- Render
 
-    protected void renderBook(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractBook(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         // Cover
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos, topPos,
+        graphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos, topPos,
               0, 0, BOOK_WIDTH, BOOK_HEIGHT, 512, 512, getTintColor());
 
         // Paper
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos, topPos,
+        graphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos, topPos,
               0, BOOK_HEIGHT, BOOK_WIDTH, BOOK_HEIGHT, 512, 512);
     }
 
-    protected void renderPageNumbers(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread) {
-        renderLeftPageNumber(guiGraphics, mouseX, mouseY, partialTick, currentSpread, pageNumbersColor);
-        renderRightPageNumber(guiGraphics, mouseX, mouseY, partialTick, currentSpread, pageNumbersColor);
+    protected void extractPageNumbers(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick, int currentSpread) {
+        extractLeftPageNumber(graphics, mouseX, mouseY, partialTick, currentSpread, pageNumbersColor);
+        extractRightPageNumber(graphics, mouseX, mouseY, partialTick, currentSpread, pageNumbersColor);
     }
 
-    protected void renderLeftPageNumber(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
+    protected void extractLeftPageNumber(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
         String leftPageNumber = Integer.toString(currentSpread * 2 + 1);
-        guiGraphics.drawString(font, leftPageNumber, leftPos + 71 + (8 - font.width(leftPageNumber) / 2),
+        guiGraphics.text(font, leftPageNumber, leftPos + 71 + (8 - font.width(leftPageNumber) / 2),
               topPos + 157, color, false);
     }
 
-    protected void renderRightPageNumber(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
+    protected void extractRightPageNumber(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
         String rightPageNumber = Integer.toString(currentSpread * 2 + 2);
-        guiGraphics.drawString(font, rightPageNumber, leftPos + 209 + (8 - font.width(rightPageNumber) / 2),
+        guiGraphics.text(font, rightPageNumber, leftPos + 209 + (8 - font.width(rightPageNumber) / 2),
               topPos + 157, color, false);
     }
 
-    protected void renderTools(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    protected void extractTools(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float partialTick) {
     }
 
     // -- Input

@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WritableBookItem;
 
 public class ReadingAnimation {
-    public static final BookModel.State BOOK_OPEN_STATE = new BookModel.State(0.0F, 0.1F, 0.9F, 1.2F);
+    public static final BookModel.State BOOK_OPEN_STATE = BookModel.State.forAnimation(0.0F, 0.1F, 0.9F, 1.2F);
 
     public static <T extends HumanoidRenderState> void poseLeftArm(T renderState, ModelPart part) {
         part.xRot = part.xRot * 0.5F - (float) (Math.PI / 5);
@@ -211,7 +211,7 @@ public class ReadingAnimation {
             float flip = anim < 0.9f
                   ? 0.9F - anim * 0.9f
                   : 0.9f + (1f - anim);
-            return new BookModel.State(0.0F, 0.1F, flip, 1.2F);
+            return BookModel.State.forAnimation(0.0F, 0.1F, flip, 1.2F);
         } else {
             return BOOK_OPEN_STATE;
         }
@@ -235,7 +235,7 @@ public class ReadingAnimation {
             float flip = anim < 0.9f
                   ? 0.9F - anim * 0.9f
                   : 0.9f + (1f - anim);
-            bookModel.setupAnim(new BookModel.State(0.0F, 0.1F, flip, 1.2F));
+            bookModel.setupAnim(BookModel.State.forAnimation(0.0F, 0.1F, flip, 1.2F));
         } else {
             bookModel.setupAnim(BOOK_OPEN_STATE);
         }

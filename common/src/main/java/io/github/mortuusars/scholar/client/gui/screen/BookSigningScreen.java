@@ -10,7 +10,7 @@ import io.github.mortuusars.scholar.client.gui.widget.textbox.text.FormattedStri
 import io.github.mortuusars.scholar.client.gui.widget.textbox.TextBox;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -32,11 +32,11 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class BookSigningScreen extends Screen {
-    public static final Identifier TEXTURE = Scholar.resource("textures/gui/book_signing.png");
-    public static final Identifier TEXTURE_GOLDEN = Scholar.resource("textures/gui/book_signing_golden.png");
+    public static final Identifier TEXTURE = Scholar.identifier("textures/gui/book_signing.png");
+    public static final Identifier TEXTURE_GOLDEN = Scholar.identifier("textures/gui/book_signing_golden.png");
 
-    public static final WidgetSprites SIGN_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.resource("signing/sign_button"));
-    public static final WidgetSprites CANCEL_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.resource("signing/cancel_button"));
+    public static final WidgetSprites SIGN_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.identifier("signing/sign_button"));
+    public static final WidgetSprites CANCEL_BUTTON_SPRITES = Widgets.threeStateSprites(Scholar.identifier("signing/cancel_button"));
 
     @NotNull
     protected final Minecraft minecraft;
@@ -128,7 +128,7 @@ public class BookSigningScreen extends Screen {
 
         // SIGN
         signButton = new ImageButton(leftPos + 46, topPos + 109, 22, 22,
-              SIGN_BUTTON_SPRITES, b -> sign(), Component.translatable("book.finalizeButton"));
+              SIGN_BUTTON_SPRITES, _ -> sign(), Component.translatable("book.finalizeButton"));
         MutableComponent component = Component.translatable("book.finalizeButton")
               .append("\n").append(Component.translatable("book.finalizeWarning").withStyle(ChatFormatting.GRAY));
         signButton.setTooltip(Tooltip.create(component));
@@ -136,7 +136,7 @@ public class BookSigningScreen extends Screen {
 
         // CANCEL
         cancelSigningButton = new ImageButton(leftPos + 82, topPos + 108, 22, 22,
-              CANCEL_BUTTON_SPRITES, b -> cancelSigning(), CommonComponents.GUI_CANCEL);
+              CANCEL_BUTTON_SPRITES, _ -> cancelSigning(), CommonComponents.GUI_CANCEL);
         cancelSigningButton.setTooltip(Tooltip.create(CommonComponents.GUI_CANCEL));
         addRenderableWidget(cancelSigningButton);
 
@@ -179,37 +179,37 @@ public class BookSigningScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         updateButtons();
 
-        renderTransparentBackground(guiGraphics);
+        extractTransparentBackground(graphics);
 
         // Cover
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos, topPos,
+        graphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos, topPos,
               0, 0, imageWidth, imageHeight, textureWidth, textureHeight, getTintColor());
 
         // Label
-        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos, topPos + 31,
+        graphics.blit(RenderPipelines.GUI_TEXTURED, getTexture(), leftPos, topPos + 31,
               0, 180, imageWidth, 76, textureWidth, textureHeight);
 
-        renderLabels(guiGraphics);
+        extractLabels(graphics);
 
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
 
     @Override
-    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         // Stops blur from rendering
     }
 
-    protected void renderLabels(GuiGraphics guiGraphics) {
+    protected void extractLabels(GuiGraphicsExtractor guiGraphics) {
         MutableComponent component = Component.translatable("book.editTitle");
-        guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 51,
+        guiGraphics.text(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 51,
               enterBookTitleFontColor, false);
 
         if (!Config.Common.BOOK_CHANGEABLE_AUTHOR.get()) {
             component = Component.translatable("book.byAuthor", player.getName());
-            guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 81,
+            guiGraphics.text(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 81,
                   byAuthorFontColor, false);
         } else {
             component = Component.empty()
@@ -218,7 +218,7 @@ public class BookSigningScreen extends Screen {
             int width = font.width(component);
             int authorWidth = font.width(authorTextBox.getEditor().getString().toString());
             int x = (authorTextBox.getX() + authorTextBox.getWidth() / 2) - (authorWidth / 2) - width;
-            guiGraphics.drawString(font, component, x, topPos + 81,
+            guiGraphics.text(font, component, x, topPos + 81,
                   byAuthorFontColor, false);
         }
     }

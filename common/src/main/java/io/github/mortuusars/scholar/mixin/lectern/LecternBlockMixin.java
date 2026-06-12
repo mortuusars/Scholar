@@ -1,7 +1,7 @@
 package io.github.mortuusars.scholar.mixin.lectern;
 
 import io.github.mortuusars.scholar.Config;
-import io.github.mortuusars.scholar.menu.LecternMenus;
+import io.github.mortuusars.scholar.menu.Lectern;
 import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -38,9 +38,9 @@ public abstract class LecternBlockMixin {
                             && lecternMenu.getLecternPos().equals(pos));
 
             if (hasPlayerEditing) {
-                LecternMenus.openBookViewMenu(serverPlayer, lecternBlockEntity, bookStack);
+                Lectern.openBookViewMenu(serverPlayer, lecternBlockEntity, bookStack);
             } else {
-                LecternMenus.openBookEditMenu(serverPlayer, lecternBlockEntity, bookStack);
+                Lectern.openBookEditMenu(serverPlayer, lecternBlockEntity, bookStack);
             }
 
             player.awardStat(Stats.INTERACT_WITH_LECTERN);
@@ -48,7 +48,7 @@ public abstract class LecternBlockMixin {
         }
 
         if (bookStack.is(Items.WRITTEN_BOOK)) {
-            LecternMenus.openBookViewMenu(serverPlayer, lecternBlockEntity, bookStack);
+            Lectern.openBookViewMenu(serverPlayer, lecternBlockEntity, bookStack);
             player.awardStat(Stats.INTERACT_WITH_LECTERN);
             ci.cancel();
         }

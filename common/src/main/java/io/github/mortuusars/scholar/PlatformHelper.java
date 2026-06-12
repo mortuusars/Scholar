@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public class PlatformHelper {
     @ExpectPlatform
-    public static void openMenu(ServerPlayer serverPlayer, MenuProvider menuProvider, Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
+    public static <D extends Register.MenuData<D>> void openMenu(ServerPlayer serverPlayer, MenuProvider menuProvider, D data) {
         throw new AssertionError();
     }
 

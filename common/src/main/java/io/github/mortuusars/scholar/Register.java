@@ -9,6 +9,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -78,13 +79,18 @@ public class Register {
     }
 
     @ExpectPlatform
-    public static <T extends MenuType<E>, E extends AbstractContainerMenu> Supplier<T> menuType(String id, MenuTypeSupplier<E> supplier) {
+    public static <E extends AbstractContainerMenu, D extends MenuData<D>> Supplier<MenuType<E>> menuType(
+          String id, MenuTypeSupplier<E, D> supplier, StreamCodec<RegistryFriendlyByteBuf, D> dataCodec) {
         throw new AssertionError();
     }
 
+    public interface MenuData<D> {
+        StreamCodec<RegistryFriendlyByteBuf, D> streamCodec();
+    }
+
     @FunctionalInterface
-    public interface MenuTypeSupplier<T extends AbstractContainerMenu> {
-        @NotNull T create(int windowId, Inventory playerInv, RegistryFriendlyByteBuf extraData);
+    public interface MenuTypeSupplier<T extends AbstractContainerMenu, D> {
+        @NotNull T create(int id, Inventory playerInv, D data);
     }
 
     @ExpectPlatform

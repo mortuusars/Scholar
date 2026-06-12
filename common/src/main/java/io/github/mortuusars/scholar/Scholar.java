@@ -2,6 +2,7 @@ package io.github.mortuusars.scholar;
 
 import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
+import io.github.mortuusars.scholar.menu.Lectern;
 import io.github.mortuusars.scholar.menu.LecternSpreadBookEditMenu;
 import io.github.mortuusars.scholar.menu.LecternSpreadMenu;
 import net.minecraft.resources.Identifier;
@@ -26,7 +27,7 @@ public class Scholar {
     public static final String ID = "scholar";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static Identifier resource(String path) {
+    public static Identifier identifier(String path) {
         return Identifier.fromNamespaceAndPath(Scholar.ID, path);
     }
 
@@ -51,12 +52,11 @@ public class Scholar {
         static void init() { }
     }
 
-    @SuppressWarnings("NullableProblems")
     public static class MenuTypes {
         public static final Supplier<MenuType<LecternSpreadMenu>> LECTERN_SPREAD_BOOK_VIEW =
-                Register.menuType("lectern_spread_book_view", LecternSpreadMenu::fromBuffer);
+              Register.menuType("lectern_spread_book_view", LecternSpreadMenu::fromNetwork, Lectern.Data.STREAM_CODEC);
         public static final Supplier<MenuType<LecternSpreadBookEditMenu>> LECTERN_SPREAD_BOOK_EDIT =
-                Register.menuType("lectern_spread_book_edit", LecternSpreadBookEditMenu::fromBuffer);
+              Register.menuType("lectern_spread_book_edit", LecternSpreadBookEditMenu::fromNetwork, Lectern.Data.STREAM_CODEC);
 
         static void init() { }
     }
@@ -75,7 +75,7 @@ public class Scholar {
             Preconditions.checkState(category != null && !category.isEmpty(), "'category' should not be empty.");
             Preconditions.checkState(key != null && !key.isEmpty(), "'key' should not be empty.");
             String path = category + "." + key;
-            return Register.soundEvent(path, () -> SoundEvent.createVariableRangeEvent(Scholar.resource(path)));
+            return Register.soundEvent(path, () -> SoundEvent.createVariableRangeEvent(Scholar.identifier(path)));
         }
 
         static void init() {}
@@ -83,11 +83,11 @@ public class Scholar {
 
     public static class Tags {
         public static class EntityTypes {
-            public static final TagKey<EntityType<?>> LITERATE = TagKey.create(Registries.ENTITY_TYPE, resource("literate"));
+            public static final TagKey<EntityType<?>> LITERATE = TagKey.create(Registries.ENTITY_TYPE, identifier("literate"));
         }
     }
 
     public static class LootTables {
-        public static final ResourceKey<LootTable> LITERATE_MOB_BOOK = ResourceKey.create(Registries.LOOT_TABLE, resource("entities/literate_mob_book"));
+        public static final ResourceKey<LootTable> LITERATE_MOB_BOOK = ResourceKey.create(Registries.LOOT_TABLE, identifier("entities/literate_mob_book"));
     }
 }

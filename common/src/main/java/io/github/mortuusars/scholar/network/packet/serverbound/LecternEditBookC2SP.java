@@ -37,7 +37,7 @@ import java.util.function.Consumer;
  * Contains logic copied from {@link net.minecraft.server.network.ServerGamePacketListenerImpl}, which is not ideal, but hopefully it'll not cause any issues.
  */
 public record LecternEditBookC2SP(BlockPos lecternPos, List<String> pages, Optional<String> title) implements Packet {
-    public static final Identifier ID = Scholar.resource("lectern_edit_book");
+    public static final Identifier ID = Scholar.identifier("lectern_edit_book");
     public static final Type<LecternEditBookC2SP> TYPE = new Type<>(ID);
 
     public static final int TITLE_MAX_CHARS = 128;

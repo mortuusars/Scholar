@@ -12,8 +12,8 @@ import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.LecternRenderer;
 import net.minecraft.client.renderer.blockentity.state.LecternRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.state.CameraRenderState;
-import net.minecraft.client.resources.model.MaterialSet;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.resources.model.sprite.SpriteGetter;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
@@ -31,33 +31,34 @@ public class LecternRendererMixin {
 
     @Shadow
     @Final
-    private MaterialSet materials;
+    private SpriteGetter sprites;
 
     @Shadow
     @Final
-    private BookModel.State bookState;
+    private static BookModel.State BOOK_STATE;
 
     @Inject(method = "extractRenderState(Lnet/minecraft/world/level/block/entity/LecternBlockEntity;Lnet/minecraft/client/renderer/blockentity/state/LecternRenderState;FLnet/minecraft/world/phys/Vec3;Lnet/minecraft/client/renderer/feature/ModelFeatureRenderer$CrumblingOverlay;)V",
           at = @At("RETURN"))
-    private void onExtractRenderState(LecternBlockEntity lecternBlockEntity, LecternRenderState lecternRenderState, float partialTick, Vec3 cameraPos, ModelFeatureRenderer.CrumblingOverlay crumblingOverlay, CallbackInfo ci) {
-        if (lecternRenderState instanceof ScholarBookHolderRenderState state) {
-            if (Config.Common.LECTERN_COLORED_BOOK_MODEL.get() && !lecternBlockEntity.getBook().isEmpty()) {
-                state.scholar$setBookRenderState(new BookRenderState(
-                      lecternBlockEntity.getBook().has(Scholar.DataComponents.BOOK_GOLDEN),
-                      BookColor.of(lecternBlockEntity.getBook())));
+    private void onExtractRenderState(LecternBlockEntity blockEntity, LecternRenderState state, float partialTicks,
+                                      Vec3 cameraPosition, ModelFeatureRenderer.CrumblingOverlay breakProgress, CallbackInfo ci) {
+        if (state instanceof ScholarBookHolderRenderState bookHolderState) {
+            if (Config.Common.LECTERN_COLORED_BOOK_MODEL.get() && !blockEntity.getBook().isEmpty()) {
+                bookHolderState.scholar$setBookRenderState(new BookRenderState(
+                      blockEntity.getBook().has(Scholar.DataComponents.BOOK_GOLDEN),
+                      BookColor.of(blockEntity.getBook())));
             } else {
-                state.scholar$setBookRenderState(BookRenderState.NO_BOOK);
+                bookHolderState.scholar$setBookRenderState(BookRenderState.NO_BOOK);
             }
         }
     }
 
-    @Inject(method = "submit(Lnet/minecraft/client/renderer/blockentity/state/LecternRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
+    @Inject(method = "submit(Lnet/minecraft/client/renderer/blockentity/state/LecternRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
           at = @At("HEAD"),
           cancellable = true)
-    private void onSubmit(LecternRenderState lecternRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
-                          CameraRenderState cameraRenderState, CallbackInfo ci) {
+    private void onSubmit(LecternRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
+                          CameraRenderState camera, CallbackInfo ci) {
         if (Config.Common.LECTERN_COLORED_BOOK_MODEL.get()) {
-            ColoredBookModel.submitOnLectern(lecternRenderState, poseStack, submitNodeCollector, cameraRenderState, materials, bookModel, bookState);
+            ColoredBookModel.submitOnLectern(state, poseStack, submitNodeCollector, camera, sprites, bookModel, BOOK_STATE);
             ci.cancel();
         }
     }

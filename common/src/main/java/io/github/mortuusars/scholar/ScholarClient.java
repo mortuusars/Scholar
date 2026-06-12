@@ -14,7 +14,7 @@ public class ScholarClient {
 
     public static class KeyMappings {
         public static final KeyMapping.Category SCHOLAR_CATEGORY = KeyMapping.Category.register(
-              Scholar.resource("scholar"));
+              Scholar.identifier("scholar"));
 
         public static KeyMapping toggleBookTools = new KeyMapping("key.scholar.toggle_book_tools",
                 InputConstants.KEY_F1, SCHOLAR_CATEGORY);

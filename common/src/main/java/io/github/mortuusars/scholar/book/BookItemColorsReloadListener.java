@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BookItemColorsReloadListener extends SimpleJsonResourceReloadListener<Map<Identifier, Integer>> {
-    public static final Identifier ID = Scholar.resource("book_item_colors_reload_listener");
+    public static final Identifier ID = Scholar.identifier("book_item_colors_reload_listener");
 
     public BookItemColorsReloadListener() {
         super(Codec.unboundedMap(Identifier.CODEC, HexColor.CODEC), FileToIdConverter.json("book/item_colors"));

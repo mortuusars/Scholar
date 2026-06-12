@@ -1,23 +1,19 @@
 package io.github.mortuusars.scholar.client.chiseled_bookshelf;
 
-import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.book.BookColor;
-import net.minecraft.client.color.block.BlockColor;
-import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.color.block.BlockTintSource;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockAndTintGetter;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.ChiseledBookShelfBlock;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 public class ChiseledBookshelfColors {
     public static Map<Identifier, BookshelfDefaultColors> DEFAULT_SLOT_COLORS = Collections.emptyMap();
@@ -46,21 +42,46 @@ public class ChiseledBookshelfColors {
     // This greatly simplifies adding colored book support - any resourcepack will now just work out of the box.
     // (in the previous version each block needed to be changed manually in code, using its reference)
 
-    public static void setBookshelfRenderLayer(BiConsumer<Block, ChunkSectionLayer> consumer) {
-        Scholar.LOGGER.info("Scholar is setting RenderType of all 'ChiseledBookShelfBlock's " +
-              "to 'cutout' so the books could have proper colors in bookshelves.");
-        Scholar.LOGGER.info("If Chiseled Bookshelves do not look correctly, please report to the Scholar github.");
-        BuiltInRegistries.BLOCK.stream()
-              .filter(bl -> bl instanceof ChiseledBookShelfBlock)
-              .forEach(bl -> consumer.accept(bl, ChunkSectionLayer.CUTOUT));
+//    public static void setBookshelfRenderLayer(BiConsumer<Block, ChunkSectionLayer> consumer) {
+//        Scholar.LOGGER.info("Scholar is setting RenderType of all 'ChiseledBookShelfBlock's " +
+//              "to 'cutout' so the books could have proper colors in bookshelves.");
+//        Scholar.LOGGER.info("If Chiseled Bookshelves do not look correctly, please report to the Scholar github.");
+//        BuiltInRegistries.BLOCK.stream()
+//              .filter(bl -> bl instanceof ChiseledBookShelfBlock)
+//              .forEach(bl -> consumer.accept(bl, ChunkSectionLayer.CUTOUT));
+//    }
+//
+//    public static void registerBookshelfBlockColors(BiConsumer<BlockColor, Block> consumer) {
+//        Scholar.LOGGER.info("Scholar is registering 'BlockColor' (tints) for all 'ChiseledBookShelfBlock's, " +
+//              "so the books could have proper colors in bookshelves.");
+//        Scholar.LOGGER.info("If Chiseled Bookshelves do not look correctly, please report to the Scholar github.");
+//        BuiltInRegistries.BLOCK.stream()
+//              .filter(bl -> bl instanceof ChiseledBookShelfBlock)
+//              .forEach(bl -> consumer.accept(ChiseledBookshelfColors::getSlotTintColor, bl));
+//    }
+
+    public static List<BlockTintSource> slotTintSources() {
+        return List.of(
+              slotTintSource(0),
+              slotTintSource(1),
+              slotTintSource(2),
+              slotTintSource(3),
+              slotTintSource(4),
+              slotTintSource(5)
+        );
     }
 
-    public static void registerBookshelfBlockColors(BiConsumer<BlockColor, Block> consumer) {
-        Scholar.LOGGER.info("Scholar is registering 'BlockColor' (tints) for all 'ChiseledBookShelfBlock's, " +
-              "so the books could have proper colors in bookshelves.");
-        Scholar.LOGGER.info("If Chiseled Bookshelves do not look correctly, please report to the Scholar github.");
-        BuiltInRegistries.BLOCK.stream()
-              .filter(bl -> bl instanceof ChiseledBookShelfBlock)
-              .forEach(bl -> consumer.accept(ChiseledBookshelfColors::getSlotTintColor, bl));
+    public static BlockTintSource slotTintSource(int slotIndex) {
+        return new BlockTintSource() {
+            @Override
+            public int color(BlockState state) {
+                return getDefaultTintColorForSlot(state, slotIndex);
+            }
+
+            @Override
+            public int colorInWorld(BlockState state, BlockAndTintGetter level, BlockPos pos) {
+                return getSlotTintColor(state, level, pos, slotIndex);
+            }
+        };
     }
 }

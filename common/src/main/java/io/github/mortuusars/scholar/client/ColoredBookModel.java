@@ -16,11 +16,10 @@ import net.minecraft.client.renderer.blockentity.state.LecternRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.MaterialSet;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.client.resources.model.sprite.SpriteGetter;
+import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -30,12 +29,12 @@ import net.minecraft.world.item.WritableBookItem;
 import org.jetbrains.annotations.NotNull;
 
 public class ColoredBookModel {
-    public static final Material BOOK_COVER_LOCATION = Sheets.BLOCK_ENTITIES_MAPPER.apply(Scholar.resource("book_cover"));
-    public static final Material BOOK_COVER_GOLDEN_LOCATION = Sheets.BLOCK_ENTITIES_MAPPER.apply(Scholar.resource("book_cover_golden"));
-    public static final Material BOOK_PAGES_LOCATION = Sheets.BLOCK_ENTITIES_MAPPER.apply(Scholar.resource("book_pages"));
+    public static final SpriteId BOOK_COVER_SPRITE = Sheets.BLOCK_ENTITIES_MAPPER.apply(Scholar.identifier("book_cover"));
+    public static final SpriteId BOOK_COVER_GOLDEN_SPRITE = Sheets.BLOCK_ENTITIES_MAPPER.apply(Scholar.identifier("book_cover_golden"));
+    public static final SpriteId BOOK_PAGES_LOCATION = Sheets.BLOCK_ENTITIES_MAPPER.apply(Scholar.identifier("book_pages"));
 
     public static void submitOnLectern(LecternRenderState lecternRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector,
-                                       CameraRenderState cameraRenderState, MaterialSet materials, BookModel bookModel, BookModel.State bookState) {
+                                       CameraRenderState camera, SpriteGetter sprites, BookModel bookModel, BookModel.State bookState) {
         if (lecternRenderState instanceof ScholarBookHolderRenderState state && state.scholar$getBookRenderState().hasBook()) {
             poseStack.pushPose();
             poseStack.translate(0.5F, 1.0625F, 0.5F);
@@ -43,24 +42,24 @@ public class ColoredBookModel {
             poseStack.mulPose(Axis.ZP.rotationDegrees(67.5F));
             poseStack.translate(0.0F, -0.125F, 0.0F);
 
-            Material coverMaterial = getBookCoverMaterial(state.scholar$getBookRenderState());
+            SpriteId coverSprite = getBookCoverSprite(state.scholar$getBookRenderState());
             submitNodeCollector.submitModel(bookModel, bookState, poseStack,
-                  coverMaterial.renderType(RenderTypes::entityCutout),
+                  coverSprite.renderType(RenderTypes::entityCutout),
                   lecternRenderState.lightCoords,
                   OverlayTexture.NO_OVERLAY,
                   state.scholar$getBookRenderState().coverTintColor(),
-                  materials.get(coverMaterial),
+                  sprites.get(coverSprite),
                   0,
                   lecternRenderState.breakProgress
             );
 
-            Material pagesMaterial = getBookPagesMaterial(state.scholar$getBookRenderState());
+            SpriteId pagesSprite = getBookPagesSprite(state.scholar$getBookRenderState());
             submitNodeCollector.submitModel(bookModel, bookState, poseStack,
-                  pagesMaterial.renderType(RenderTypes::entityCutout),
+                  pagesSprite.renderType(RenderTypes::entityCutout),
                   lecternRenderState.lightCoords,
                   OverlayTexture.NO_OVERLAY,
                   0xFFFFFFFF,
-                  materials.get(pagesMaterial),
+                  sprites.get(pagesSprite),
                   0,
                   lecternRenderState.breakProgress
             );
@@ -92,24 +91,24 @@ public class ColoredBookModel {
 
         ReadingAnimation.poseBook(humanoidRenderState, stack, arm, entityModel, bookModel);
 
-        Material coverMaterial = getBookCoverMaterial(bookRenderState);
+        SpriteId coverSprite = getBookCoverSprite(bookRenderState);
         submitNodeCollector.submitModel(bookModel, bookState, poseStack,
-              coverMaterial.renderType(RenderTypes::entityCutout),
+              coverSprite.renderType(RenderTypes::entityCutout),
               packedLight,
               OverlayTexture.NO_OVERLAY,
               bookRenderState.coverTintColor(),
-              Minecraft.getInstance().getAtlasManager().get(coverMaterial),
+              Minecraft.getInstance().getAtlasManager().get(coverSprite),
               0,
               null
         );
 
-        Material pagesMaterial = getBookPagesMaterial(bookRenderState);
+        SpriteId pagesSprite = getBookPagesSprite(bookRenderState);
         submitNodeCollector.submitModel(bookModel, bookState, poseStack,
-              pagesMaterial.renderType(RenderTypes::entityCutout),
+              pagesSprite.renderType(RenderTypes::entityCutout),
               packedLight,
               OverlayTexture.NO_OVERLAY,
               0xFFFFFFFF,
-              Minecraft.getInstance().getAtlasManager().get(pagesMaterial),
+              Minecraft.getInstance().getAtlasManager().get(pagesSprite),
               0,
               null
         );
@@ -161,24 +160,24 @@ public class ColoredBookModel {
 
         BookRenderState bookRenderState = new BookRenderState(stack.has(Scholar.DataComponents.BOOK_GOLDEN), BookColor.of(stack));
 
-        Material coverMaterial = getBookCoverMaterial(bookRenderState);
+        SpriteId coverSprite = getBookCoverSprite(bookRenderState);
         submitNodeCollector.submitModel(bookModel, ReadingAnimation.BOOK_OPEN_STATE, poseStack,
-              coverMaterial.renderType(RenderTypes::entityCutout),
+              coverSprite.renderType(RenderTypes::entityCutout),
               packedLight,
               OverlayTexture.NO_OVERLAY,
               bookRenderState.coverTintColor(),
-              Minecraft.getInstance().getAtlasManager().get(coverMaterial),
+              Minecraft.getInstance().getAtlasManager().get(coverSprite),
               0,
               null
         );
 
-        Material pagesMaterial = getBookPagesMaterial(bookRenderState);
+        SpriteId pagesSprite = getBookPagesSprite(bookRenderState);
         submitNodeCollector.submitModel(bookModel, ReadingAnimation.BOOK_OPEN_STATE, poseStack,
-              pagesMaterial.renderType(RenderTypes::entityCutout),
+              pagesSprite.renderType(RenderTypes::entityCutout),
               packedLight,
               OverlayTexture.NO_OVERLAY,
               0xFFFFFFFF,
-              Minecraft.getInstance().getAtlasManager().get(pagesMaterial),
+              Minecraft.getInstance().getAtlasManager().get(pagesSprite),
               0,
               null
         );
@@ -186,13 +185,13 @@ public class ColoredBookModel {
         poseStack.popPose();
     }
 
-    public static @NotNull Material getBookCoverMaterial(BookRenderState renderState) {
+    public static @NotNull SpriteId getBookCoverSprite(BookRenderState renderState) {
         return renderState.isGolden()
-              ? BOOK_COVER_GOLDEN_LOCATION
-              : BOOK_COVER_LOCATION;
+              ? BOOK_COVER_GOLDEN_SPRITE
+              : BOOK_COVER_SPRITE;
     }
 
-    public static @NotNull Material getBookPagesMaterial(BookRenderState renderState) {
+    public static @NotNull SpriteId getBookPagesSprite(BookRenderState renderState) {
         return ColoredBookModel.BOOK_PAGES_LOCATION;
     }
 }

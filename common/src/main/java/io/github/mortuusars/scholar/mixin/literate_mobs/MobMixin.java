@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(Mob.class)
 public abstract class MobMixin extends LivingEntity implements EquipmentUser, Leashable, Targeting {
     @Shadow
-    public abstract void setDropChance(EquipmentSlot slot, float dropChance);
+    public abstract void setDropChance(EquipmentSlot slot, float percent);
 
     @Shadow
     @Final
@@ -29,7 +29,7 @@ public abstract class MobMixin extends LivingEntity implements EquipmentUser, Le
     @WrapOperation(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Mob;registerGoals()V"))
     private void onRegisterGoals(Mob instance, Operation<Void> original) {
         original.call(instance);
-        if (getType().is(Scholar.Tags.EntityTypes.LITERATE)) {
+        if (is(Scholar.Tags.EntityTypes.LITERATE)) {
             goalSelector.addGoal(ReadBookGoal.getPriority(instance), new ReadBookGoal((Mob) (Object) this));
         }
     }

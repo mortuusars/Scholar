@@ -1,6 +1,6 @@
 package io.github.mortuusars.scholar.client.gui.widget;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -25,9 +25,9 @@ public class BookmarkButton extends ImageButton {
     }
 
     @Override
-    public void renderContents(GuiGraphics guiGraphics, int i, int j, float f) {
+    public void extractContents(GuiGraphicsExtractor graphics, int i, int j, float f) {
         WidgetSprites sprites = expanded ? expandedSprites : this.sprites;
         Identifier sprite = sprites.get(isActive(), isHoveredOrFocused());
-        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, getX(), getY(), width, height);
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, getX(), getY(), width, height);
     }
 }

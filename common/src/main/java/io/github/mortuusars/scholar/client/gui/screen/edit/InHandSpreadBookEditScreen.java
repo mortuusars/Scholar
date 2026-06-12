@@ -49,8 +49,8 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
     protected void createExtraToolsButtons() {
         super.createExtraToolsButtons();
         bookmarkButton = addRenderableWidget(new BookmarkButton(leftPos + 118, topPos + 2, 20, 20,
-              Widgets.threeStateSprites(Scholar.resource("book/bookmark_button_inactive")),
-              Widgets.threeStateSprites(Scholar.resource("book/bookmark_button_active")),
+              Widgets.threeStateSprites(Scholar.identifier("book/bookmark_button_inactive")),
+              Widgets.threeStateSprites(Scholar.identifier("book/bookmark_button_active")),
               this::pressBookmarkButton,
               Component.translatable("gui.scholar.bookmark")));
     }

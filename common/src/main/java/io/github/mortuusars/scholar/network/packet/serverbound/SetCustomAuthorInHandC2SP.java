@@ -18,7 +18,7 @@ import net.minecraft.world.item.component.WrittenBookContent;
 import org.jetbrains.annotations.NotNull;
 
 public record SetCustomAuthorInHandC2SP(int slot, String author) implements Packet {
-    public static final Identifier ID = Scholar.resource("set_custom_author_in_hand");
+    public static final Identifier ID = Scholar.identifier("set_custom_author_in_hand");
     public static final Type<SetCustomAuthorInHandC2SP> TYPE = new Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, SetCustomAuthorInHandC2SP> STREAM_CODEC = StreamCodec.composite(

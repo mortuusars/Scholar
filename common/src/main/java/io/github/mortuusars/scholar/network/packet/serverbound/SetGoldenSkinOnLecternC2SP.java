@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public record SetGoldenSkinOnLecternC2SP(BlockPos lecternPos, boolean golden) implements Packet {
-    public static final Identifier ID = Scholar.resource("set_golden_skin_on_lectern");
+    public static final Identifier ID = Scholar.identifier("set_golden_skin_on_lectern");
     public static final Type<SetGoldenSkinOnLecternC2SP> TYPE = new Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, SetGoldenSkinOnLecternC2SP> STREAM_CODEC = StreamCodec.composite(

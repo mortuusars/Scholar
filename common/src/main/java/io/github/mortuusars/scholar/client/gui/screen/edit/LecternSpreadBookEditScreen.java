@@ -10,7 +10,7 @@ import io.github.mortuusars.scholar.network.packet.serverbound.LecternEditBookC2
 import io.github.mortuusars.scholar.network.packet.serverbound.SetCustomAuthorOnLecternC2SP;
 import io.github.mortuusars.scholar.network.packet.serverbound.SetGoldenSkinOnLecternC2SP;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
@@ -68,12 +68,12 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
         if (player.mayBuild()) {
             if (Config.Common.BOOK_SCREEN_SHOW_DONE_BUTTON.get()) {
                 this.addRenderableWidget(Button.builder(CommonComponents.GUI_DONE,
-                        button -> this.onClose()).bounds(this.width / 2 - 100, topPos + SpreadBookScreen.BOOK_HEIGHT + 12, 98, 20).build());
+                      _ -> this.onClose()).bounds(this.width / 2 - 100, topPos + SpreadBookScreen.BOOK_HEIGHT + 12, 98, 20).build());
                 this.addRenderableWidget(Button.builder(Component.translatable("lectern.take_book"),
-                        button -> this.sendButtonClick(3)).bounds(this.width / 2 + 2, topPos + SpreadBookScreen.BOOK_HEIGHT + 12, 98, 20).build());
+                      _ -> this.sendButtonClick(3)).bounds(this.width / 2 + 2, topPos + SpreadBookScreen.BOOK_HEIGHT + 12, 98, 20).build());
             } else {
                 this.addRenderableWidget(Button.builder(Component.translatable("lectern.take_book"),
-                        (button) -> this.sendButtonClick(3)).bounds(this.width / 2 - 60, topPos + SpreadBookScreen.BOOK_HEIGHT + 12, 120, 20).build());
+                        _ -> this.sendButtonClick(3)).bounds(this.width / 2 - 60, topPos + SpreadBookScreen.BOOK_HEIGHT + 12, 120, 20).build());
             }
         } else {
             super.createBottomButtons();
@@ -141,34 +141,35 @@ public class LecternSpreadBookEditScreen extends SpreadBookEditScreen implements
 
     // --
 
+
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
-        renderPageTooltip(guiGraphics, mouseX, mouseY);
+    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick);
+        renderPageTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
-    protected void renderLeftPageNumber(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
+    protected void extractLeftPageNumber(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
         if (isRightPage(getMenu().getPage()) && isHoveringOverLeftPageNumber(mouseX, mouseY)) {
             color = textColor;
         }
-        super.renderLeftPageNumber(guiGraphics, mouseX, mouseY, partialTick, currentSpread, color);
+        super.extractLeftPageNumber(graphics, mouseX, mouseY, partialTick, currentSpread, color);
     }
 
     @Override
-    protected void renderRightPageNumber(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
+    protected void extractRightPageNumber(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick, int currentSpread, int color) {
         if (isLeftPage(getMenu().getPage()) && isHoveringOverRightPageNumber(mouseX, mouseY)) {
             color = textColor;
         }
-        super.renderRightPageNumber(guiGraphics, mouseX, mouseY, partialTick, currentSpread, color);
+        super.extractRightPageNumber(graphics, mouseX, mouseY, partialTick, currentSpread, color);
     }
 
-    protected void renderPageTooltip(GuiGraphics guiGraphics, int x, int y) {
+    protected void renderPageTooltip(GuiGraphicsExtractor graphics, int x, int y) {
         int page = getMenu().getPage();
 
         if ((isRightPage(page) && isHoveringOverLeftPageNumber(x, y))
                 || (isLeftPage(page) && isHoveringOverRightPageNumber(x, y))) {
-            guiGraphics.setTooltipForNextFrame(font, Component.translatable("gui.scholar.lectern.set_current_page"), x, y);
+            graphics.setTooltipForNextFrame(font, Component.translatable("gui.scholar.lectern.set_current_page"), x, y);
         }
     }
 

@@ -33,7 +33,7 @@ public class ReadBookGoal extends Goal {
     }
 
     public boolean canRead() {
-        return mob.getType().is(Scholar.Tags.EntityTypes.LITERATE)
+        return mob.is(Scholar.Tags.EntityTypes.LITERATE)
               && mob.getTarget() == null
               && !mob.isInWaterOrRain()
               && !mob.getNavigation().isInProgress()

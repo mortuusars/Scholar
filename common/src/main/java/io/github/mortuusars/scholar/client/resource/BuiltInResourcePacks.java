@@ -12,31 +12,31 @@ public class BuiltInResourcePacks {
         List<Pack> packs = new java.util.ArrayList<>();
 
         packs.add(new Pack(
-                Scholar.resource("colored_books"),
+                Scholar.identifier("colored_books"),
                 Component.translatable("resourcepack.scholar.colored_books.name"),
                 new Activation(ActivationType.DEFAULT_ENABLED)));
         packs.add(new Pack(
-                Scholar.resource("chiseled_bookshelf_colored_books"),
+                Scholar.identifier("chiseled_bookshelf_colored_books"),
                 Component.translatable("resourcepack.scholar.chiseled_bookshelf_colored_books.name"),
                 new Activation(ActivationType.DEFAULT_ENABLED)));
 
         if (Mods.MCBV.isLoading()) {
             packs.add(new Pack(
-                    Scholar.resource("chiseled_bookshelf_colored_books_lolmcbv_compat"),
+                    Scholar.identifier("chiseled_bookshelf_colored_books_lolmcbv_compat"),
                     Component.translatable("resourcepack.scholar.chiseled_bookshelf_colored_books_lolmcbv_compat.name"),
                     new Activation(ActivationType.DEFAULT_ENABLED)));
         }
 
         if (Mods.WOODWORKS.isLoading()) {
             packs.add(new Pack(
-                    Scholar.resource("chiseled_bookshelf_colored_books_abnww_compat"),
+                    Scholar.identifier("chiseled_bookshelf_colored_books_abnww_compat"),
                     Component.translatable("resourcepack.scholar.chiseled_bookshelf_colored_books_abnww_compat.name"),
                     new Activation(ActivationType.DEFAULT_ENABLED)));
         }
 
         if (Mods.WOODSTER.isLoading()) {
             packs.add(new Pack(
-                    Scholar.resource("chiseled_bookshelf_colored_books_woodster_compat"),
+                    Scholar.identifier("chiseled_bookshelf_colored_books_woodster_compat"),
                     Component.translatable("resourcepack.scholar.chiseled_bookshelf_colored_books_woodster_compat.name"),
                     new Activation(ActivationType.DEFAULT_ENABLED)));
         }

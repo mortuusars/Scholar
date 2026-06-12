@@ -4,7 +4,6 @@ import io.github.mortuusars.scholar.client.BookRenderState;
 import io.github.mortuusars.scholar.client.lectern.ScholarBookHolderRenderState;
 import net.minecraft.client.renderer.blockentity.state.LecternRenderState;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 

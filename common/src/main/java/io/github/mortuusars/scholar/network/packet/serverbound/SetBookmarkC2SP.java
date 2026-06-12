@@ -15,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public record SetBookmarkC2SP(int slot, int page) implements Packet {
-    public static final Identifier ID = Scholar.resource("set_bookmark");
+    public static final Identifier ID = Scholar.identifier("set_bookmark");
     public static final Type<SetBookmarkC2SP> TYPE = new Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, SetBookmarkC2SP> STREAM_CODEC = StreamCodec.composite(
