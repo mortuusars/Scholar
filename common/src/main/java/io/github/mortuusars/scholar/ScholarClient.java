@@ -10,19 +10,11 @@ import java.util.function.Consumer;
 
 public class ScholarClient {
     public static void init() {
-//        registerItemModelProperties();
-    }
-
-    private static void registerItemModelProperties() {
-//        ItemProperties.register(Items.WRITABLE_BOOK, Scholar.resource("book_golden"),
-//              (stack, level, entity, seed) -> stack.has(Scholar.DataComponents.BOOK_GOLDEN) ? 1 : 0);
-//        ItemProperties.register(Items.WRITTEN_BOOK, Scholar.resource("book_golden"),
-//              (stack, level, entity, seed) -> stack.has(Scholar.DataComponents.BOOK_GOLDEN) ? 1 : 0);
     }
 
     public static class KeyMappings {
         public static final KeyMapping.Category SCHOLAR_CATEGORY = KeyMapping.Category.register(
-              Scholar.resource("key.scholar.categories.scholar"));
+              Scholar.resource("scholar"));
 
         public static KeyMapping toggleBookTools = new KeyMapping("key.scholar.toggle_book_tools",
                 InputConstants.KEY_F1, SCHOLAR_CATEGORY);

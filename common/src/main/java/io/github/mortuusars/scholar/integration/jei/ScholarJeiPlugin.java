@@ -47,9 +47,7 @@ public class ScholarJeiPlugin implements IModPlugin {
                 }
 
                 DyeItem dye = DyeItem.byColor(color);
-                NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.of(ItemStack.EMPTY.getItem()),
-                      Ingredient.of(itemHolder.value()),
-                      Ingredient.of(dye));
+                List<Ingredient> inputs = List.of(Ingredient.of(itemHolder.value()), Ingredient.of(dye));
                 ItemStack result = DyedItemColor.applyDyes(new ItemStack(itemHolder), List.of(dye));
                 String id = "dyeing_" + itemHolder.value().toString().replace(':', '_') + "_with_" + color.getName();
                 ShapelessRecipe recipe = new ShapelessRecipe("dyeing_" + color.getName(),

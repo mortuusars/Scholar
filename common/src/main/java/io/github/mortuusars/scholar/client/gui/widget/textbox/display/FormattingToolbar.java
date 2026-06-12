@@ -207,7 +207,6 @@ public class FormattingToolbar {
         if (isVisible() && shouldShow() && event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             for (FormattingButton formattingButton : buttons) {
                 if (formattingButton.isHovering((int) (event.x() - x), (int) (event.y() - y))) {
-                    getTextBox().getEditor().applyFormatting(Formatting.of(formattingButton.formatting()));
                     Minecraft.getInstance().getSoundManager().play(
                             SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1, 0.1f));
 

@@ -48,7 +48,7 @@
   "gui.scholar.tools.tooltip.paste_without_formatting": "§8[§7Ctrl+Shift+V§8] Вставити без форматуванням",
   "gui.scholar.tools.tooltip.redo": "§8[§7Ctrl+Shift+Z§8] Повторити",
   "gui.scholar.tools.tooltip.undo": "§8[§7Ctrl+Z§8] Відмінити",
-  "key.scholar.categories.scholar": "Scholar",
+  "key.category.scholar.scholar": "Scholar",
   "key.scholar.export_book": "Експортувати книгу",
   "key.scholar.import_book": "Імпортувати книгу",
   "key.scholar.insert_empty_page_left": "Вставити порожню сторінку зліва",
