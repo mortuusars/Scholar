@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.0 - UNRELEASED 
+## 1.2.0 - 2026-06-15 
 
 _New features:_
 - **Book Reading Animation**
