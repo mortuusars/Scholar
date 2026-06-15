@@ -1,6 +1,9 @@
 # Changelog
 
-## 1.2.0 - UNRELEASED
+## 1.2.1 - 2026-06-16
+- Fixed crash when pressing backspace while cursor is on index 0. 
+
+## 1.2.0 - 2026-06-16
 
 _New features:_
 - **Book Reading Animation**

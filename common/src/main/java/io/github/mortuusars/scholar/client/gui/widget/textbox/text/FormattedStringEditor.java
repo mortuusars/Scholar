@@ -407,8 +407,8 @@ public class FormattedStringEditor {
             } else {
                 int cursor = getCursorPos();
                 int removePos = cursor + direction;
-                int start = Math.min(removePos, cursor);
-                int end = Math.max(removePos, cursor);
+                int start = clampIndex(Math.min(removePos, cursor));
+                int end = clampIndex(Math.max(removePos, cursor));
 
                 getSpan(start, end).clear();
                 setCursorPos(start, false);
