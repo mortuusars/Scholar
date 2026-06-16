@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1 - 2026-06-16
+- Fixed crash when opening book placed on lectern.
+- Fixed errors in log when pressing backspace while cursor is at index 0.
+- Fixed errors/warnings in log related to pack.mcmeta pack_format.
+
 ## 1.2.0 - 2026-06-15 
 
 _New features:_
