@@ -6,20 +6,27 @@ import io.github.mortuusars.scholar.network.packet.C2SPackets;
 import io.github.mortuusars.scholar.network.packet.CommonPackets;
 import io.github.mortuusars.scholar.network.packet.Packet;
 import io.github.mortuusars.scholar.network.packet.S2CPackets;
-import net.minecraft.core.cauldron.CauldronInteraction;
+import io.github.mortuusars.scholar.world.entity.Reading;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.world.item.Items;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 @SuppressWarnings("unused")
 @EventBusSubscriber(modid = Scholar.ID)
 public class NeoForgeCommonEvents {
+    @SubscribeEvent
+    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            Reading.closeAllBooksInInventory(player);
+        }
+    }
+
     @SuppressWarnings("unchecked")
     @SubscribeEvent
     public static void registerPackets(RegisterPayloadHandlersEvent event) {

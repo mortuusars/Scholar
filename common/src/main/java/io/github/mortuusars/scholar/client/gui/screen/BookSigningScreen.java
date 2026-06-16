@@ -179,10 +179,10 @@ public class BookSigningScreen extends Screen {
     }
 
     @Override
-    public void resize(Minecraft minecraft, int width, int height) {
+    public void resize(int width, int height) {
         FormattedString titleString = titleTextBox.getEditor().getString();
         FormattedString authorString = authorTextBox.getEditor().getString();
-        super.resize(minecraft, width, height);
+        super.resize(width, height);
         titleTextBox.getEditor().setString(titleString);
         authorTextBox.getEditor().setString(authorString);
     }
