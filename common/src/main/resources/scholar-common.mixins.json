@@ -8,6 +8,7 @@
     "BlockEntityParentMixin",
     "BookCloningRecipeMixin",
     "IsFoilWrittenBookItemStackMixin",
+    "accessor.LecternBlockEntityAccessor",
     "chiseled_bookshelf.ChiseledBookShelfBlockEntityMixin",
     "chiseled_bookshelf.ChiseledBookShelfBlockMixin",
     "golden.ItemStackMixin",
