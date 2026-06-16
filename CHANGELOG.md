@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.1 - 2026-06-16
+- Fixed errors in log when pressing backspace while cursor is at index 0.
+
 ## 1.2.0 - 2026-06-15 
 
 _New features:_
