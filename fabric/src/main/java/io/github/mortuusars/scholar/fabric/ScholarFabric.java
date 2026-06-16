@@ -5,8 +5,10 @@ import io.github.mortuusars.scholar.Config;
 import io.github.mortuusars.scholar.Scholar;
 import io.github.mortuusars.scholar.network.fabric.FabricC2SPackets;
 import io.github.mortuusars.scholar.network.fabric.FabricS2CPackets;
+import io.github.mortuusars.scholar.world.entity.Reading;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.*;
@@ -33,6 +35,9 @@ public class ScholarFabric implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             ScholarFabric.server = null;
         });
+
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
+              Reading.closeAllBooksInInventory(handler.getPlayer()));
 
         FabricC2SPackets.register();
         FabricS2CPackets.register();
