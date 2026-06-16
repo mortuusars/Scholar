@@ -110,6 +110,7 @@ public class InHandSpreadBookEditScreen extends SpreadBookEditScreen {
         saveChanges(true, signature.title());
         signature.customAuthor().ifPresent(customAuthor ->
               Packets.sendToServer(new SetCustomAuthorInHandC2SP(getBookSlot(), customAuthor)));
+        Packets.sendToServer(new StoppedReadingInHandC2SP(getBookSlot()));
     }
 
     @Override

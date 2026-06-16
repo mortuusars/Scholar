@@ -2,6 +2,7 @@
 
 ## 1.2.2 - 2026-06-17
 - Fixed swapping between windowed and fullscreen mode reverting the changes made to input boxes.
+- Fixed signing the book not closing it properly.
 
 ## 1.2.1 - 2026-06-16
 - Fixed errors in log when pressing backspace while cursor is at index 0.
