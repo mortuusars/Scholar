@@ -3,6 +3,7 @@
 ## 1.2.2 - 2026-06-17
 - Fixed swapping between windowed and fullscreen mode reverting the changes made to input boxes.
 - Fixed signing the book not closing it properly.
+- Added a safeguard to close all books in player's inventory on login, to prevent the "reading" state being active after disconnect or a crash. 
 
 ## 1.2.1 - 2026-06-16
 - Fixed crash when pressing backspace while cursor is on index 0. 
