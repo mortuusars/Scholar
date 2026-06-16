@@ -230,6 +230,15 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
         }
     }
 
+    @Override
+    public void resize(Minecraft minecraft, int width, int height) {
+        FormattedString leftString = leftPageTextBox.getEditor().getString();
+        FormattedString rightString = rightPageTextBox.getEditor().getString();
+        super.resize(minecraft, width, height);
+        leftPageTextBox.getEditor().setString(leftString);
+        rightPageTextBox.getEditor().setString(rightString);
+    }
+
     // -- Render
 
     @Override

@@ -165,6 +165,15 @@ public class BookSigningScreen extends Screen {
     }
 
     @Override
+    public void resize(Minecraft minecraft, int width, int height) {
+        FormattedString titleString = titleTextBox.getEditor().getString();
+        FormattedString authorString = authorTextBox.getEditor().getString();
+        super.resize(minecraft, width, height);
+        titleTextBox.getEditor().setString(titleString);
+        authorTextBox.getEditor().setString(authorString);
+    }
+
+    @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         updateButtons();
 
@@ -210,12 +219,6 @@ public class BookSigningScreen extends Screen {
     }
 
     protected void sign() {
-        /*if (canSign()) {
-            onSign.accept(titleText.trim());
-            minecraft.getSoundManager().play(
-                  SimpleSoundInstance.forUI(Scholar.SoundEvents.BOOK_SIGNED.get(), 1f, 0.8f));
-            onClose();
-        }*/
         if (canSign()) {
             Optional<String> author = Optional.of(authorText)
                   .filter(a -> Config.Common.BOOK_CHANGEABLE_AUTHOR.get()
