@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.3 - 2026-06-19
+- Potential fix of an issue with C2ME.
+
 ## 1.2.2 - 2026-06-17
 - Fixed swapping between windowed and fullscreen mode reverting the changes made to input boxes.
 - Fixed signing the book not closing it properly.
