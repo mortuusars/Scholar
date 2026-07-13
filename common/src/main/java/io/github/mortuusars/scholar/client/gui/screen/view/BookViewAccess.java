@@ -99,10 +99,9 @@ public interface BookViewAccess {
 
         private static List<String> readPages(ItemStack itemStack) {
             CompoundTag compoundTag = itemStack.getTag();
-            return (WrittenBookItem.makeSureTagIsValid(compoundTag) ?
-                  loadPages(compoundTag) :
-                  ImmutableList.of(Component.Serializer.toJson(Component.translatable("book.invalid.tag")
-                        .withStyle(ChatFormatting.DARK_RED))));
+            return WritableBookItem.makeSureTagIsValid(compoundTag)
+                  ? loadPages(compoundTag)
+                  : ImmutableList.of();
         }
 
         public int getPageCount() {

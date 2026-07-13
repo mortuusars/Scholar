@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.3 - 2026-07-13
+- Fixed Book and Quill on Lectern not displaying its contents properly for other players when someone is editing it.
+
 ## 1.2.2 - 2026-06-17
 - Fixed swapping between windowed and fullscreen mode reverting the changes made to input boxes.
 - Fixed signing the book not closing it properly.
