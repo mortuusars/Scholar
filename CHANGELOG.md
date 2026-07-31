@@ -1,5 +1,8 @@
 # Changelog
 
+## UNRELEASED
+- Removed overlap from textures in the built-in 'colored_books' resourcepack book models to fix z-fighting with shaders.
+
 ## 1.2.3 - 2026-06-19
 - Potential fix of an issue with C2ME.
 
