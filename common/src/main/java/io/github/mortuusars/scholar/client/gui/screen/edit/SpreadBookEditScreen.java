@@ -234,10 +234,34 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
     @Override
     public void resize(Minecraft minecraft, int width, int height) {
         FormattedString leftString = leftPageTextBox.getEditor().getString();
+        int leftBoxCursorPos = leftPageTextBox.getEditor().getCursorPos();
+        boolean leftSelecting = leftPageTextBox.getEditor().isSelecting();
+        int leftSelectionStart = leftPageTextBox.getEditor().getSelectionStart();
+        int leftSelectionEnd = leftPageTextBox.getEditor().getSelectionEnd();
+
         FormattedString rightString = rightPageTextBox.getEditor().getString();
+        int rightBoxCursorPos = rightPageTextBox.getEditor().getCursorPos();
+        boolean rightSelecting = rightPageTextBox.getEditor().isSelecting();
+        int rightSelectionStart = rightPageTextBox.getEditor().getSelectionStart();
+        int rightSelectionEnd = rightPageTextBox.getEditor().getSelectionEnd();
+
+        @Nullable Spread.Side focusedBox = null;
+        if (leftPageTextBox.isFocused()) focusedBox = Spread.Side.LEFT;
+        if (rightPageTextBox.isFocused()) focusedBox = Spread.Side.RIGHT;
+
         super.resize(minecraft, width, height);
+
         leftPageTextBox.getEditor().setString(leftString);
+        leftPageTextBox.getEditor().setCursorPos(leftBoxCursorPos, false);
+        if (leftSelecting) leftPageTextBox.getEditor().setSelectionRange(leftSelectionStart, leftSelectionEnd);
+
         rightPageTextBox.getEditor().setString(rightString);
+        rightPageTextBox.getEditor().setCursorPos(rightBoxCursorPos, false);
+        if (rightSelecting) rightPageTextBox.getEditor().setSelectionRange(rightSelectionStart, rightSelectionEnd);
+
+        if (focusedBox != null) {
+            setFocused(focusedBox == Spread.Side.LEFT ? leftPageTextBox : rightPageTextBox);
+        }
     }
 
     @Override
