@@ -181,10 +181,30 @@ public class BookSigningScreen extends Screen {
     @Override
     public void resize(int width, int height) {
         FormattedString titleString = titleTextBox.getEditor().getString();
+        int titleCursorPos = titleTextBox.getEditor().getCursorPos();
+        boolean titleSelecting = titleTextBox.getEditor().isSelecting();
+        int titleSelectionStart = titleTextBox.getEditor().getSelectionStart();
+        int titleSelectionEnd = titleTextBox.getEditor().getSelectionEnd();
+
         FormattedString authorString = authorTextBox.getEditor().getString();
+        int authorCursorPos = authorTextBox.getEditor().getCursorPos();
+        boolean authorBoxFocused = authorTextBox.isFocused();
+        boolean authorSelecting = authorTextBox.getEditor().isSelecting();
+        int authorSelectionStart = authorTextBox.getEditor().getSelectionStart();
+        int authorSelectionEnd = authorTextBox.getEditor().getSelectionEnd();
+
         super.resize(width, height);
         titleTextBox.getEditor().setString(titleString);
+        titleTextBox.getEditor().setCursorPos(titleCursorPos, false);
+        if (titleSelecting) titleTextBox.getEditor().setSelectionRange(titleSelectionStart, titleSelectionEnd);
+
         authorTextBox.getEditor().setString(authorString);
+        authorTextBox.getEditor().setCursorPos(authorCursorPos, false);
+        if (authorSelecting) authorTextBox.getEditor().setSelectionRange(authorSelectionStart, authorSelectionEnd);
+
+        if (authorBoxFocused) {
+            setFocused(authorTextBox);
+        }
     }
 
     @Override
