@@ -1,5 +1,8 @@
 # Changelog
 
+## UNRELEASED
+- Removed overlap from textures in the built-in 'colored_books' resourcepack book models to fix z-fighting with shaders.
+
 ## 1.2.2 - 2026-06-17
 - Fixed swapping between windowed and fullscreen mode reverting the changes made to input boxes.
 - Fixed signing the book not closing it properly.

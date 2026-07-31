@@ -1,9 +1,10 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "scholar:item/cover",
-    "layer1": "scholar:item/paper",
-    "layer2": "scholar:item/quill"
+    "layer0": "scholar:item/empty",
+    "layer1": "scholar:item/writable_book_cover",
+    "layer2": "scholar:item/writable_book_paper",
+    "layer3": "scholar:item/quill"
   },
   "overrides": [
     {
