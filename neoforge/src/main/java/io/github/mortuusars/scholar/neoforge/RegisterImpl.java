@@ -3,7 +3,7 @@ package io.github.mortuusars.scholar.neoforge;
 import com.mojang.brigadier.arguments.ArgumentType;
 import io.github.mortuusars.scholar.Register;
 import io.github.mortuusars.scholar.Scholar;
-import net.minecraft.advancements.CriterionTrigger;
+import net.minecraft.advancements.triggers.CriterionTrigger;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.component.DataComponentType;

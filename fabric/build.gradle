@@ -26,7 +26,7 @@ dependencies {
     implementation("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_port_version}")
 
     localRuntime("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}") { transitive = false }
-    localRuntime("maven.modrinth:jade:26.1.0+fabric") { transitive = false }
+    localRuntime("maven.modrinth:jade:${jade_version}+fabric") { transitive = false }
 
     common(project(path: ":common")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }

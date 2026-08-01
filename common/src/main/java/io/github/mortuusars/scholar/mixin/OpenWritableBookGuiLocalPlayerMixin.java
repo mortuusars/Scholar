@@ -27,7 +27,7 @@ public abstract class OpenWritableBookGuiLocalPlayerMixin extends Player {
         if (!stack.is(Items.WRITABLE_BOOK)) return;
         if (Config.Common.SNEAKING_OPENS_VANILLA_BOOK_SCREEN.get() && isSecondaryUseActive()) return;
 
-        Minecraft.getInstance().setScreen(new InHandSpreadBookEditScreen(stack, hand));
+        Minecraft.getInstance().gui.setScreen(new InHandSpreadBookEditScreen(stack, hand));
         ci.cancel();
     }
 }

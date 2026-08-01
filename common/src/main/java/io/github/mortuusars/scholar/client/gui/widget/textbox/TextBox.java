@@ -175,8 +175,7 @@ public class TextBox extends AbstractWidget {
         int cursorColor = getCurrentFontColor();
         Formatting currentFormatting = getEditor().getFormattingAtCursor();
         if (currentFormatting.color() != null) {
-            //noinspection DataFlowIssue
-            cursorColor = currentFormatting.color().asChatFormatting().getColor() | 0xFF000000;
+            cursorColor = currentFormatting.color().getColor();
         }
 
         renderCursor(graphics, mouseX, mouseY, partialTick, getEditor(), displayCache.getCursor(), cursorColor);

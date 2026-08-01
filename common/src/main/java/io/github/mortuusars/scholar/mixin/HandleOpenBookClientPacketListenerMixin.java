@@ -30,7 +30,7 @@ public abstract class HandleOpenBookClientPacketListenerMixin {
 
         if (!stack.is(Items.WRITTEN_BOOK)) return;
 
-        Minecraft.getInstance().setScreen(new InHandSpreadBookViewScreen(
+        Minecraft.getInstance().gui.setScreen(new InHandSpreadBookViewScreen(
               BookViewAccess.fromItem(stack),
               BookColor.of(stack),
               packet.getHand()));

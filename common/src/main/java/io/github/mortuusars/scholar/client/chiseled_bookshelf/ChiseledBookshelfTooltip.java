@@ -24,7 +24,7 @@ public class ChiseledBookshelfTooltip {
 
         Minecraft minecraft = Minecraft.getInstance();
 
-        if (minecraft.level == null || minecraft.player == null || minecraft.screen != null
+        if (minecraft.level == null || minecraft.player == null || minecraft.gui.screen() != null
               || !(minecraft.hitResult instanceof BlockHitResult blockHitResult)) {
             return false;
         }

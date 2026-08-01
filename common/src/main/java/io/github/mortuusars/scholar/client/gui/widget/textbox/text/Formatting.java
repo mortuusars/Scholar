@@ -27,10 +27,6 @@ public record Formatting(@Nullable Color color, EnumSet<Format> format) {
         return EMPTY.with(code);
     }
 
-    public static Formatting of(ChatFormatting formatting) {
-        return of(formatting.getChar());
-    }
-
     public static Formatting of(Formatting.Type type) {
         return of(type.getChar());
     }
@@ -109,29 +105,31 @@ public record Formatting(@Nullable Color color, EnumSet<Format> format) {
     }
 
     public enum Color implements Type {
-        BLACK("black", '0'),
-        DARK_BLUE("dark_blue", '1'),
-        DARK_GREEN("dark_green", '2'),
-        DARK_AQUA("dark_aqua", '3'),
-        DARK_RED("dark_red", '4'),
-        DARK_PURPLE("dark_purple", '5'),
-        GOLD("gold", '6'),
-        GRAY("gray", '7'),
-        DARK_GRAY("dark_gray", '8'),
-        BLUE("blue", '9'),
-        GREEN("green", 'a'),
-        AQUA("aqua", 'b'),
-        RED("red", 'c'),
-        LIGHT_PURPLE("light_purple", 'd'),
-        YELLOW("yellow", 'e'),
-        WHITE("white", 'f');
+        BLACK("black", '0', 0xFF000000),
+        DARK_BLUE("dark_blue", '1', 0xFF0000AA),
+        DARK_GREEN("dark_green", '2', 0xFF00AA00),
+        DARK_AQUA("dark_aqua", '3', 0xFF00AAAA),
+        DARK_RED("dark_red", '4', 0xFFAA0000),
+        DARK_PURPLE("dark_purple", '5', 0xFFAA00AA),
+        GOLD("gold", '6', 0xFFFFAA00),
+        GRAY("gray", '7', 0xFFAAAAAA),
+        DARK_GRAY("dark_gray", '8', 0xFF555555),
+        BLUE("blue", '9', 0xFF5555FF),
+        GREEN("green", 'a', 0xFF55FF55),
+        AQUA("aqua", 'b', 0xFF55FFFF),
+        RED("red", 'c', 0xFFFF5555),
+        LIGHT_PURPLE("light_purple", 'd', 0xFFFF55FF),
+        YELLOW("yellow", 'e', 0xFFFFFF55),
+        WHITE("white", 'f', 0xFFFFFFFF);
 
         private final String name;
         private final char c;
+        private final int color;
 
-        Color(String name, char c) {
+        Color(String name, char c, int color) {
             this.name = name;
             this.c = c;
+            this.color = color;
         }
 
         @Override
@@ -141,6 +139,10 @@ public record Formatting(@Nullable Color color, EnumSet<Format> format) {
 
         public char getChar() {
             return c;
+        }
+
+        public int getColor() {
+            return color;
         }
 
         public static @Nullable Color fromChar(char c) {

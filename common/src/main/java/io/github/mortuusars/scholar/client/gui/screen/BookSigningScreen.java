@@ -265,7 +265,7 @@ public class BookSigningScreen extends Screen {
     }
 
     protected void cancelSigning() {
-        minecraft.setScreen(parentScreen);
+        minecraft.gui.setScreen(parentScreen);
     }
 
     @Override

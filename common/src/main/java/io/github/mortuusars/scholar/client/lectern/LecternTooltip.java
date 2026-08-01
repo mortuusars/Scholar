@@ -17,7 +17,7 @@ public class LecternTooltip {
 
         Minecraft minecraft = Minecraft.getInstance();
 
-        if (minecraft.level == null || minecraft.player == null || minecraft.screen != null
+        if (minecraft.level == null || minecraft.player == null || minecraft.gui.screen() != null
               || !(minecraft.hitResult instanceof BlockHitResult blockHitResult)
               || !(minecraft.level.getBlockEntity(blockHitResult.getBlockPos()) instanceof LecternBlockEntity lecternBlockEntity)) {
             return false;

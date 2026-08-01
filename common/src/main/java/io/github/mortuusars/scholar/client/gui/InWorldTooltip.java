@@ -10,7 +10,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class InWorldTooltip {
     public static boolean extract(GuiGraphicsExtractor guiGraphics, DeltaTracker deltaTracker) {
-        if (Minecraft.getInstance().options.hideGui) {
+        if (Minecraft.getInstance().gui.hud.isHidden()) {
             return false;
         }
         return ChiseledBookshelfTooltip.extract(guiGraphics, deltaTracker)

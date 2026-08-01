@@ -522,7 +522,7 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
 
     protected void enterSignMode() {
         saveChanges(false, null);
-        minecraft.execute(() -> minecraft.setScreen(new BookSigningScreen(this, bookColor, this::signBook)));
+        minecraft.execute(() -> minecraft.gui.setScreen(new BookSigningScreen(this, bookColor, this::signBook)));
     }
 
     protected abstract void signBook(BookSignature signature);

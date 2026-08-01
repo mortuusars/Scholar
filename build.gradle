@@ -1,8 +1,8 @@
 plugins {
     id 'architectury-plugin' version '3.5-SNAPSHOT'
-    id "dev.architectury.loom-no-remap" version "1.14-SNAPSHOT" apply false
+    id "dev.architectury.loom-no-remap" version "1.17-SNAPSHOT" apply false
     id "com.gradleup.shadow" version "9.4.+" apply false
-    id "me.modmuss50.mod-publish-plugin" version "2.0.0"
+    id "me.modmuss50.mod-publish-plugin" version "2.1.1"
 }
 
 architectury {
