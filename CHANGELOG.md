@@ -1,6 +1,6 @@
 # Changelog
 
-## UNRELEASED
+## 1.2.4 - 2026-08-01
 - Fixed book edit and signing screen input boxes not keeping their state (cursor pos, selection, focus) when game window is resized. 
 - Removed overlap from textures in the built-in 'colored_books' resourcepack book models to fix z-fighting with shaders.
 
