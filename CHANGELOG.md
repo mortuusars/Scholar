@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.5 - 2026-08-08
+- Safeguard for literate mob equipment to prevent potential errors.
+
 ## 1.2.4 - 26.2 - 2026-08-01
 - Port to 26.2.
 
