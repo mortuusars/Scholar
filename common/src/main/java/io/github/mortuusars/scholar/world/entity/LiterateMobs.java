@@ -28,21 +28,29 @@ public class LiterateMobs {
               && mob.getType().is(Scholar.Tags.EntityTypes.LITERATE)
               && random.nextDouble() < Config.Common.LITERATE_MOBS_BOOK_SPAWN_CHANCE.get()) {
             float dropChance = (float) Config.Common.LITERATE_MOBS_BOOK_DROP_CHANCE.getAsDouble();
-            LootParams params = new LootParams.Builder(serverLevel).withParameter(LootContextParams.ORIGIN, mob.position()).withParameter(LootContextParams.THIS_ENTITY, mob).create(LootContextParamSets.EQUIPMENT);
-            equip(mob, random,
-                  Scholar.LootTables.LITERATE_MOB_BOOK, Map.of(EquipmentSlot.MAINHAND, dropChance, EquipmentSlot.OFFHAND, dropChance),
-                  params);
+            LootParams params = new LootParams.Builder(serverLevel)
+                  .withParameter(LootContextParams.ORIGIN, mob.position())
+                  .withParameter(LootContextParams.THIS_ENTITY, mob)
+                  .create(LootContextParamSets.EQUIPMENT);
+
+            // Executing on the main thread to prevent deadlocks in some cases when mob is spawned with a structure
+            serverLevel.getServer().execute(() -> {
+                equip(mob, random, Scholar.LootTables.LITERATE_MOB_BOOK,
+                      Map.of(EquipmentSlot.MAINHAND, dropChance, EquipmentSlot.OFFHAND, dropChance), params);
+            });
         }
     }
 
-    private static void equip(Mob mob, RandomSource random, ResourceKey<LootTable> table, Map<EquipmentSlot, Float> slotDropChances, LootParams params) {
+    private static void equip(Mob mob, RandomSource random, ResourceKey<LootTable> table,
+                              Map<EquipmentSlot, Float> slotDropChances, LootParams params) {
         if (table.equals(BuiltInLootTables.EMPTY)) return;
 
         LootTable lootTable = params.getLevel().getServer().reloadableRegistries().getLootTable(table);
         if (lootTable == LootTable.EMPTY) return;
 
         List<ItemStack> list = new ArrayList<>();
-        lootTable.getRandomItems(new LootContext.Builder(params).withOptionalRandomSource(random).create(Optional.empty()), list::add);
+        lootTable.getRandomItems(new LootContext.Builder(params)
+              .withOptionalRandomSource(random).create(Optional.empty()), list::add);
         List<EquipmentSlot> excludedSlots = new ArrayList<>();
 
         for (ItemStack itemStack : list) {
