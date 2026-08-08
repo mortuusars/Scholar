@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.5 - 2026-08-08
+- Safeguard for literate mob equipment to prevent deadlocks (idk if it can happen in 1.20.1, but just to be sure)
+
 ## 1.2.3 - 2026-07-13
 - Fixed Book and Quill on Lectern not displaying its contents properly for other players when someone is editing it.
 

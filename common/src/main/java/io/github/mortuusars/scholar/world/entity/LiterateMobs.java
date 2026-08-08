@@ -24,20 +24,22 @@ public class LiterateMobs {
               && random.nextDouble() < Config.Common.LITERATE_MOBS_BOOK_SPAWN_CHANCE.get()) {
             double dropChance = Config.Common.LITERATE_MOBS_BOOK_DROP_CHANCE.get();
 
-            ResourceLocation lootTableId = Scholar.LootTables.LITERATE_MOB_BOOK;
-            LootTable lootTable = serverLevel.getServer().getLootData().getLootTable(lootTableId);
-            LootParams.Builder builder = (new LootParams.Builder(serverLevel))
-                  .withParameter(LootContextParams.THIS_ENTITY, mob)
-                  .withParameter(LootContextParams.ORIGIN, mob.position());
+            serverLevel.getServer().execute(() -> {
+                ResourceLocation lootTableId = Scholar.LootTables.LITERATE_MOB_BOOK;
+                LootTable lootTable = serverLevel.getServer().getLootData().getLootTable(lootTableId);
+                LootParams.Builder builder = (new LootParams.Builder(serverLevel))
+                      .withParameter(LootContextParams.THIS_ENTITY, mob)
+                      .withParameter(LootContextParams.ORIGIN, mob.position());
 
-            LootParams lootParams = builder.create(LootContextParamSets.CHEST);
-            List<ItemStack> items = lootTable.getRandomItems(lootParams, mob.getLootTableSeed());
+                LootParams lootParams = builder.create(LootContextParamSets.CHEST);
+                List<ItemStack> items = lootTable.getRandomItems(lootParams, mob.getLootTableSeed());
 
-            if (!items.isEmpty()) {
-                ItemStack item = Util.getRandom(items, mob.getRandom());
-                mob.setItemSlot(EquipmentSlot.MAINHAND, item);
-                mob.setDropChance(EquipmentSlot.MAINHAND, (float) dropChance);
-            }
+                if (!items.isEmpty()) {
+                    ItemStack item = Util.getRandom(items, mob.getRandom());
+                    mob.setItemSlot(EquipmentSlot.MAINHAND, item);
+                    mob.setDropChance(EquipmentSlot.MAINHAND, (float) dropChance);
+                }
+            });
         }
     }
 }
