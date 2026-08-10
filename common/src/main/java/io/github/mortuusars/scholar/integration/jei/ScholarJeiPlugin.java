@@ -50,7 +50,7 @@ public class ScholarJeiPlugin implements IModPlugin {
                       Ingredient.of(item),
                       Ingredient.of(dye));
                 ItemStack result = DyeableLeatherItem.dyeArmor(new ItemStack(item), List.of(dye));
-                String id = "dyeing_" + item.toString().replace(':', '_') + "_with_" + color.getName();
+                String id = "dyeing_" + BuiltInRegistries.ITEM.getKey(item).toString().replace(':', '_') + "_with_" + color.getName();
                 ShapelessRecipe recipe = new ShapelessRecipe(Scholar.resource(id), "dyeing_" + color.getName(),
                       CraftingBookCategory.MISC, result, inputs);
                 recipes.add(recipe);

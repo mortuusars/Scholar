@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.5.1 - 2026-08-10
+- Fixed JEI dyeing recipes breaking with some mods (AE2, for example)
+
 ## 1.2.5 - 2026-08-08
 - Safeguard for literate mob equipment to prevent deadlocks (idk if it can happen in 1.20.1, but just to be sure)
 
