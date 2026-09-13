@@ -52,6 +52,7 @@ dependencies {
     modImplementation("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_port_version}")
 
     modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}")
+    modLocalRuntime("net.mezzdev.config:mezz_config-1.21.1-fabric:${mezz_config_version}")
 
     modLocalRuntime("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}")
     modLocalRuntime("maven.modrinth:sodium:mc1.21.1-0.6.9-neoforge")

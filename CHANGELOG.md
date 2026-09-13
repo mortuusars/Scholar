@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.6 - 2026-09-14
+- Fixed crash with latest JEI.
+- Updated localization files.
+
 ## 1.2.5 - 2026-08-08
 - Fixed occasional deadlock occurring when a literate mob is spawned with a structure (when some other mods were present).
 
