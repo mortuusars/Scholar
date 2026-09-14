@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.7 - 2026-09-14
+- [Fabric] Removed hard-dependency on JEI that was accidentally introduced in the 1.2.6.
+
 ## 1.2.6 - 2026-09-14
 - Fixed crash with latest JEI.
 - Updated localization files.

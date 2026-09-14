@@ -32,7 +32,6 @@
     "minecraft": ">=1.21.0",
     "fabric": "*",
     "fabric-api": ">=0.88.1",
-    "forgeconfigapiport": ">=8.0.0",
-    "jei": ">=19.56.0"
+    "forgeconfigapiport": ">=8.0.0"
   }
 }
