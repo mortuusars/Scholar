@@ -11,5 +11,5 @@
 <h1></h1>
 
 <div align="center">
-  <h3>Minecraft mod that imroves books.</h3>
+  <h3>Minecraft mod that improves books.</h3>
 </div>
