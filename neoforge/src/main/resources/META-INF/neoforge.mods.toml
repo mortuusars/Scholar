@@ -4,6 +4,7 @@ loaderVersion="${neoforge_loader_version_range}"
 issueTrackerURL="${mod_issues}"
 displayURL="${mod_page}"
 logoFile="icon.png"
+iconFile="icon.png"
 
 [[mixins]]
 config="scholar-common.mixins.json"

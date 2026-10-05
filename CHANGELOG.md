@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.6 - 2026-10-05
+- Fix incompatibility with latest JEI
+
 ## 1.2.5 - 2026-08-08
 - Safeguard for literate mob equipment to prevent potential errors.
 
