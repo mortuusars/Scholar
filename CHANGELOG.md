@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.6 - 2026-10-08
+- Fixed incompatibility with latest JEI versions 
+  - This versions of Scholar only supports JEI 15.62+
+
 ## 1.2.5.1 - 2026-08-10
 - Fixed JEI dyeing recipes breaking with some mods (AE2, for example)
 

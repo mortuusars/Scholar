@@ -33,5 +33,8 @@
     "fabric": "*",
     "fabric-api": ">=0.88.1",
     "forgeconfigapiport": ">=8.0.0"
+  },
+  "recommends": {
+    "jei": ">=15.62"
   }
 }

@@ -48,12 +48,13 @@ dependencies {
     implementation(include("io.github.llamalad7:mixinextras-forge:${mixinextras_version}"))
 
     modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
-    modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}") { transitive = false }
+//    modLocalRuntime("mezz.jei:jei-${minecraft_version}-forge:${jei_version}") { transitive = false }
+//    modLocalRuntime("maven.modrinth:mezzconfig:${mezz_config_version}")
 
     modImplementation("maven.modrinth:blueprint:z4m8zvm5")
     modImplementation("maven.modrinth:woodworks:236Amnif")
 
-    modRuntimeOnly("maven.modrinth:embeddium:0.3.31+mc1.20.1")
+    modLocalRuntime("maven.modrinth:embeddium:0.3.31+mc1.20.1")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
