@@ -25,7 +25,7 @@ public abstract class HandleOpenBookClientPacketListenerMixin {
         if (!Config.Common.IN_HAND_TWO_PAGE_BOOK_SCREEN.get()) return;
         if (Config.Common.SNEAKING_OPENS_VANILLA_BOOK_SCREEN.get() && Minecraft.getInstance().player.isSecondaryUseActive()) return;
 
-        InteractionHand hand = packet.getHand();
+        InteractionHand hand = packet.hand();
         ItemStack stack = Minecraft.getInstance().player.getItemInHand(hand);
 
         if (!stack.is(Items.WRITTEN_BOOK)) return;
@@ -33,7 +33,7 @@ public abstract class HandleOpenBookClientPacketListenerMixin {
         Minecraft.getInstance().gui.setScreen(new InHandSpreadBookViewScreen(
               BookViewAccess.fromItem(stack),
               BookColor.of(stack),
-              packet.getHand()));
+              packet.hand()));
 
         ci.cancel();
     }

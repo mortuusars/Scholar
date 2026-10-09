@@ -155,8 +155,8 @@ public class ReadingAnimation {
             turn = Mth.lerp(isOnTheRightPage ? 1 - scanningAnim : scanningAnim, turn, target);
         }
 
-        if (renderState.attackTime > 0) {
-            float anim = easeInOutSine(renderState.attackTime);
+        if (renderState.swingAnimation > 0) {
+            float anim = easeInOutSine(renderState.swingAnimation);
             head.yRot = Mth.lerp(anim, head.yRot, body.yRot + turn);
         } else {
             head.yRot = body.yRot + turn;
@@ -186,8 +186,8 @@ public class ReadingAnimation {
             pitch = Mth.lerp(t, currentPitch, nextPitch);
         }
 
-        if (renderState.attackTime > 0) {
-            float anim = easeInOutSine(renderState.attackTime);
+        if (renderState.swingAnimation > 0) {
+            float anim = easeInOutSine(renderState.swingAnimation);
             head.xRot = Mth.lerp(anim, head.yRot, pitch);
         } else {
             head.xRot = pitch;

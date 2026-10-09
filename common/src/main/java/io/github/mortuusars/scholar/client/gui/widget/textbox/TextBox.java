@@ -163,8 +163,13 @@ public class TextBox extends AbstractWidget {
         return this;
     }
 
-    // -- Render
+    @Override
+    public void setFocused(boolean focused) {
+        super.setFocused(focused);
+        Minecraft.getInstance().onTextInputFocusChange(this, focused);
+    }
 
+    // -- Render
 
     @Override
     protected void extractWidgetRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
@@ -326,7 +331,7 @@ public class TextBox extends AbstractWidget {
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double mouseX, double mouseY) {
-        if (event.button() == 0 && canDrag) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT && canDrag) {
             FormattedStringDisplayCache display = getDisplayCache();
             int indexAtMousePos = display.getCharIndexAtPosition(font, (int) (event.x() + mouseX - getX()), (int) (event.y() + mouseY - getY()));
             getEditor().setCursorPos(indexAtMousePos, true);

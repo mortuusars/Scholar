@@ -19,20 +19,19 @@
     "literate_mobs.GiveBookMixin",
     "literate_mobs.MobMixin",
     "literate_mobs.RandomStrollGoalMixin",
-    "reading.PlayerMixin"
+    "reading.LivingEntityMixin"
   ],
   "client": [
     "HandleOpenBookClientPacketListenerMixin",
     "OpenWritableBookGuiLocalPlayerMixin",
     "lectern.LecternRendererMixin",
     "lectern.LecternRenderStateMixin",
-    "reading.AbstractZombieModelMixin",
+    "reading.ZombieModelMixin",
     "reading.HumanoidModelMixin",
     "reading.HumanoidRendererMixin",
     "reading.HumanoidRenderStateMixin",
     "reading.IllagerModelMixin",
     "reading.ItemInHandLayerMixin",
-    "reading.ItemInHandRendererMixin",
     "reading.PiglinModelMixin",
     "reading.ZombieVillagerModelMixin"
   ]

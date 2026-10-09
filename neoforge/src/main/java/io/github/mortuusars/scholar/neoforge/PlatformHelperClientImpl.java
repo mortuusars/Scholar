@@ -12,7 +12,7 @@ public class PlatformHelperClientImpl {
         return new KeyMapping("key.scholar.insert_empty_page_left",
               KeyConflictContext.GUI,
               KeyModifier.SHIFT,
-              InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_INSERT),
+              InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_INSERT),
               ScholarClient.KeyMappings.SCHOLAR_CATEGORY);
     }
 
@@ -20,7 +20,7 @@ public class PlatformHelperClientImpl {
         return new KeyMapping("key.scholar.remove_page_left",
               KeyConflictContext.GUI,
               KeyModifier.SHIFT,
-              InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_DELETE),
+              InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_DELETE),
               ScholarClient.KeyMappings.SCHOLAR_CATEGORY);
     }
 
@@ -28,7 +28,7 @@ public class PlatformHelperClientImpl {
         return new KeyMapping("key.scholar.insert_empty_page_right",
               KeyConflictContext.GUI,
               KeyModifier.ALT,
-              InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_INSERT),
+              InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_INSERT),
               ScholarClient.KeyMappings.SCHOLAR_CATEGORY);
     }
 
@@ -36,7 +36,7 @@ public class PlatformHelperClientImpl {
         return new KeyMapping("key.scholar.remove_page_right",
               KeyConflictContext.GUI,
               KeyModifier.ALT,
-              InputConstants.Type.KEYSYM.getOrCreate(InputConstants.KEY_DELETE),
+              InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_DELETE),
               ScholarClient.KeyMappings.SCHOLAR_CATEGORY);
     }
 

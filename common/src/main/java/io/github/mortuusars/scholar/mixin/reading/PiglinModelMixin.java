@@ -2,9 +2,7 @@ package io.github.mortuusars.scholar.mixin.reading;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
 import io.github.mortuusars.scholar.world.entity.Reading;
-import net.minecraft.client.model.*;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.monster.piglin.AbstractPiglinModel;
 import net.minecraft.client.model.monster.piglin.PiglinModel;
@@ -23,14 +21,14 @@ public abstract class PiglinModelMixin extends AbstractPiglinModel<PiglinRenderS
 
     @WrapOperation(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/PiglinRenderState;)V",
           at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/monster/piglin/PiglinModel;holdWeaponHigh(Lnet/minecraft/client/renderer/entity/state/PiglinRenderState;)V"))
-    private void onSetupAnim(PiglinModel instance, PiglinRenderState renderState, Operation<Void> original) {
-        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(renderState.leftHandItemStack,
-              renderState.rightHandItemStack,
-              renderState.mainArm == HumanoidArm.RIGHT);
+    private void onSetupAnim(PiglinModel instance, PiglinRenderState state, Operation<Void> original) {
+        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(state.leftHandItemStack,
+              state.rightHandItemStack,
+              state.mainArm == HumanoidArm.RIGHT);
         if (openedBookHand != null) {
             return; // Stop arms animation, so it wouldn't override ours.
         }
 
-        original.call(instance, renderState);
+        original.call(instance, state);
     }
 }

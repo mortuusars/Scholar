@@ -40,53 +40,53 @@ public abstract class HumanoidModelMixin<T extends HumanoidRenderState> extends 
     }
 
     @Inject(method = "poseLeftArm", at = @At("HEAD"), cancellable = true)
-    private void poseLeftArm(T renderState, CallbackInfo ci) {
+    private void poseLeftArm(T state, CallbackInfo ci) {
         if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON
               && Minecraft.getInstance().getCameraEntity() != null
-              && Minecraft.getInstance().getCameraEntity().getId() == ReadingAnimation.getEntityId(renderState)) {
+              && Minecraft.getInstance().getCameraEntity().getId() == ReadingAnimation.getEntityId(state)) {
             return;
         }
 
-        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(renderState.leftHandItemStack,
-              renderState.rightHandItemStack,
-              renderState.mainArm == HumanoidArm.RIGHT);
+        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(state.leftHandItemStack,
+              state.rightHandItemStack,
+              state.mainArm == HumanoidArm.RIGHT);
         if (openedBookHand == null) {
             return;
         }
 
-        ReadingAnimation.poseLeftArm(renderState, leftArm);
+        ReadingAnimation.poseLeftArm(state, leftArm);
         ci.cancel();
     }
 
     @Inject(method = "poseRightArm", at = @At("HEAD"), cancellable = true)
-    private void poseRightArm(T renderState, CallbackInfo ci) {
+    private void poseRightArm(T state, CallbackInfo ci) {
         if (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON
               && Minecraft.getInstance().getCameraEntity() != null
-              && Minecraft.getInstance().getCameraEntity().getId() == ReadingAnimation.getEntityId(renderState)) {
+              && Minecraft.getInstance().getCameraEntity().getId() == ReadingAnimation.getEntityId(state)) {
             return;
         }
 
-        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(renderState.leftHandItemStack,
-              renderState.rightHandItemStack,
-              renderState.mainArm == HumanoidArm.RIGHT);
+        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(state.leftHandItemStack,
+              state.rightHandItemStack,
+              state.mainArm == HumanoidArm.RIGHT);
         if (openedBookHand == null) {
             return;
         }
 
-        ReadingAnimation.poseRightArm(renderState, rightArm);
+        ReadingAnimation.poseRightArm(state, rightArm);
         ci.cancel();
     }
 
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V",
           at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/HumanoidModel;setupAttackAnimation(Lnet/minecraft/client/renderer/entity/state/HumanoidRenderState;)V"))
-    void onSetupAnim(T renderState, CallbackInfo ci) {
-        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(renderState.leftHandItemStack,
-              renderState.rightHandItemStack,
-              renderState.mainArm == HumanoidArm.RIGHT);
+    void onSetupAnim(T state, CallbackInfo ci) {
+        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(state.leftHandItemStack,
+              state.rightHandItemStack,
+              state.mainArm == HumanoidArm.RIGHT);
         if (openedBookHand == null) {
             return;
         }
 
-        ReadingAnimation.poseHead(renderState, body, head);
+        ReadingAnimation.poseHead(state, body, head);
     }
 }

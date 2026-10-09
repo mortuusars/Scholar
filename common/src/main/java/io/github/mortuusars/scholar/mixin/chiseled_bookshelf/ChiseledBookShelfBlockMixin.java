@@ -20,11 +20,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ChiseledBookShelfBlockMixin {
     @Inject(method = "addBook", at = @At(value = "RETURN"))
     private static void onAddBook(Level level, BlockPos pos, Player player, ChiseledBookShelfBlockEntity blockEntity,
-                                  ItemStack bookStack, int slot, CallbackInfo ci) {
+                                  ItemStack itemStack, int slot, CallbackInfo ci) {
         if (level.isClientSide()) {
-            blockEntity.setItem(slot, bookStack.split(1));
+            blockEntity.setItem(slot, itemStack.split(1));
             if (player.isCreative()) {
-                bookStack.grow(1);
+                itemStack.grow(1);
             }
         }
     }

@@ -16,7 +16,7 @@ public class ScholarNeoForge {
     public ScholarNeoForge(ModContainer container) {
         Scholar.init();
 
-        container.registerConfig(ModConfig.Type.COMMON, Config.Common.SPEC);
+        container.registerConfig(ModConfig.Type.LOCAL, Config.Common.SPEC);
         container.registerConfig(ModConfig.Type.CLIENT, Config.Client.SPEC);
 
         @Nullable IEventBus modEventBus = container.getEventBus();
@@ -32,7 +32,6 @@ public class ScholarNeoForge {
         RegisterImpl.CRITERION_TRIGGERS.register(modEventBus);
         RegisterImpl.SOUND_EVENTS.register(modEventBus);
         RegisterImpl.COMMAND_ARGUMENT_TYPES.register(modEventBus);
-        RegisterImpl.WORLD_GEN_FEATURES.register(modEventBus);
         RegisterImpl.DATA_COMPONENT_TYPES.register(modEventBus);
         RegisterImpl.PARTICLE_TYPES.register(modEventBus);
         RegisterImpl.CUSTOM_STATS.register(modEventBus);

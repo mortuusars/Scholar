@@ -20,12 +20,12 @@ import java.util.function.Consumer;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin implements DataComponentHolder {
-    @Inject(method = "addToTooltip", at = @At("HEAD"), cancellable = true)
-    private <T extends TooltipProvider> void onAddToTooltip(DataComponentType<T> component, Item.TooltipContext context,
-                                                            TooltipDisplay tooltipDisplay, Consumer<Component> tooltipAdder,
-                                                            TooltipFlag tooltipFlag, CallbackInfo ci) {
-        if (component == DataComponents.DYED_COLOR && has(Scholar.DataComponents.BOOK_GOLDEN)) {
-            tooltipAdder.accept(Component.translatable("gui.scholar.golden").withStyle(ChatFormatting.GRAY));
+    @Inject(method = "addToTooltip(Lnet/minecraft/core/component/DataComponentType;Lnet/minecraft/world/item/component/TooltipProvider$Getter;Lnet/minecraft/world/item/Item$TooltipContext;Lnet/minecraft/world/item/component/TooltipDisplay;Ljava/util/function/Consumer;Lnet/minecraft/world/item/TooltipFlag;)V", at = @At("HEAD"), cancellable = true)
+    private <T extends TooltipProvider> void onAddToTooltip(DataComponentType<T> type, TooltipProvider.Getter<T> tooltipGetter,
+                                                            Item.TooltipContext context, TooltipDisplay display, Consumer<Component> consumer,
+                                                            TooltipFlag flag, CallbackInfo ci) {
+        if (type == DataComponents.DYED_COLOR && has(Scholar.DataComponents.BOOK_GOLDEN)) {
+            consumer.accept(Component.translatable("gui.scholar.golden").withStyle(ChatFormatting.GRAY));
             ci.cancel();
         }
     }

@@ -32,7 +32,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.configurations.FeatureConfiguration;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -114,11 +113,6 @@ public class RegisterImpl {
     Supplier<ArgumentTypeInfo<A, T>> commandArgumentType(String id, Class<A> infoClass, I argumentTypeInfo) {
         ArgumentTypeRegistry.registerArgumentType(Scholar.identifier(id), infoClass, argumentTypeInfo);
         return () -> argumentTypeInfo;
-    }
-
-    public static <T extends FeatureConfiguration> Supplier<Feature<?>> worldGenFeature(String name, Supplier<Feature<T>> featureSupplier) {
-        Feature<T> feature = Registry.register(BuiltInRegistries.FEATURE, name, featureSupplier.get());
-        return () -> feature;
     }
 
     public static <T> DataComponentType<T> dataComponentType(String name, Consumer<DataComponentType.Builder<T>> builderConsumer) {

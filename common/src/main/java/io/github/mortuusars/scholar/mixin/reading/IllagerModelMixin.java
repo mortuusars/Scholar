@@ -38,14 +38,14 @@ public abstract class IllagerModelMixin<S extends IllagerRenderState> extends En
     }
 
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/IllagerRenderState;)V", at = @At("RETURN"))
-    private void onSetupAnim(S renderState, CallbackInfo ci) {
-        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(renderState.leftHandItemStack,
-              renderState.rightHandItemStack,
-              renderState.mainArm == HumanoidArm.RIGHT);
-        if (openedBookHand != null && renderState.armPose != AbstractIllager.IllagerArmPose.CROSSED) {
-            ReadingAnimation.poseLeftArm(renderState, leftArm);
-            ReadingAnimation.poseRightArm(renderState, rightArm);
-            ReadingAnimation.poseHead(renderState, root.getChild("body"), head);
+    private void onSetupAnim(S state, CallbackInfo ci) {
+        @Nullable InteractionHand openedBookHand = Reading.getOpenedBookHand(state.leftHandItemStack,
+              state.rightHandItemStack,
+              state.mainArm == HumanoidArm.RIGHT);
+        if (openedBookHand != null && state.armPose != AbstractIllager.IllagerArmPose.CROSSED) {
+            ReadingAnimation.poseLeftArm(state, leftArm);
+            ReadingAnimation.poseRightArm(state, rightArm);
+            ReadingAnimation.poseHead(state, root.getChild("body"), head);
         }
     }
 }

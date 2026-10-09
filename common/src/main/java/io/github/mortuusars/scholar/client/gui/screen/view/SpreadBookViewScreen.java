@@ -1,5 +1,6 @@
 package io.github.mortuusars.scholar.client.gui.screen.view;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Pair;
 import io.github.mortuusars.scholar.book.Spread;
 import io.github.mortuusars.scholar.Scholar;
@@ -172,7 +173,7 @@ public abstract class SpreadBookViewScreen extends SpreadBookScreen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean isDoubleClick) {
-        if (event.button() == 0 && handleTextClick(event, isDoubleClick)) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT && handleTextClick(event, isDoubleClick)) {
             return true;
         }
 
@@ -269,7 +270,13 @@ public abstract class SpreadBookViewScreen extends SpreadBookScreen {
             }
             String title = Component.translatable("gui.scholar.export_book").getString();
 
-            FileDialogs.saveFile(defaultDirectory, title, "Text Files (.txt)", "*.txt").ifPresent(filePath -> {
+            FileDialogs.saveFile(defaultDirectory, title, "Text Files (.txt)", paths -> {
+                if (paths.isEmpty()) {
+                    return;
+                }
+
+                String filePath = paths.getFirst();
+
                 try {
                     Files.writeString(Path.of(filePath), content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                     MutableComponent filePathComponent = Component.literal(filePath).withStyle(Style.EMPTY
@@ -283,7 +290,7 @@ public abstract class SpreadBookViewScreen extends SpreadBookScreen {
                           Component.translatable("gui.scholar.export_book.failure")));
                     Scholar.LOGGER.error("Failed to export book: ", e);
                 }
-            });
+            }, "*.txt");
         }).exceptionally(e -> {
             Minecraft.getInstance().execute(() -> player.sendSystemMessage(
                   Component.translatable("gui.scholar.export_book.failure")));

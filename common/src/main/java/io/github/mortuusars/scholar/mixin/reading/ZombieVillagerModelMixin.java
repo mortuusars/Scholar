@@ -18,13 +18,13 @@ public abstract class ZombieVillagerModelMixin<S extends ZombieVillagerRenderSta
         super(root);
     }
 
-    @WrapOperation(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/ZombieVillagerRenderState;)V",
+    @WrapOperation(method = "setupAttackAnimation(Lnet/minecraft/client/renderer/entity/state/ZombieVillagerRenderState;)V",
           at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/AnimationUtils;animateZombieArms(Lnet/minecraft/client/model/geom/ModelPart;Lnet/minecraft/client/model/geom/ModelPart;ZLnet/minecraft/client/renderer/entity/state/UndeadRenderState;)V"))
-    private void onSetupAnim(ModelPart leftArm, ModelPart rightArm, boolean isAggressive, UndeadRenderState renderState, Operation<Void> original) {
-        if (renderState.getMainHandItemStack().has(Scholar.DataComponents.BOOK_OPEN)) {
+    private void onSetupAnim(ModelPart leftArm, ModelPart rightArm, boolean aggressive, UndeadRenderState state, Operation<Void> original) {
+        if (state.getMainHandItemStack().has(Scholar.DataComponents.BOOK_OPEN)) {
             return; // Stop zombie arms animation, so it wouldn't override ours.
         }
 
-        original.call(leftArm, rightArm, isAggressive, renderState);
+        original.call(leftArm, rightArm, aggressive, state);
     }
 }

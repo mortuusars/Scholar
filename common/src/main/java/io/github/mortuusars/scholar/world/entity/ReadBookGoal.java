@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.SwingAnimation;
 
 public class ReadBookGoal extends Goal {
     private final Mob mob;
@@ -50,7 +51,7 @@ public class ReadBookGoal extends Goal {
     public void start() {
         mob.getMainHandItem().set(Scholar.DataComponents.BOOK_OPEN, Unit.INSTANCE);
         mob.playSound(SoundEvents.BOOK_PAGE_TURN, 0.6f, 1.1f);
-        mob.swing(InteractionHand.MAIN_HAND);
+        mob.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT);
         readingTime = 0;
         readingDuration = 300 + mob.getRandom().nextInt(10) * 20;
     }
@@ -64,7 +65,7 @@ public class ReadBookGoal extends Goal {
     public void stop() {
         mob.getMainHandItem().remove(Scholar.DataComponents.BOOK_OPEN);
         mob.playSound(SoundEvents.BOOK_PAGE_TURN, 0.6f, 0.75f);
-        mob.swing(InteractionHand.MAIN_HAND);
+        mob.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT);
     }
 
     // --

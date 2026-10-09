@@ -3,7 +3,6 @@ package io.github.mortuusars.scholar.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import io.github.mortuusars.scholar.Scholar;
-import io.github.mortuusars.scholar.book.BookColor;
 import io.github.mortuusars.scholar.client.animation.ReadingAnimation;
 import io.github.mortuusars.scholar.client.lectern.ScholarBookHolderRenderState;
 import net.minecraft.client.Minecraft;
@@ -21,7 +20,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.sprite.SpriteGetter;
 import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -38,31 +36,49 @@ public class ColoredBookModel {
         if (lecternRenderState instanceof ScholarBookHolderRenderState state && state.scholar$getBookRenderState().hasBook()) {
             poseStack.pushPose();
             poseStack.translate(0.5F, 1.0625F, 0.5F);
-            poseStack.mulPose(Axis.YP.rotationDegrees(-lecternRenderState.yRot));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(67.5F));
+            poseStack.rotateDegrees(Axis.YP, -lecternRenderState.yRot);
+            poseStack.rotateDegrees(Axis.ZP, 67.5F);
             poseStack.translate(0.0F, -0.125F, 0.0F);
 
             SpriteId coverSprite = getBookCoverSprite(state.scholar$getBookRenderState());
-            submitNodeCollector.submitModel(bookModel, bookState, poseStack,
+            SpriteId pagesSprite = getBookPagesSprite(state.scholar$getBookRenderState());
+
+            submitNodeCollector.submitModel(
+                  bookModel,
+                  bookState,
+                  poseStack,
                   coverSprite.renderType(RenderTypes::entityCutout),
                   lecternRenderState.lightCoords,
                   OverlayTexture.NO_OVERLAY,
                   state.scholar$getBookRenderState().coverTintColor(),
                   sprites.get(coverSprite),
-                  0,
-                  lecternRenderState.breakProgress
+                  0
             );
 
-            SpriteId pagesSprite = getBookPagesSprite(state.scholar$getBookRenderState());
-            submitNodeCollector.submitModel(bookModel, bookState, poseStack,
+            submitNodeCollector.submitModel(bookModel,
+                  bookState,
+                  poseStack,
                   pagesSprite.renderType(RenderTypes::entityCutout),
                   lecternRenderState.lightCoords,
                   OverlayTexture.NO_OVERLAY,
                   0xFFFFFFFF,
                   sprites.get(pagesSprite),
-                  0,
-                  lecternRenderState.breakProgress
+                  0
             );
+
+            if (lecternRenderState.breakProgress != null) {
+                submitNodeCollector.order(1)
+                      .submitCrumblingOverlay(
+                            bookModel,
+                            bookState,
+                            poseStack,
+                            pagesSprite.renderType(RenderTypes::entityCutout),
+                            lecternRenderState.lightCoords,
+                            OverlayTexture.NO_OVERLAY,
+                            0xFFFFFFFF,
+                            lecternRenderState.breakProgress
+                      );
+            }
 
             poseStack.popPose();
         }
@@ -76,7 +92,7 @@ public class ColoredBookModel {
 
         // We attach the book to the left hand, to use the right hand for page flipping animation (to not move the book with the arm).
         // Unless the entity is currently swinging - in that case we still use original arm for it, to "open" the book in the correct hand.
-        if (humanoidRenderState.attackTime > 0) {
+        if (humanoidRenderState.swingAnimation > 0) {
             entityModel.translateToHand(humanoidRenderState, arm, poseStack);
             poseStack.translate(arm == HumanoidArm.LEFT ? -0.285F : 0.285F, 0.625, -0.38);
         } else {
@@ -84,33 +100,34 @@ public class ColoredBookModel {
             poseStack.translate(-0.285F, 0.625, -0.38);
         }
 
-        poseStack.mulPose(Axis.YP.rotationDegrees(-90));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(-90));
+        poseStack.rotateDegrees(Axis.YP, -90);
+        poseStack.rotateDegrees(Axis.ZP, -90);
 
         BookModel.State bookState = ReadingAnimation.createBookRenderState(humanoidRenderState, stack, arm, bookModel);
 
         ReadingAnimation.poseBook(humanoidRenderState, stack, arm, entityModel, bookModel);
 
         SpriteId coverSprite = getBookCoverSprite(bookRenderState);
-        submitNodeCollector.submitModel(bookModel, bookState, poseStack,
+        SpriteId pagesSprite = getBookPagesSprite(bookRenderState);
+
+        submitNodeCollector.submitModel(bookModel,
+              bookState,
+              poseStack,
               coverSprite.renderType(RenderTypes::entityCutout),
               packedLight,
               OverlayTexture.NO_OVERLAY,
               bookRenderState.coverTintColor(),
               Minecraft.getInstance().getAtlasManager().get(coverSprite),
-              0,
-              null
+              0
         );
 
-        SpriteId pagesSprite = getBookPagesSprite(bookRenderState);
         submitNodeCollector.submitModel(bookModel, bookState, poseStack,
               pagesSprite.renderType(RenderTypes::entityCutout),
               packedLight,
               OverlayTexture.NO_OVERLAY,
               0xFFFFFFFF,
               Minecraft.getInstance().getAtlasManager().get(pagesSprite),
-              0,
-              null
+              0
         );
 
         poseStack.popPose();
@@ -123,9 +140,9 @@ public class ColoredBookModel {
             entityModel.translateToHand(humanoidRenderState, HumanoidArm.RIGHT, poseStack);
             poseStack.translate((float) (isLeftArm ? -1 : 1) / 16.0F - 0.05, 0.5F,
                   entityModel instanceof SkeletonModel<?> ? -0.15F : -0.22F);
-            poseStack.mulPose(Axis.XP.rotationDegrees(150.0F));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(40.0F));
-            poseStack.mulPose(Axis.YP.rotationDegrees(-90));
+            poseStack.rotateDegrees(Axis.XP, 150.0F);
+            poseStack.rotateDegrees(Axis.ZP, 40.0F);
+            poseStack.rotateDegrees(Axis.YP, -90);
             poseStack.scale(0.8f, 0.8f, 0.8f);
 
             ItemDisplayContext context = mainArm == HumanoidArm.LEFT
@@ -141,7 +158,8 @@ public class ColoredBookModel {
         }
     }
 
-    public static void renderInFirstpersonHand(LivingEntity entity, ItemStack stack, ItemDisplayContext context, PoseStack poseStack,
+    /* Unused for now
+    public static void submitInFirstpersonHand(LivingEntity entity, ItemStack stack, ItemDisplayContext context, PoseStack poseStack,
                                                SubmitNodeCollector submitNodeCollector, int packedLight, BookModel bookModel) {
         poseStack.pushPose();
 
@@ -151,11 +169,11 @@ public class ColoredBookModel {
               : entity.getMainArm().getOpposite();
 
         if (arm == HumanoidArm.LEFT) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(135));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(135));
+            poseStack.rotateDegrees(Axis.YP, 135);
+            poseStack.rotateDegrees(Axis.ZP, 135);
         } else {
-            poseStack.mulPose(Axis.YP.rotationDegrees(45));
-            poseStack.mulPose(Axis.ZP.rotationDegrees(135));
+            poseStack.rotateDegrees(Axis.YP, 45);
+            poseStack.rotateDegrees(Axis.ZP, 135);
         }
 
         BookRenderState bookRenderState = new BookRenderState(stack.has(Scholar.DataComponents.BOOK_GOLDEN), BookColor.of(stack));
@@ -167,8 +185,7 @@ public class ColoredBookModel {
               OverlayTexture.NO_OVERLAY,
               bookRenderState.coverTintColor(),
               Minecraft.getInstance().getAtlasManager().get(coverSprite),
-              0,
-              null
+              0
         );
 
         SpriteId pagesSprite = getBookPagesSprite(bookRenderState);
@@ -178,12 +195,13 @@ public class ColoredBookModel {
               OverlayTexture.NO_OVERLAY,
               0xFFFFFFFF,
               Minecraft.getInstance().getAtlasManager().get(pagesSprite),
-              0,
-              null
+              0
         );
 
         poseStack.popPose();
     }
+
+     */
 
     public static @NotNull SpriteId getBookCoverSprite(BookRenderState renderState) {
         return renderState.isGolden()

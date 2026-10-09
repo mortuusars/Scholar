@@ -22,12 +22,12 @@ public abstract class OpenWritableBookGuiLocalPlayerMixin extends Player {
     }
 
     @Inject(method = "openItemGui", at = @At("HEAD"), cancellable = true)
-    private void onOpenItemGui(ItemStack stack, InteractionHand hand, CallbackInfo ci) {
+    private void onOpenItemGui(ItemStack itemStack, InteractionHand hand, CallbackInfo ci) {
         if (!Config.Common.IN_HAND_TWO_PAGE_BOOK_SCREEN.get()) return;
-        if (!stack.is(Items.WRITABLE_BOOK)) return;
+        if (!itemStack.is(Items.WRITABLE_BOOK)) return;
         if (Config.Common.SNEAKING_OPENS_VANILLA_BOOK_SCREEN.get() && isSecondaryUseActive()) return;
 
-        Minecraft.getInstance().gui.setScreen(new InHandSpreadBookEditScreen(stack, hand));
+        Minecraft.getInstance().gui.setScreen(new InHandSpreadBookEditScreen(itemStack, hand));
         ci.cancel();
     }
 }

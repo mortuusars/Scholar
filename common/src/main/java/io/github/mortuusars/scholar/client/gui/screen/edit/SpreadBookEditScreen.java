@@ -774,7 +774,12 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
             }
             String title = Component.translatable("gui.scholar.import_book").getString();
 
-            FileDialogs.loadFile(defaultDirectory, title, "Text Files (.txt)", false, "*.txt").ifPresent(filePath -> {
+            FileDialogs.loadFile(defaultDirectory, title, "Text Files (.txt)", false, paths -> {
+                if (paths.isEmpty()) {
+                    return;
+                }
+
+                String filePath = paths.getFirst();
                 try {
                     String content = Files.readString(Path.of(filePath));
                     Minecraft.getInstance().execute(() -> setBookContents(content, withFormatting));
@@ -783,7 +788,7 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
                           Component.translatable("gui.scholar.import_book.failure")));
                     Scholar.LOGGER.error("Failed to import book: ", e);
                 }
-            });
+            }, "*.txt");
         }).exceptionally(e -> {
             Minecraft.getInstance().execute(() -> player.sendSystemMessage(
                   Component.translatable("gui.scholar.import_book.failure")));
@@ -804,7 +809,12 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
             }
             String title = Component.translatable("gui.scholar.export_book").getString();
 
-            FileDialogs.saveFile(defaultDirectory, title, "Text Files (.txt)", "*.txt").ifPresent(filePath -> {
+            FileDialogs.saveFile(defaultDirectory, title, "Text Files (.txt)", paths -> {
+                if (paths.isEmpty()) {
+                    return;
+                }
+
+                String filePath = paths.getFirst();
                 try {
                     Files.writeString(Path.of(filePath), content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                     MutableComponent filePathComponent = Component.literal(filePath).withStyle(Style.EMPTY
@@ -818,7 +828,7 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
                           Component.translatable("gui.scholar.export_book.failure")));
                     Scholar.LOGGER.error("Failed to export book: ", e);
                 }
-            });
+            }, "*.txt");
         }).exceptionally(e -> {
             Minecraft.getInstance().execute(() -> player.sendSystemMessage(
                   Component.translatable("gui.scholar.export_book.failure")));
