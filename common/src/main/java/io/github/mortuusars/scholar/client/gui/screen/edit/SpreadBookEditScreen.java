@@ -730,6 +730,10 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
         Predicate<String> validator = FormattedStringEditor.Validator.fitInDimensions(font, leftPageTextBox.getWidth(), leftPageTextBox.getHeight());
 
         for (String pageContent : pages) {
+            if (this.pages.size() >= 100) {
+                break;
+            }
+
             if (pageContent.isEmpty()) {
                 this.pages.add("");
                 continue;
@@ -748,23 +752,23 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
 
                 if (!validator.test(str)) {
                     this.pages.add(lastValidString);
-
-                    if (this.pages.size() >= 100) {
-                        lastValidString = "";
-                        break;
-                    }
-
                     currentChar--;
                     currentString.clear();
+                    lastValidString = "";
                     continue;
                 }
 
                 lastValidString = str;
             }
 
-            if (!lastValidString.isEmpty() && this.pages.size() <= 100) {
+            if (!lastValidString.isEmpty()) {
                 this.pages.add(lastValidString);
             }
+        }
+
+        // Safeguard just to be sure
+        while (this.pages.size() > 100) {
+            this.pages.removeLast();
         }
 
         bookModified = true;
