@@ -723,7 +723,7 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
 
         // Safeguard just to be sure
         while (this.pages.size() > 100) {
-            this.pages.removeLast();
+            this.pages.remove(this.pages.size() - 1);
         }
 
         bookModified = true;
