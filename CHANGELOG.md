@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.8 - 2026-10-09
+- Fixed Lectern book being invisible if `tooltip.lectern_tooltip` config option was disabled
+
 ## 1.2.6 - 2026-10-08
 - Fixed incompatibility with latest JEI versions 
   - This versions of Scholar only supports JEI 15.62+
