@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.9 - 2026-10-09
+- Fixed Import Book feature loading more than 100 pages causing a crash
+
 ## 1.2.8 - 2026-10-09
 - Fixed Lectern book being invisible if `tooltip.lectern_tooltip` config option was disabled
 
