@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.8 - 2026-10-09
+- Fixed Lectern book being invisible if `tooltip.lectern_tooltip` config option was disabled
+
 ## 1.2.7 - 2026-09-14
 - [Fabric] Removed hard-dependency on JEI that was accidentally introduced in the 1.2.6.
 
