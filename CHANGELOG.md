@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.10 - 2026-10-13
+- Removed JEI version restriction
+
 ## 1.2.9 - 2026-10-09
 - Fixed Import Book feature loading more than 100 pages causing a crash
 
