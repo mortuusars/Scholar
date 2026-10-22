@@ -149,7 +149,7 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
         createNextPageButton();
 
         ImageButton enterSignModeButton = new ImageButton(leftPos - 24, topPos + 18, 22, 22,
-              ENTER_SIGN_MODE_SPRITES, b -> enterSignMode(), Component.translatable("book.signButton"));
+              ENTER_SIGN_MODE_SPRITES, _ -> enterSignMode(), Component.translatable("book.signButton"));
         enterSignModeButton.setTooltip(Tooltip.create(Component.translatable("book.signButton")));
         addRenderableWidget(enterSignModeButton);
 
@@ -792,7 +792,7 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
                           Component.translatable("gui.scholar.import_book.failure")));
                     Scholar.LOGGER.error("Failed to import book: ", e);
                 }
-            }, "*.txt");
+            }, "txt");
         }).exceptionally(e -> {
             Minecraft.getInstance().execute(() -> player.sendSystemMessage(
                   Component.translatable("gui.scholar.import_book.failure")));
@@ -818,7 +818,12 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
                     return;
                 }
 
-                String filePath = paths.getFirst();
+                String filePath = paths.getFirst().trim();
+
+                if (!filePath.endsWith(".txt")) {
+                    filePath = filePath + ".txt";
+                }
+
                 try {
                     Files.writeString(Path.of(filePath), content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                     MutableComponent filePathComponent = Component.literal(filePath).withStyle(Style.EMPTY
@@ -832,7 +837,7 @@ public abstract class SpreadBookEditScreen extends SpreadBookScreen {
                           Component.translatable("gui.scholar.export_book.failure")));
                     Scholar.LOGGER.error("Failed to export book: ", e);
                 }
-            }, "*.txt");
+            }, "txt");
         }).exceptionally(e -> {
             Minecraft.getInstance().execute(() -> player.sendSystemMessage(
                   Component.translatable("gui.scholar.export_book.failure")));

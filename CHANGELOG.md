@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.10 - 26.3 - 2026-10-23
+- Port to 26.3
+
 ## 1.2.10 - 2026-10-13
 - Removed JEI version restriction
 
@@ -16,7 +19,7 @@
 - Safeguard for literate mob equipment to prevent potential errors.
 
 ## 1.2.4 - 26.2 - 2026-08-01
-- Port to 26.2.
+- Port to 26.2
 
 ## 1.2.4 - 2026-08-01
 - Fixed book edit and signing screen input boxes not keeping their state (cursor pos, selection, focus) when game window is resized. 
