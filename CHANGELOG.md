@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.11 - 2026-10-23
+- [Fabric] Fixed game crashing when joining world due to incorrect key mapping value  
+
 ## 1.2.10 - 26.3 - 2026-10-23
 - Port to 26.3
 
