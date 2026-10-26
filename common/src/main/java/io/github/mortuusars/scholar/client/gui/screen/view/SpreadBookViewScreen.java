@@ -275,7 +275,11 @@ public abstract class SpreadBookViewScreen extends SpreadBookScreen {
                     return;
                 }
 
-                String filePath = paths.getFirst();
+                String filePath = paths.getFirst().trim();
+
+                if (!filePath.endsWith(".txt")) {
+                    filePath = filePath + ".txt";
+                }
 
                 try {
                     Files.writeString(Path.of(filePath), content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
@@ -290,7 +294,7 @@ public abstract class SpreadBookViewScreen extends SpreadBookScreen {
                           Component.translatable("gui.scholar.export_book.failure")));
                     Scholar.LOGGER.error("Failed to export book: ", e);
                 }
-            }, "*.txt");
+            }, "txt");
         }).exceptionally(e -> {
             Minecraft.getInstance().execute(() -> player.sendSystemMessage(
                   Component.translatable("gui.scholar.export_book.failure")));

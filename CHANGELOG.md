@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.12 - 2026-10-26
+- Fixed Written Book's **Export** button not working 
+
 ## 1.2.11 - 2026-10-23
 - [Fabric] Fixed game crashing when joining world due to incorrect key mapping value  
 
