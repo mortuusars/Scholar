@@ -123,7 +123,15 @@ public class FormattedStringEditor {
     }
 
     public int getWordPosition(int skipCount, boolean includeWhitespace) {
-        int i = getCursorPos();
+        return getWordPosition(skipCount, getCursorPos(), includeWhitespace);
+    }
+
+    /**
+     * Works on codepoint indices (same as cursor/selection), unlike {@link net.minecraft.client.StringSplitter#getWordPosition}
+     * which works on UTF-16 char indices and gets misaligned when text contains surrogate pairs (e.g. emojis).
+     */
+    public int getWordPosition(int skipCount, int fromIndex, boolean includeWhitespace) {
+        int i = clampIndex(fromIndex);
 
         boolean backwards = skipCount < 0;
         int count = Math.abs(skipCount);
@@ -189,8 +197,8 @@ public class FormattedStringEditor {
 
     public void selectWord(int index) {
         setSelectionRange(
-              StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), -1, index, false),
-              StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), 1, index, false));
+              getWordPosition(-1, index, false),
+              getWordPosition(1, index, false));
     }
 
     public String getSelectedString(boolean withFormatting) {
@@ -395,7 +403,7 @@ public class FormattedStringEditor {
     }
 
     public void removeWordsFromCursor(int direction) {
-        int charsCount = StringSplitter.getWordPosition(getString().toStringWithoutFormatting(), direction, this.cursorPos, true);
+        int charsCount = getWordPosition(direction, this.cursorPos, true);
         this.removeCharsFromCursor(charsCount - this.cursorPos);
     }
 

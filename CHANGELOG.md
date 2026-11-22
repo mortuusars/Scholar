@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.13 - 2026-11-22
+- Fixed word selection (with double-click) not working correctly with complex emojis (thanks _MayonnaiseOG_)
+
 ## 1.2.12 - 2026-10-26
 - Fixed Written Book's **Export** button not working 
 
