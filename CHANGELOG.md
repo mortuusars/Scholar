@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.11 - 2026-11-22
+- Fixed word selection (with double-click) not working correctly with complex emojis (thanks _MayonnaiseOG_)
+
 ## 1.2.10 - 2026-10-13
 - Removed JEI version restriction
 
